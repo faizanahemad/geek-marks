@@ -1,0 +1,266 @@
+[
+  {
+    "href": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+    "protocol": "https:",
+    "hostname": "en.wikipedia.org",
+    "pathname": "/wiki/Heap_(data_structure)",
+    "notes": [],
+    "tags": [
+      "heap"
+    ],
+    "lastVisited": 1481290647620,
+    "visits": 2,
+    "difficulty": 3
+  },
+  {
+    "href": "http://quiz.geeksforgeeks.org/binary-heap/",
+    "protocol": "http:",
+    "hostname": "quiz.geeksforgeeks.org",
+    "pathname": "/binary-heap/",
+    "lastVisited": 1481303301330,
+    "difficulty": 1,
+    "notes": [
+      "Max Heap:\n<a href='http://ideone.com/9Gr3iQ'><a href='http://ideone.com/9Gr3iQ'>http://ideone.com/9Gr3iQ</a></a>",
+      "Min Heap:\n<a href='http://ideone.com/HvUBZM'>http://ideone.com/HvUBZM</a>"
+    ],
+    "visits": 1,
+    "tags": []
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/why-is-binary-heap-preferred-over-bst-for-priority-queue/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/why-is-binary-heap-preferred-over-bst-for-priority-queue/",
+    "difficulty": 2,
+    "notes": [],
+    "tags": [
+      "heap",
+      "bst"
+    ],
+    "lastVisited": 1481307715113,
+    "visits": 3
+  },
+  {
+    "href": "http://quiz.geeksforgeeks.org/how-to-implement-decrease-key-or-change-key-in-binary-search-tree/",
+    "protocol": "http:",
+    "hostname": "quiz.geeksforgeeks.org",
+    "pathname": "/how-to-implement-decrease-key-or-change-key-in-binary-search-tree/",
+    "difficulty": 1,
+    "notes": [],
+    "tags": [
+      "bst"
+    ],
+    "lastVisited": 1481308002525,
+    "visits": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/binomial-heap-2/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/binomial-heap-2/",
+    "difficulty": 4,
+    "notes": [
+      "Java: <a href='http://code.geeksforgeeks.org/Pm6rDH'>http://code.geeksforgeeks.org/Pm6rDH</a>",
+      "Skew Heaps: <a href='https://en.wikipedia.org/wiki/Skew_heap'>https://en.wikipedia.org/wiki/Skew_heap</a>",
+      "Pairing heaps: <a href='https://en.wikipedia.org/wiki/Pairing_heap'>https://en.wikipedia.org/wiki/Pairing_heap</a>"
+    ],
+    "tags": [
+      "heap"
+    ],
+    "lastVisited": 1481344644179,
+    "visits": 7
+  },
+  {
+    "href": "http://quiz.geeksforgeeks.org/heap-sort/",
+    "protocol": "http:",
+    "hostname": "quiz.geeksforgeeks.org",
+    "pathname": "/heap-sort/",
+    "difficulty": 1,
+    "notes": [
+      "Mistakes:\nFirst paragraph: \"3. Repeat above steps until size of heap is greater than 1.\"shouldsay \"while\" instead of \"until\"\n\nInside heapSort function, last statement: \"heapify(arr, i, 0);\" should be \"heapify(arr, i-1, 0);\" else it's possible the element we swapped to the end will get swapped with the new root, during heapification once.\n\nThe second for loop in heapSort function should end on \"i>0\" not i>=0\", there's no point in swapping the same element with itself, then calling heapify on a single element heap."
+    ],
+    "tags": [],
+    "lastVisited": 1481347501056,
+    "visits": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/k-largestor-smallest-elements-in-an-array/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/k-largestor-smallest-elements-in-an-array/",
+    "difficulty": 3,
+    "notes": [
+      "Code c++: <a href='https://mytechspaze.com/index.php/2016/07/18/k-largest-elements-array/'>https://mytechspaze.com/index.php/2016/07/18/k-largest-elements-array/</a>"
+    ],
+    "tags": [
+      "heap",
+      "order statistics"
+    ],
+    "lastVisited": 1481348305653,
+    "visits": 4
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/kth-largest-element-in-a-stream/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/kth-largest-element-in-a-stream/",
+    "difficulty": 2,
+    "notes": [],
+    "tags": [
+      "order statistics",
+      "heap"
+    ],
+    "lastVisited": 1481348529469,
+    "visits": 3
+  },
+  {
+    "href": "https://en.wikipedia.org/wiki/Quickselect",
+    "protocol": "https:",
+    "hostname": "en.wikipedia.org",
+    "pathname": "/wiki/Quickselect",
+    "difficulty": 2,
+    "notes": [],
+    "tags": [
+      "order statistics"
+    ],
+    "lastVisited": 1481350245605,
+    "visits": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/nearly-sorted-algorithm/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/nearly-sorted-algorithm/",
+    "difficulty": 3,
+    "notes": [
+      "why we need to create heap of k+1 then remove/add for remaining elements ?\nBecause the element is atmost k away from the target position. We create a heap to store k+1 elements. So the element is already in the heap. So if the element is the smallest of the group the we extract the element.\nand to be sure smallest element(first element of sorted out o/p) will always be in first K+1 elements as it can only move k places away from its original position and of course it will root element of minheap."
+    ],
+    "tags": [
+      "heap",
+      "sorting"
+    ],
+    "lastVisited": 1481351222418,
+    "visits": 5
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/check-if-a-given-binary-tree-is-heap/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/check-if-a-given-binary-tree-is-heap/",
+    "difficulty": 3,
+    "notes": [
+      "Java: <a href='http://code.geeksforgeeks.org/23YCEn'>http://code.geeksforgeeks.org/23YCEn</a>",
+      "Just one level order traversal of the given binary tree would be sufficient to check both the properties of binary heap..\n\nTo check Complete binary tree property: Just check no NON NULL value should proceed,once any NULL value is inserted into the queue.\n\nChecking the other property of binary heap is very easy, while inserting the children of a node , just check that they both are less than or greater than the parent."
+    ],
+    "tags": [
+      "heap",
+      "binary tree"
+    ],
+    "lastVisited": 1481352905962,
+    "visits": 5
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/check-if-a-given-binary-tree-is-complete-tree-or-not/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/check-if-a-given-binary-tree-is-complete-tree-or-not/",
+    "notes": [
+      "Java: public boolean check(Node root) {\nif (root == null)\nreturn true;\nelse if (root.left == null && root.right != null)\nreturn false;\n\nreturn check(root.left) && check(root.right);\n}",
+      "C++: <a href='http://code.geeksforgeeks.org/QwL4Eb'>http://code.geeksforgeeks.org/QwL4Eb</a>"
+    ],
+    "tags": [
+      "binary tree"
+    ],
+    "lastVisited": 1481352835859,
+    "visits": 5,
+    "difficulty": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/how-to-check-if-a-given-array-represents-a-binary-heap/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/how-to-check-if-a-given-array-represents-a-binary-heap/",
+    "difficulty": 3,
+    "notes": [],
+    "tags": [
+      "heap"
+    ],
+    "lastVisited": 1481354298954,
+    "visits": 13
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/merge-k-sorted-arrays/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/merge-k-sorted-arrays/",
+    "difficulty": 3,
+    "notes": [
+      "Java Code: <a href='http://code.geeksforgeeks.org/JJ9ytn'>http://code.geeksforgeeks.org/JJ9ytn</a>"
+    ],
+    "tags": [
+      "heap",
+      "sorting"
+    ],
+    "lastVisited": 1481358226873,
+    "visits": 6
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/print-elements-sorted-order-row-column-wise-sorted-matrix/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/print-elements-sorted-order-row-column-wise-sorted-matrix/",
+    "difficulty": 3,
+    "notes": [],
+    "tags": [
+      "heap",
+      "sorting"
+    ],
+    "lastVisited": 1481358297914,
+    "visits": 3
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/connect-n-ropes-minimum-cost/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/connect-n-ropes-minimum-cost/",
+    "difficulty": 3,
+    "notes": [
+      "Java: <a href='http://ideone.com/wsTJKT'>http://ideone.com/wsTJKT</a>"
+    ],
+    "tags": [
+      "heap",
+      "greedy"
+    ],
+    "lastVisited": 1481358705012,
+    "visits": 4
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/sort-numbers-stored-on-different-machines/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/sort-numbers-stored-on-different-machines/",
+    "difficulty": 2,
+    "notes": [],
+    "tags": [
+      "heap"
+    ],
+    "lastVisited": 1481358903007,
+    "visits": 3
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/a-data-structure-question/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/a-data-structure-question/",
+    "notes": [
+      "Delete from heap: <a href='http://www.mathcs.emory.edu/~cheung/Courses/171/Syllabus/9-BinTree/heap-delete.html'><a href='http://www.mathcs.emory.edu/~cheung/Courses/171/Syllabus/9-BinTree/heap-delete.html'><a href='http://www.mathcs.emory.edu/~cheung/Courses/171/Syllabus/9-BinTree/heap-delete.html'>http://www.mathcs.emory.edu/~cheung/Courses/171/Syllabus/9-BinTree/heap-delete.html</a></a></a>",
+      "There is better solution than this I believe:\nWe can use a sorted DLL along with a Hash map (that stores the the value of the node as key and its address in the DLL as its value). \nWith this option we will have the following complexities:\n\nfindMax() ==> O(1)\nfindMin() ==> O(1)\ndeleteMax() ==> O(1)\ndeleteMin() ==> O(1)\nDelete() ==> O(1)\nInsert() ==> O(n)\n\n"
+    ],
+    "tags": [
+      "heap"
+    ],
+    "lastVisited": 1481372082650,
+    "visits": 10,
+    "difficulty": 3
+  }
+]
