@@ -25,7 +25,7 @@ module.exports = function(app) {
                 tagSet.add(t)
                 var linkArr = tagHrefMap.get(t) || [];
                 linkArr.push(e);
-                tagHrefMap.set(t, e);
+                tagHrefMap.set(t, linkArr);
             });
         }
     });
@@ -60,6 +60,8 @@ module.exports = function(app) {
     	    var storedVar = hrefMap.get(cld.href);
             storedVar["lastVisited"] = cld.lastVisited;
             storedVar["visits"] = storedVar["visits"]+1;
+
+            storedVar.title = cld.title || storedVar.title || "";
             storedVar.difficulty = cld.difficulty || storedVar.difficulty;
             storedVar.notes = cld.notes || storedVar.notes || [];
             storedVar.tags = cld.tags || storedVar.tags || [];

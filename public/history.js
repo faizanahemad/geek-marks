@@ -46,11 +46,36 @@ levelStyleMap.set(3, "color: DodgerBlue !important;");
 levelStyleMap.set(4, "color: MediumBlue !important;");
 levelStyleMap.set(5, "color: DarkBlue !important; font-weight:bolder;");
 
+function getTitle() {
+
+    var s1 = function () {
+        var h1s = document.getElementsByTagName("h1");
+        return h1s[0].textContent.trim().toLowerCase() || "";
+    };
+
+    var s2 = function () {
+        var h1s = document.getElementsByTagName("h1");
+        return h1s[h1s.length-1].textContent.trim().toLowerCase() || "";
+    };
+
+    var tmap = new Map();
+    tmap.set("www.geeksforgeeks.org",s1);
+    tmap.set("www.quiz.geeksforgeeks.org",s1);
+    var curStrategy = tmap.get(location.hostname);
+    if (curStrategy) {
+        return curStrategy();
+    } else {
+        return s2();
+    }
+
+}
+
 var cld = {
     "href": location.href,
     "protocol": location.protocol,
     "hostname": location.hostname,
-    "pathname": location.pathname
+    "pathname": location.pathname,
+    "title":getTitle()
 };
 
 var body = document.getElementsByTagName("body")[0];
@@ -101,6 +126,7 @@ var pathnameSet = new Set();
 var hrefSet = new Set();
 var hrefMap = new Map();
 var pathMap = new Map();
+var titleMap = new Map();
 var tagAutoCompleteSet = new Set();
 setTimeout(function () {
     refreshData(true)
@@ -120,11 +146,16 @@ function refreshData(firstRun) {
             hrefSet.add(e["href"]);
             hrefMap.set(e["href"], e);
             pathMap.set(e["pathname"],e);
+
+            if (e.title) {
+                titleMap.set(e.title, e)
+            }
         });
         var atags = Array.from(document.getElementsByTagName("a"));
         var atagsHref = new Set();
         atags.filter((e)=>hrefSet.has(e.href)).forEach((e)=>atagsHref.add(e));
         atags.filter((e)=>pathnameSet.has(e.pathname)).forEach((e)=>atagsHref.add(e));
+        atags.filter((e)=>titleMap.has(e.innerText.toLowerCase().trim())).forEach((e)=>atagsHref.add(e));
         atagsHref.forEach((e)=> {
             var df =3
             if (hrefMap.get(e.href)) {
@@ -154,6 +185,21 @@ function render() {
     boldDifficultyButton();
     renderTags();
 }
+
+function cleanPage() {
+    var discusPrompt = document.getElementById("onboard");
+    var practiceText = document.getElementById("practice");
+    var removables = [];
+    removables.push(discusPrompt);
+    removables.push(practiceText);
+    removables.forEach(e=>{
+        if (e) {
+            e.remove();
+        }
+    });
+}
+
+
 
 var noteId = "notebook-id";
 var note = document.createElement("div");

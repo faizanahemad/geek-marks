@@ -262,5 +262,198 @@
     "lastVisited": 1481372082650,
     "visits": 10,
     "difficulty": 3
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/tournament-tree-and-binary-heap/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/tournament-tree-and-binary-heap/",
+    "notes": [
+      "<a href='https://www.youtube.com/watch?v=7WGaT0-gYCQ'>https://www.youtube.com/watch?v=7WGaT0-gYCQ</a>",
+      "To get kth largest element: Another simple strategy is based on some of the same concepts as the hash table. When we know the range of values beforehand, we can divide that range into h subintervals and assign these to h buckets. When we insert an element, we add it to the bucket corresponding to the interval it falls in. To find the minimum or maximum element, we scan from the beginning or end for the first nonempty bucket and find the minimum or maximum element in that bucket. In general, to find the kth element, we maintain a count of the number of elements in each bucket, then scan the buckets from left to right adding up counts until we find the bucket containing the desired element, then use the expected linear-time algorithm to find the correct element in that bucket."
+    ],
+    "tags": [
+      "heap",
+      "tree",
+      "sorting",
+      "order statistics"
+    ],
+    "lastVisited": 1481386916551,
+    "visits": 7,
+    "difficulty": 4
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/to-find-smallest-and-second-smallest-element-in-an-array/#comment-2541",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/to-find-smallest-and-second-smallest-element-in-an-array/",
+    "difficulty": 3,
+    "notes": [
+      "It can be done in n + logn -2 comparison.\nTrick : store all pairs being compared.\nSteps :\n1. Pair it in groups of 2 and compare each group and store the pair.\n2. Again Pair and Compare till you have only one element left.\n3. Comparisons made till now = n/2 + ..+1 = n-1 and you have smallest element\n4. now find second minimum using same technique from stored pairs which include smallest element, total number of such pairs = logn because smallest element has been compared exactly logn times(height of comparison tree) .\n5.Comparison made for second minimum = logn-1\nSo total = n-1 + logn-1\n<a href='http://quickinfobox.blogspot.in/2016/03/an-optimised-approach-to-find-second.html'>http://quickinfobox.blogspot.in/2016/03/an-optimised-approach-to-find-second.html</a>",
+      "<a href='http://stackoverflow.com/questions/3628718/find-the-2nd-largest-element-in-an-array-with-minimum-number-of-comparisons/3628777#3628777'>http://stackoverflow.com/questions/3628718/find-the-2nd-largest-element-in-an-array-with-minimum-number-of-comparisons/3628777#3628777</a>"
+    ],
+    "tags": [
+      "order statistics"
+    ],
+    "lastVisited": 1481387248918,
+    "visits": 5
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/detect-and-remove-loop-in-a-linked-list/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/detect-and-remove-loop-in-a-linked-list/",
+    "notes": [
+      "In method 2 step 3, kth node is 0 indexed. Or think of it as move k times starting from root.",
+      "to reduce time complexity we can do this problem in simple n steps, in O(n) complexity, we just have to do is introduce a boolean in Node as ( boolean isVisited = false; ), go through linked list, mark isVisited = true for the node on which you are currently and check that if this.next.isVisited == false then keep moving else <a href='http://this.next'>http://this.next</a> = null;"
+    ],
+    "tags": [
+      "linked list"
+    ],
+    "lastVisited": 1481389254489,
+    "visits": 5,
+    "difficulty": 4
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/rotate-a-linked-list/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/rotate-a-linked-list/",
+    "difficulty": 3,
+    "notes": [],
+    "tags": [
+      "linked list"
+    ],
+    "lastVisited": 1481389388420,
+    "visits": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/split-a-circular-linked-list-into-two-halves/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/split-a-circular-linked-list-into-two-halves/",
+    "difficulty": 2,
+    "notes": [],
+    "tags": [
+      "linked list"
+    ],
+    "lastVisited": 1481389553959,
+    "visits": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/convert-a-binary-tree-to-a-circular-doubly-link-list/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/convert-a-binary-tree-to-a-circular-doubly-link-list/",
+    "difficulty": 3,
+    "notes": [],
+    "tags": [
+      "binary tree"
+    ],
+    "lastVisited": 1481389738327,
+    "visits": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/quicksort-for-linked-list/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/quicksort-for-linked-list/",
+    "difficulty": 2,
+    "notes": [],
+    "tags": [
+      "linked list"
+    ],
+    "lastVisited": 1481391190937,
+    "visits": 3
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/check-for-balanced-parentheses-in-an-expression/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/check-for-balanced-parentheses-in-an-expression/",
+    "difficulty": 1,
+    "notes": [],
+    "tags": [
+      "stack"
+    ],
+    "lastVisited": 1481391329230,
+    "visits": 3
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/implement-stack-using-queue/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/implement-stack-using-queue/",
+    "difficulty": 3,
+    "notes": [],
+    "tags": [
+      "stack",
+      "queue"
+    ],
+    "lastVisited": 1481396183990,
+    "visits": 3
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/queue-using-stacks/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/queue-using-stacks/",
+    "difficulty": 3,
+    "notes": [],
+    "tags": [
+      "stack",
+      "queue"
+    ],
+    "lastVisited": 1481398686339,
+    "visits": 7,
+    "title": "implement queue using stacks"
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/dynamic-programming-set-3-longest-increasing-subsequence/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/dynamic-programming-set-3-longest-increasing-subsequence/",
+    "title": "dynamic programming | set 3 (longest increasing subsequence)",
+    "difficulty": 2,
+    "notes": [],
+    "tags": [
+      "dp"
+    ],
+    "lastVisited": 1481399607284,
+    "visits": 2
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/dynamic-programming-set-4-longest-common-subsequence/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/dynamic-programming-set-4-longest-common-subsequence/",
+    "title": "dynamic programming | set 4 (longest common subsequence)",
+    "notes": [
+      "Java: <a href='http://code.geeksforgeeks.org/iCtwby'>http://code.geeksforgeeks.org/iCtwby</a>",
+      "All LCS : <a href='http://code.geeksforgeeks.org/7pwkQz'>http://code.geeksforgeeks.org/7pwkQz</a>",
+      "Less space: <a href='http://ideone.com/BOnvwD'>http://ideone.com/BOnvwD</a>"
+    ],
+    "tags": [
+      "dp"
+    ],
+    "lastVisited": 1481453438662,
+    "visits": 5,
+    "difficulty": 3
+  },
+  {
+    "href": "http://www.geeksforgeeks.org/printing-longest-common-subsequence/",
+    "protocol": "http:",
+    "hostname": "www.geeksforgeeks.org",
+    "pathname": "/printing-longest-common-subsequence/",
+    "title": "printing longest common subsequence",
+    "difficulty": 2,
+    "notes": [
+      "LCS prob: <a href='http://www.geeksforgeeks.org/dynamic-programming-set-4-longest-common-subsequence/'>http://www.geeksforgeeks.org/dynamic-programming-set-4-longest-common-subsequence/</a>"
+    ],
+    "tags": [
+      "dp"
+    ],
+    "lastVisited": 1481453007800,
+    "visits": 3
   }
 ]

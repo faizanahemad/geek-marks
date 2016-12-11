@@ -7,6 +7,7 @@ var express = require('express'),
     http = require('http');
 
 var fs = require('fs');
+var compression = require('compression');
 var https = require('https');
 var privateKey  = fs.readFileSync('localhost.key', 'utf8');
 var certificate = fs.readFileSync('localhost.cert', 'utf8');
@@ -19,6 +20,7 @@ var credentials = {key: privateKey, cert: certificate};
 var app = express();
 
 (function middlewareSetup(app) {
+    app.use(compression({filter: (res, resp)=>true}));
     app.use(express.static(__dirname + '/public'));
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");

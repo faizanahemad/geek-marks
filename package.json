@@ -5,7 +5,7 @@
   "dependencies": {
     "body-parser": "~1.9.0",
     "collections": "^5.0.5",
-    "compression": "^1.2.1",
+    "compression": "^1.6.2",
     "config": "~1.7.0",
     "connect": "~3.2.0",
     "connect-memcached": "~0.1.0",
