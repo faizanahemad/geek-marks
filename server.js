@@ -27,14 +27,11 @@ var app = express();
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
-    var session = require('express-session'),
-        cookieParser = require('cookie-parser'),
-        multer = require('multer'),
+    var multer = require('multer'),
         bodyParser = require('body-parser');
     app.use(multer());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieParser('myCookieSecret'));
     app.use(function(req, res, next) {
         req._startTime = new Date().getTime();
         next();

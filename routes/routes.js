@@ -2,11 +2,6 @@
 var jsonfile = require('jsonfile');
 var CSet = require("collections/set");
 var Map = require("collections/map");
-function persist(data, file) {
-    jsonfile.writeFile(file, data, {spaces: 2}, function(err) {
-        console.error(err)
-    });
-}
 
 module.exports = function(app) {
     var file = process.cwd()+"/history.json";
