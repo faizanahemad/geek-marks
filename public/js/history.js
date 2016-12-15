@@ -35,38 +35,227 @@ String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
+//=====================
+var body = document.getElementsByTagName("body")[0];
+var atags = Array.from(document.getElementsByTagName("a"));
 
+var pathnameSet = new Set();
+var hrefSet = new Set();
+var hrefMap = new Map();
+var pathMap = new Map();
+var titleMap = new Map();
+
+
+var colorButtonId = "color-button-";
+var difficultyIdString = "difficulty-";
+var showHideButtonId = "show-hide-id";
+var colors=["Magenta","LimeGreen","Silver","DodgerBlue","SandyBrown"];
+var visibilityState = true;
+var tagId = "tag-id";
+var noteId = "notebook-id";
 //=====================
 
 
-var levelStyleMap = new Map();
-levelStyleMap.set(1, "color: LightSkyBlue !important; font-weight:lighter;");
-levelStyleMap.set(2, "color: DeepSkyBlue !important;");
-levelStyleMap.set(3, "color: DodgerBlue !important;");
-levelStyleMap.set(4, "color: MediumBlue !important;");
-levelStyleMap.set(5, "color: DarkBlue !important; font-weight:bolder;");
 
+var pinkStyle = new Map();
+pinkStyle.set(1, "color: Plum !important; font-weight:lighter;");
+pinkStyle.set(2, "color: Violet !important;");
+pinkStyle.set(3, "color: Magenta !important;");
+pinkStyle.set(4, "color: BlueViolet !important;");
+pinkStyle.set(5, "color: Indigo !important; font-weight:bolder;");
+
+var greenStyle = new Map();
+greenStyle.set(1, "color: GreenYellow !important; font-weight:lighter;");
+greenStyle.set(2, "color: Lime !important;");
+greenStyle.set(3, "color: LimeGreen !important;");
+greenStyle.set(4, "color: SeaGreen !important;");
+greenStyle.set(5, "color: ForestGreen !important; font-weight:bolder;");
+
+var grayStyle = new Map();
+grayStyle.set(1, "color: Gainsboro !important; font-weight:lighter;");
+grayStyle.set(2, "color: Silver !important;");
+grayStyle.set(3, "color: DarkGray !important;");
+grayStyle.set(4, "color: DarkSlateGray !important;");
+grayStyle.set(5, "color: Black !important; font-weight:bolder;");
+
+var blueStyle = new Map();
+blueStyle.set(1, "color: LightSkyBlue !important; font-weight:lighter;");
+blueStyle.set(2, "color: DeepSkyBlue !important;");
+blueStyle.set(3, "color: DodgerBlue !important;");
+blueStyle.set(4, "color: MediumBlue !important;");
+blueStyle.set(5, "color: DarkBlue !important; font-weight:bolder;");
+
+var redStyle = new Map();
+redStyle.set(1, "color: Wheat !important; font-weight:lighter;");
+redStyle.set(2, "color: BurlyWood !important;");
+redStyle.set(3, "color: DarkGoldenrod !important;");
+redStyle.set(4, "color: IndianRed !important;");
+redStyle.set(5, "color: DarkRed !important; font-weight:bolder;");
+
+
+var levelStyleMap = blueStyle;
+
+function renderLinks() {
+    var atagsHref = new Set();
+    atags.filter((e)=>hrefSet.has(e.href)).forEach((e)=>atagsHref.add(e));
+    atags.filter((e)=>pathnameSet.has(e.pathname)).forEach((e)=>atagsHref.add(e));
+    atags.filter((e)=>titleMap.has(e.innerText.toLowerCase().trim())).forEach((e)=>atagsHref.add(e));
+    atagsHref.forEach((e)=> {
+        var df =3;
+        if (hrefMap.get(e.href)) {
+            df = hrefMap.get(e.href).difficulty;
+        } else if(pathMap.get(e.pathname)) {
+            df = pathMap.get(e.pathname).difficulty;
+        }
+        e.style = levelStyleMap.get(df);
+    });
+}
+
+
+function changeStyle(style) {
+    if (style==1) {
+        levelStyleMap = pinkStyle;
+    } else if (style==2) {
+        levelStyleMap = greenStyle;
+    } else if (style==3) {
+        levelStyleMap = grayStyle;
+    }   else if (style==4) {
+        levelStyleMap = blueStyle;
+    } else {
+        levelStyleMap = redStyle;
+    }
+    var curBtn = document.getElementById(colorButtonId + style);
+    curBtn.style =
+        `top:60px; 
+        right:%rw%; 
+        position:fixed;
+        color:red; 
+        font-weight:bold;
+        background-color:%bgcol%;
+        border: 2px solid black;
+        border-radius: 2px;`
+            .replaceAll("%rw%", (5 - style) * 25 + 10 + "px")
+            .replaceAll("%bgcol%",colors[style-1]);
+}
+
+function createColorButtons() {
+    for (var i = 1; i <= 5; i++) {
+        if (document.getElementById(colorButtonId + i)) {
+            document.getElementById(colorButtonId + i).remove();
+        }
+        var btn = document.createElement("button");
+        btn.id = colorButtonId + i;
+        body.appendChild(btn);
+        btn.style =
+            "top:60px; right:%rw%; position:fixed;background-color:%bgcol%;"
+                .replaceAll("%rw%", (5 - i) * 25 + 10 + "px")
+                .replaceAll("%bgcol%",colors[i-1]);
+        btn.onclick = (function (style) {
+            return function () {
+                createColorButtons();
+                changeStyle(style);
+                renderLinks();
+            }
+        })(i);
+    }
+}
+createColorButtons();
+changeStyle(4);
+
+function createShowHideButton() {
+    if (document.getElementById(showHideButtonId)) {
+        document.getElementById(showHideButtonId).remove();
+    }
+    var btn = document.createElement("button");
+    btn.id = showHideButtonId;
+    function getBtnInnerHtml(visibleState) {
+        return visibleState?`<img src="https://localhost:8443/img/up-600px.png" height="12" width="12"></img>`:`<img src="https://localhost:8443/img/down-120px.png" height="12" width="12"></img>`;
+    }
+    btn.innerHTML = getBtnInnerHtml(visibilityState);
+    body.appendChild(btn);
+    btn.style =
+        "top:25px; right:%rw%; position:fixed;background-color:DeepSkyBlue;"
+            .replaceAll("%rw%",10 + "px");
+    btn.onclick = (function () {
+        return function () {
+            visibilityState = !visibilityState;
+            var toAdd = visibilityState?"show":"hide";
+            var toRemove = visibilityState?"hide":"show";
+            var noteArea = document.getElementById(noteId);
+            var tagArea = document.getElementById(tagId);
+            if (noteArea) {
+                noteArea.classList.remove(toRemove);
+                noteArea.classList.add(toAdd);
+            }
+            if (tagArea) {
+                tagArea.classList.remove(toRemove);
+                tagArea.classList.add(toAdd);
+            }
+            btn.innerHTML = getBtnInnerHtml(visibilityState);
+            for (var i = 1; i <= 5; i++) {
+                var colorBtn = document.getElementById(colorButtonId + i);
+                var diffBtn = document.getElementById(difficultyIdString + i);
+                if (colorBtn) {
+                    colorBtn.classList.remove(toRemove);
+                    colorBtn.classList.add(toAdd);
+                }
+                if (diffBtn) {
+                    diffBtn.classList.remove(toRemove);
+                    diffBtn.classList.add(toAdd);
+                }
+            }
+
+        }
+    })();
+}
+createShowHideButton();
 function getTitle() {
 
     var s1 = function () {
         var h1s = document.getElementsByTagName("h1");
-        return h1s[0].textContent.trim().toLowerCase() || "";
+        var h1Elem = h1s[0];
+        if (h1Elem) {
+            return h1Elem.textContent.trim().toLowerCase();
+        }
+        return "";
     };
 
     var s2 = function () {
         var h1s = document.getElementsByTagName("h1");
-        return h1s[h1s.length-1].textContent.trim().toLowerCase() || "";
+        var h1Elem = h1s[h1s.length-1];
+        if (h1Elem) {
+            return h1Elem.textContent.trim().toLowerCase();
+        }
+        return "";
+    };
+    var s3 = function () {
+        var h1s = document.getElementsByClassName("entry-title");
+        var h1Elem = h1s[0];
+        if (h1Elem) {
+            return h1Elem.textContent.trim().toLowerCase();
+        }
+        return "";
     };
 
     var tmap = new Map();
-    tmap.set("www.geeksforgeeks.org",s1);
-    tmap.set("www.quiz.geeksforgeeks.org",s1);
+    var strategyArray = [s1, s2, s3];
+    tmap.set("www.geeksforgeeks.org",s3);
+    tmap.set("www.quiz.geeksforgeeks.org",s3);
     var curStrategy = tmap.get(location.hostname);
+    var title = "";
     if (curStrategy) {
-        return curStrategy();
-    } else {
-        return s2();
+        title = curStrategy();
     }
+    if (title.length==0) {
+        title = strategyArray.reduce((prev,cur)=>{
+            if (prev && prev.length>0) {
+                return prev;
+            } else {
+                return cur();
+            }
+        },title);
+    }
+    return title;
 
 }
 
@@ -78,8 +267,6 @@ var cld = {
     "title":getTitle()
 };
 
-var body = document.getElementsByTagName("body")[0];
-var difficultyIdString = "difficulty-";
 function boldDifficultyButton() {
     var curBtn = document.getElementById(difficultyIdString + cld.difficulty);
     if (curBtn && cld.difficulty) {
@@ -122,12 +309,6 @@ function createButtons() {
         })(i);
     }
 }
-var pathnameSet = new Set();
-var hrefSet = new Set();
-var hrefMap = new Map();
-var pathMap = new Map();
-var titleMap = new Map();
-var tagAutoCompleteSet = new Set();
 setTimeout(function () {
     refreshData(true)
 }, 1000);
@@ -151,23 +332,14 @@ function refreshData(firstRun) {
                 titleMap.set(e.title, e)
             }
         });
-        var atags = Array.from(document.getElementsByTagName("a"));
-        var atagsHref = new Set();
-        atags.filter((e)=>hrefSet.has(e.href)).forEach((e)=>atagsHref.add(e));
-        atags.filter((e)=>pathnameSet.has(e.pathname)).forEach((e)=>atagsHref.add(e));
-        atags.filter((e)=>titleMap.has(e.innerText.toLowerCase().trim())).forEach((e)=>atagsHref.add(e));
-        atagsHref.forEach((e)=> {
-            var df =3
-            if (hrefMap.get(e.href)) {
-                df = hrefMap.get(e.href).difficulty;
-            } else if(pathMap.get(e.pathname)) {
-                df = pathMap.get(e.pathname).difficulty;
-            }
-            e.style = levelStyleMap.get(df);
-        });
+
+        renderLinks();
         if (firstRun) {
             augmentCLD();
             render();
+        }
+        if (hrefSet.has(location.href)) {
+            postInput();
         }
     });
 }
@@ -186,6 +358,7 @@ function render() {
     renderTags();
 }
 
+
 function cleanPage() {
     var discusPrompt = document.getElementById("onboard");
     var practiceText = document.getElementById("practice");
@@ -199,16 +372,16 @@ function cleanPage() {
     });
 }
 
+cleanPage();
 
 
-var noteId = "notebook-id";
 var note = document.createElement("div");
 note.id = noteId;
 body.appendChild(note);
 note.style =
     "top:180px; right:%rw%; position:fixed; width: 35em;".replaceAll("%rw%",10 + "px");
 
-var tagId = "tag-id";
+
 var tagger = document.createElement("div");
 tagger.id = tagId;
 body.appendChild(tagger);
@@ -312,49 +485,4 @@ function renderTags() {
             postInput();
         }
     });
-}
-
-function removeStopWords(input) {
-    var inputWords = input.split(" ").map(w=>w.trim());
-    for (var i=0;i<inputWords.length;) {
-        if (i<inputWords.length) {
-            if (stopWordSet.has(inputWords[i].toLowerCase()) ||
-                stopWordSet.has(inputWords[i]) ||
-                stopWordSet.has(inputWords[i].toUpperCase()) ||
-                list.includes(inputWords[i]) ||
-                list.includes(inputWords[i].toLowerCase()) ||
-                list.includes(inputWords[i].toUpperCase())) {
-                inputWords.splice( i, 1 );
-            } else {
-                i++;
-            }
-        }
-    }
-    return inputWords
-}
-
-function generateAutoComplete(input) {
-    var inputWords = removeStopWords(input);
-    var inputWordsTakenTwo = [];
-    for (var i=0;i<=(inputWords.length-1)/2;i++) {
-        var i1=2*i;
-        var i2=2*i +1;
-        if (i2>(inputWords.length-1)) {
-            i2 = i1;
-            i1 = 2*i -1;
-        }
-        inputWordsTakenTwo.push(inputWords[i1]+" "+inputWords[i2])
-    }
-    var words = inputWords.concat(inputWordsTakenTwo);
-    words.forEach(w=>tagAutoCompleteSet.add(w));
-    return Array.from(tagAutoCompleteSet);
-}
-
-function getTags() {
-    superagent.get("https://localhost:8443/tags",function (err, resp) {
-        if (err !== null) {
-            console.log(err);
-        }
-        resp.body.forEach(t=>tagAutoCompleteSet.add(t));
-    })
 }

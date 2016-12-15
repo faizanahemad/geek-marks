@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "bluebird": "^3.4.6",
     "body-parser": "~1.15.2",
     "collections": "^5.0.5",
     "compression": "^1.6.2",
@@ -10,7 +11,7 @@
     "dustjs-linkedin": "^2.7.4",
     "express": "4.x",
     "jsonfile": "~2.4.0",
-    "lodash": "^2.4.1",
+    "lodash": "^2.4.2",
     "multer": "~1.2.0",
     "mysql": "^2.12.0",
     "nedb": "^1.8.0",

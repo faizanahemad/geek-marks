@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Browse Bookmarks</title>
+    <script src="js/jquery-3.1.1.min.js" rel="script"></script>
+    <script src="js/jquery-ui.min.js" rel="script"></script>
+    <script src="js/taggle.js" rel="script"></script>
+    <script src="js/superagent.min.js"></script>
+    <script src="js/handlebars.min.js"></script>
+    <script src="js/bluebird.min.js"></script>
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/browse.css">
+</head>
+<body>
+<h3 class=" text-center">Browse Bookmarks</h3>
+<hr>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3" id="filterArea">
+            <div id="campact-selector-area">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="compact-select-input" value="1" checked>
+                        Compact View
+                    </label>
+                </div>
+            </div>
+            <div id="difficulty-selector-area">
+                <span class="lead">Difficulty</span>
+                <div class="checkbox">
+                    <label>
+                        <input name="difficultyCheckBox" type="checkbox" value="1">
+                        1
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input name="difficultyCheckBox" type="checkbox" value="2">
+                        2
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input name="difficultyCheckBox" type="checkbox" value="3">
+                        3
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input name="difficultyCheckBox" type="checkbox" value="4">
+                        4
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input name="difficultyCheckBox" type="checkbox" value="5">
+                        5
+                    </label>
+                </div>
+            </div>
+            <div id="date-range-selector-area">
+                <label for="visitedWithinInput">Visited within:</label>
+                <input type="number" class="form-control" id="visitedWithinInput" placeholder="365"
+                       value="365" min="0">
+                <label for="visitedBeforeInput">Visited before:</label>
+                <input type="number" class="form-control" id="visitedBeforeInput" placeholder="0"
+                       value="0">
+            </div>
+            <div id="visits-greater-than-area">
+                <label for="visitCountInput"># Visits More Than:</label>
+                <input type="number" class="form-control" id="visitCountInput" placeholder="0"
+                       value="0" min="0">
+            </div>
+            <div id="order-selector-area">
+                <span class="lead">Order By</span>
+                <form>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="difficultyOrder" value="true" checked>
+                            Difficulty Descending
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="difficultyOrder" value="false">
+                            Difficulty Ascending
+                        </label>
+                    </div>
+                </form>
+                <form>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="lastSeenOrder" value="true" checked>
+                            Last Seen Descending
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="lastSeenOrder" value="false">
+                            Last Seen Ascending
+                        </label>
+                    </div>
+                </form>
+                <form>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="visitsOrder" value="true" checked>
+                            # Visits Descending
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="visitsOrder" value="false">
+                            # Visits Ascending
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="searchInput"
+                           placeholder="Search...">
+                </div>
+                <div class="form-group">
+
+
+                    <div class="form-control" id="tagInput"></div>
+                </div>
+
+                <button id="searchButton" class="pull-right btn btn-success">Go&nbsp;</button>
+            </div>
+            <div id="renderResultArea"></div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+<script id="renderTemplate" type="text/x-handlebars-template">
+    {{#each this}}
+    <div class="bs-callout bs-callout-{{difficulty}}">
+        <h4 class="text-center text-capitalize" onclick="window.open('{{href}}','mywindow');"
+            style="cursor: pointer;">
+            {{#if title}}
+            {{title}}
+            {{else if pathname}}
+            {{pathname}}
+            {{else}}
+            {{href}}
+            {{/if}}
+        </h4>
+        {{#if options.compact}}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pull-left"><b>Host: </b><a href="{{protocol}}//{{hostname}}">{{hostname}}</a>
+                    </div>
+                    <div class="text-center"><b>Visits: </b><span>{{visits}}</span></div>
+                    <div class="pull-right"><b>Difficulty: </b><span>{{difficulty}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pull-left">
+                        <b>Tags: </b>{{#each tags}}<span class="label label-primary">{{this}}</span>{{/each}}
+                    </div>
+                    <div class="pull-right">
+                        <b>Last Seen: </b> <span>{{lastVisited}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+    {{/each}}
+</script>
+<script src="js/browse.js"></script>
+</body>
+</html>

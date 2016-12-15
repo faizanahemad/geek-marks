@@ -27,6 +27,17 @@ var app = express();
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
+    app.use(function promiseify(request, response, next) {
+        response.promise = function(promise) {
+            promise.then(function(result) {
+                response.send(result);
+            }).catch(function(error) {
+                response.statusCode(500).send(error);
+            });
+        };
+
+        next();
+    })
     var multer = require('multer'),
         bodyParser = require('body-parser');
     app.use(multer());

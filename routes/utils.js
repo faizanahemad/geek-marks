@@ -10,24 +10,24 @@ function minsToMilliseconds(mins) {
         return mins*60*1000;
     }
 }
-function merge(oldRecord, newRecord) {
-    var vr = {
-        "href": newRecord.href || oldRecord.href,
-        "protocol": "http:",
-        "hostname": "quiz.geeksforgeeks.org",
-        "pathname": "/binary-heap/",
-        "lastVisited": 1481303301330,
-        "difficulty": 1,
-        "notes": [
-            "Max Heap:\n<a href='http://ideone.com/9Gr3iQ'><a href='http://ideone.com/9Gr3iQ'>http://ideone.com/9Gr3iQ</a></a>",
-            "Min Heap:\n<a href='http://ideone.com/HvUBZM'>http://ideone.com/HvUBZM</a>"
-        ],
-        "visits": 1,
-        "tags": []
+function subtractDaysFromNow(days) {
+    return Date.now() - days*86400*1000
+}
+function csvToArrayNumber(values) {
+    return csvToArrayString(values)
+        .map(v=>parseInt(v.trim()))
+        .filter(n=>!isNaN(n))
+}
+function csvToArrayString(values) {
+    if (values && values.length>0) {
+        return values.split(",")
     }
+    return [];
+}
+function merge(oldRecord, newRecord) {
     var record = {};
+    var lastVisited = Date.now();
     if (oldRecord && newRecord) {
-        var lastVisited = (new Date()).getTime();
         record = {
             "href": newRecord.href || oldRecord.href,
             "protocol": newRecord.protocol || oldRecord.protocol,
@@ -36,21 +36,42 @@ function merge(oldRecord, newRecord) {
             "lastVisited": lastVisited,
             "difficulty": newRecord.difficulty || oldRecord.difficulty,
             "notes": newRecord.notes || oldRecord.notes || [],
+            "title":newRecord.title || oldRecord.title,
             "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits+1:1,
             "tags": newRecord.tags || oldRecord.tags || []
         };
         return record;
     } else if (oldRecord) {
+        oldRecord.lastVisited = lastVisited;
         return oldRecord
     } else if (newRecord) {
-        return newRecord
+        record = {
+            "href": newRecord.href,
+            "protocol": newRecord.protocol,
+            "hostname": newRecord.hostname,
+            "pathname": newRecord.pathname,
+            "lastVisited": lastVisited,
+            "difficulty": newRecord.difficulty,
+            "notes": newRecord.notes || [],
+            "visits": 1,
+            "tags": newRecord.tags || []
+        };
+        return record
     } else {
         return {}
     }
+}
+
+function isSuperSet(superSet, subSet) {
+    return subSet.every(elem => superSet.indexOf(elem) > -1);
 }
 module.exports = {
     "convertRelativeToAbsolutePath": convertRelativeToAbsolutePath,
     "workingDir": workingDir,
     "merge": merge,
-    "minsToMilliseconds":minsToMilliseconds
+    "minsToMilliseconds":minsToMilliseconds,
+    "isSuperSet":isSuperSet,
+    "subtractDaysFromNow":subtractDaysFromNow,
+    "csvToArrayString":csvToArrayString,
+    "csvToArrayNumber":csvToArrayNumber
 };

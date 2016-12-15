@@ -996,3 +996,40 @@ var list = ["4sq",
 
 var stopWordSet = new Set();
 list.forEach(w=>stopWordSet.add(w));
+
+
+function removeStopWords(input) {
+    var inputWords = input.split(" ").map(w=>w.trim());
+    for (var i=0;i<inputWords.length;) {
+        if (i<inputWords.length) {
+            if (stopWordSet.has(inputWords[i].toLowerCase()) ||
+                stopWordSet.has(inputWords[i]) ||
+                stopWordSet.has(inputWords[i].toUpperCase()) ||
+                list.includes(inputWords[i]) ||
+                list.includes(inputWords[i].toLowerCase()) ||
+                list.includes(inputWords[i].toUpperCase())) {
+                inputWords.splice( i, 1 );
+            } else {
+                i++;
+            }
+        }
+    }
+    return inputWords
+}
+var tagAutoCompleteSet = new Set();
+function generateAutoComplete(input) {
+    var inputWords = removeStopWords(input);
+    var inputWordsTakenTwo = [];
+    for (var i=0;i<=(inputWords.length-1)/2;i++) {
+        var i1=2*i;
+        var i2=2*i +1;
+        if (i2>(inputWords.length-1)) {
+            i2 = i1;
+            i1 = 2*i -1;
+        }
+        inputWordsTakenTwo.push(inputWords[i1]+" "+inputWords[i2])
+    }
+    var words = inputWords.concat(inputWordsTakenTwo);
+    words.forEach(w=>tagAutoCompleteSet.add(w));
+    return Array.from(tagAutoCompleteSet);
+}
