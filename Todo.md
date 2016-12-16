@@ -6,3 +6,13 @@
 - Support Annotations
 - Explore other storage options
 - Host based strategies for styles and title extraction by downloading separate scripts for separate hosts.
+- Chrome extension (Per page activate / global activate)
+- Detect whether the user has read the page based on scroll/mouse move/cursor patterns
+- Per user metadata like used tags etc.
+- pagination/Infinite scroll
+- Make extension as your new tab page.
+- Show most rated/visited hosts in the new tab page
+- Enable on this site in extension popup
+- Annotation support
+- Browse page link from Page app
+- Sign Up page

@@ -1,41 +1,3 @@
-Element.prototype.remove = function () {
-    this.parentElement.removeChild(this);
-}
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
-    for (var i = this.length - 1; i >= 0; i--) {
-        if (this[i] && this[i].parentElement) {
-            this[i].parentElement.removeChild(this[i]);
-        }
-    }
-};
-/**
- * @param {String} HTML representing a single element
- * @return {Element}
- */
-function htmlToElement(html) {
-    var template = document.createElement('template');
-    template.innerHTML = html;
-    return template.content.firstChild;
-}
-
-/**
- * @param {String} HTML representing any number of sibling elements
- * @return {NodeList}
- */
-function htmlToElements(html) {
-    var template = document.createElement('template');
-    template.innerHTML = html;
-    return template.content.childNodes;
-}
-function escapeRegExp(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
-}
-String.prototype.replaceAll = function(search, replacement) {
-    search = escapeRegExp(search);
-    var target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
-};
-//=====================
 var body = document.getElementsByTagName("body")[0];
 var atags = Array.from(document.getElementsByTagName("a"));
 
@@ -169,7 +131,7 @@ function createShowHideButton() {
     var btn = document.createElement("button");
     btn.id = showHideButtonId;
     function getBtnInnerHtml(visibleState) {
-        return visibleState?`<img src="https://localhost:8443/img/up-600px.png" height="12" width="12"></img>`:`<img src="https://localhost:8443/img/down-120px.png" height="12" width="12"></img>`;
+        return visibleState?`<img src="%server%/img/up-600px.png" height="12" width="12"></img>`.replace("%server%",serverUrl):`<img src="%server%/img/down-120px.png" height="12" width="12"></img>`.replace("%server%",serverUrl);
     }
     btn.innerHTML = getBtnInnerHtml(visibilityState);
     body.appendChild(btn);
@@ -278,7 +240,7 @@ function boldDifficultyButton() {
 var postInput = function postInput(callback) {
     var time = (new Date()).getTime();
     cld["lastVisited"] = time;
-    superagent.post("https://localhost:8443", cld)
+    superagent.post("%server%/bookmarks".replace("%server%",serverUrl), cld)
         .end(function (err, resp) {
             if (err !== null) {
                 console.log(err);
@@ -317,7 +279,7 @@ setInterval(function () {
 },5000);
 
 function refreshData(firstRun) {
-    superagent.get("https://localhost:8443", function (err, resp) {
+    superagent.get("%server%/bookmarks".replace("%server%",serverUrl), function (err, resp) {
         if (err !== null) {
             console.log(err);
         }

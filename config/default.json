@@ -1,3 +1,18 @@
 {
-  "datafile":"history.db"
+  "datafile":"history.db",
+  "userfile":"users.db",
+  "salt":"my_first_bookmark_service",
+  "host":"",
+  "session":{
+    "name":"bookmark_service",
+    "secret":"bookmark_service",
+    "sessionTimeOut":31536000000
+  },
+  "loginConfig": {
+    "loginSuccessRedirect": "/browse.html",
+    "loginFailureRedirect": "/login.html",
+    "loginPage": "login/login_app",
+    "noLoginPathStartPathList":["/login","/login.html","/create","/js","/css","/check_login","/bookmarksapp.manifest"],
+    "noLoginExactMatch":["/bookmarksapp.manifest"]
+  }
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" manifest="bookmarksapp.manifest">
+<head>
+    <link rel="stylesheet" href="lib/css/bootstrap.css">
+    <link rel="stylesheet" href="css/login.css">
+    <script src="lib/js/jquery-3.1.1.min.js" rel="script"></script>
+    <title>Login</title>
+</head>
+<body data-spy="scroll" data-target=".navspy" data-twttr-rendered="true" data-offset="180">
+<div class="container loginDiv">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 loginInnerDiv"><h3 class="pull-center">Use Your Credentials</h3>
+        <div class="row">
+            <form id="loginForm" method="post" action="/login" class="form-horizontal">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="form-group"><input id="username" minlength="6" type="text" name="username"
+                                                   autofocus="autofocus" placeholder="Username"
+                                                   required="" class="form-control"></div>
+                    <div class="form-group"><input id="password" minlength="8" type="password" name="password"
+                                                   placeholder="Password" required=""
+                                                   class="form-control"></div>
+                    <div class="form-group">
+                        <button type="submit" class="btn submit pull-right"><b>&nbsp;Log
+                            in&nbsp;</b></button>
+                        <a href="" target="_blank"
+                           class="pull-left">forgot password?</a></div>
+                </div>
+                <div class="col-md-3"></div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-3"><span></span></div>
+</div><!--build:js(public/) scripts/common.js-->
+</body>
+</html>

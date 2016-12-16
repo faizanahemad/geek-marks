@@ -29,6 +29,7 @@ function merge(oldRecord, newRecord) {
     var lastVisited = Date.now();
     if (oldRecord && newRecord) {
         record = {
+            "userId":newRecord.userId||oldRecord.userId,
             "href": newRecord.href || oldRecord.href,
             "protocol": newRecord.protocol || oldRecord.protocol,
             "hostname": newRecord.hostname || oldRecord.hostname,
@@ -46,6 +47,7 @@ function merge(oldRecord, newRecord) {
         return oldRecord
     } else if (newRecord) {
         record = {
+            "userId":newRecord.userId,
             "href": newRecord.href,
             "protocol": newRecord.protocol,
             "hostname": newRecord.hostname,
@@ -62,6 +64,25 @@ function merge(oldRecord, newRecord) {
     }
 }
 
+function mergeUserRecord(oldRecord, newRecord) {
+    var record = {};
+    if (oldRecord && newRecord) {
+        record = {
+            "username":oldRecord.username,
+            "password":newRecord.password||oldRecord.password,
+            "email":newRecord.email||oldRecord.email
+        };
+        return record;
+    } else if (oldRecord) {
+        return oldRecord
+    } else if (newRecord) {
+        record = {};
+        return record
+    } else {
+        return {}
+    }
+}
+
 function isSuperSet(superSet, subSet) {
     return subSet.every(elem => superSet.indexOf(elem) > -1);
 }
@@ -69,6 +90,7 @@ module.exports = {
     "convertRelativeToAbsolutePath": convertRelativeToAbsolutePath,
     "workingDir": workingDir,
     "merge": merge,
+    "mergeUserRecord":mergeUserRecord,
     "minsToMilliseconds":minsToMilliseconds,
     "isSuperSet":isSuperSet,
     "subtractDaysFromNow":subtractDaysFromNow,

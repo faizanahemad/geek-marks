@@ -1,0 +1,20 @@
+.pull-center {
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+.loginInnerDiv {
+    padding: 10px;
+    border: 1px solid #DCDCDC;
+    border-radius: 4px;
+}
+.loginDiv {
+    padding-top: 200px;
+    padding-left: 20px;
+}
+
+.loginInnerDiv .submit {
+    color: #00496b;
+    background: #fbd00e;
+    border-color: #eea236;
+}

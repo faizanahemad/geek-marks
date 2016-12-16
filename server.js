@@ -7,6 +7,7 @@ var express = require('express'),
     http = require('http');
 
 var fs = require('fs');
+var userSession = require("./routes/user-session-utils");
 var compression = require('compression');
 var https = require('https');
 var privateKey  = fs.readFileSync('localhost.key', 'utf8');
@@ -18,15 +19,26 @@ var credentials = {key: privateKey, cert: certificate};
 
 
 var app = express();
+var staticDirectory = __dirname + '/public';
 
 (function middlewareSetup(app) {
     app.use(compression({filter: (res, resp)=>true}));
-    app.use(express.static(__dirname + '/public'));
+    app.use(express.static(staticDirectory));
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
+    var session = require('express-session');
+    var cookieParser = require('cookie-parser');
+    app.use(cookieParser(config.session.secret));
+    app.use(session({
+                        secret: config.session.secret,
+                        name: config.session.name,
+                        resave: false,
+                        saveUninitialized: false,
+                        cookie: { secure: false,maxAge:config.session.sessionTimeOut}
+                    }));
     app.use(function promiseify(request, response, next) {
         response.promise = function(promise) {
             promise.then(function(result) {
@@ -41,8 +53,9 @@ var app = express();
     var multer = require('multer'),
         bodyParser = require('body-parser');
     app.use(multer());
+    app.use(userSession.verifyLogin);
     app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.urlencoded({ extended: false }))
     app.use(function(req, res, next) {
         req._startTime = new Date().getTime();
         next();
@@ -60,4 +73,4 @@ var app = express();
 var server = http.createServer(app).listen(app.get('port'), function() {
     console.log('Express server listening on port: ' + app.get('port'))
 });
-var httpsServer = https.createServer(credentials, app).listen(8443);
+var httpsServer = https.createServer(credentials, app).listen(8444);

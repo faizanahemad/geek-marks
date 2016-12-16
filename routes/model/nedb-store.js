@@ -1,5 +1,6 @@
+var config = require('config');
 var Datastore = require('nedb');
-var utils = require('./utils');
+var utils = require('./../utils');
 var CSet = require("collections/set");
 var Promise = require("bluebird");
 var _ = require('lodash');
@@ -16,12 +17,18 @@ var NedbStore = class NedbStore {
         this.db.ensureIndex({fieldName: 'difficulty'});
     }
 
-    getAll() {
-        return this.db.findAsync({}).then(undefined, console.error);
+    getAll(userId) {
+        var query = {};
+        if (userId) {
+            query = {userId: userId}
+        } else {
+            return Promise.reject("User Id not specified");
+        }
+        return this.db.findAsync(query).then(undefined, console.error);
     }
 
-    getAllTags() {
-        return this.getAll()
+    getAllTags(userId) {
+        return this.getAll(userId)
             .then((allDocs)=> {
                 var tagSet = new CSet();
                 allDocs.forEach(d=> {
@@ -33,8 +40,8 @@ var NedbStore = class NedbStore {
             }, console.error)
     }
 
-    getAllHostnames() {
-        this.getAll().then((allDocs)=> {
+    getAllHostnames(userId) {
+        this.getAll(userId).then((allDocs)=> {
             var hostSet = new CSet();
             allDocs.forEach(d=> {
                 hostSet.add(d.hostname)
@@ -43,42 +50,33 @@ var NedbStore = class NedbStore {
         }, console.error)
     }
 
-    getByHostnames(hostnames) {
+    getByHostnames(hostnames, userId) {
+        var query = {};
+        if (userId) {
+            query = {userId: userId}
+        } else {
+            return Promise.reject("User Id not specified");
+        }
         if (hostnames && hostnames instanceof Array) {
-            return this.db.findAsync({hostname: {$in: hostnames}}, console.error);
+            query.hostname = {$in: hostnames};
+            return this.db.findAsync(query, console.error);
         } else {
             return Promise.resolve([]);
         }
     }
 
-    getByTags(tags) {
-        if (tags && tags instanceof Array) {
-            return this.db.findAsync({tags: tags[0]}).then(
-                docs=>docs.filter(d=>utils.isSuperSet(d.tags, tags)), console.error)
-        } else {
-            return Promise.resolve([]);
-        }
-    }
-
-    getByDifficulties(difficulties) {
-        if (difficulties && difficulties instanceof Array) {
-            return this.db.findAsync({difficulty: {$in: difficulties}}, console.error);
-        } else {
-            return Promise.resolve([]);
-        }
-    }
-
-    insertOrUpdateEntry(entry) {
+    insertOrUpdateEntry(entry, userId) {
         var newEntryToStore = entry;
         var self = this;
         var query = {};
         if (entry._id) {
             query = {_id: entry._id};
-        } else if (entry.href) {
-            query = {href: entry.href};
+        } else if (userId && entry.href) {
+            query = {href: entry.href, userId: userId};
         } else {
             console.error("Cannot update/insert entry");
             console.error(entry);
+            return Promise.reject("Cannot update/insert entry");
         }
         return this.db.findOneAsync(query).then((doc)=> {
             if (doc) {
@@ -97,8 +95,15 @@ var NedbStore = class NedbStore {
                     lastVisitedDaysWithin,
                     lastVisitedDaysBeyond,
                     search,
-                    sort) {
+                    sort,
+                    userId) {
         var query = {};
+        if (userId) {
+            query = {userId: userId}
+        } else {
+            return Promise.reject("User Id not specified");
+        }
+        sort = sort || {};
         var thenFunc = (v)=>v;
         if (difficulties && difficulties instanceof Array && difficulties.length > 0) {
             query.difficulty = {$in: difficulties}
@@ -120,14 +125,17 @@ var NedbStore = class NedbStore {
             thenFunc = docs=>docs.filter(d=>utils.isSuperSet(d.tags, tags))
         }
         if (search && typeof search == "string" && search.length > 0) {
-            var searchRegex = new RegExp(search,"i");
-            var searchQuery = {$or:[{title:{$regex: searchRegex}},{href:{$regex: searchRegex}},{pathname:{$regex: searchRegex}}]}
-            query = {$and:[_.cloneDeep(query),searchQuery]}
+            var searchRegex = new RegExp(search, "i");
+            var searchQuery = {
+                $or: [{title: {$regex: searchRegex}}, {href: {$regex: searchRegex}},
+                    {pathname: {$regex: searchRegex}}]
+            };
+            query = {$and: [_.cloneDeep(query), searchQuery]}
         }
         var sortedOutput = Promise.promisifyAll(this.db.find(query).sort(sort));
         return sortedOutput.execAsync().then(thenFunc, console.error);
     }
 };
 
-module.exports = NedbStore;
+module.exports = new NedbStore(utils.convertRelativeToAbsolutePath(config.datafile));
 

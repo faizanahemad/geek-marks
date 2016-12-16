@@ -8,12 +8,12 @@ var DisplayBookmarks = class DisplayBookmarks {
     }
 
     fetchAll() {
-        this.docs = superagent.getAsync("/").then(req=>req.body, console.error);
+        this.docs = superagent.getAsync("/bookmarks").then(req=>req.body, console.error);
         return this;
     }
 
     fetchWithFilters(filters) {
-        this.docs = superagent.get("/search").query(filters).endAsync().then(req=>req.body, console.error);
+        this.docs = superagent.get("/bookmarks/search").query(filters).endAsync().then(req=>req.body, console.error);
         return this;
     }
 
@@ -48,7 +48,7 @@ var taggle = new Taggle("tagInput", {
     }
 });
 
-superagent.getAsync("/tags")
+superagent.getAsync("/bookmarks/tags")
     .then(req=>req.body)
     .then(tags=> {
         $(taggle.getInput()).autocomplete({
@@ -74,6 +74,7 @@ var difficultyElem = Array.from(document.getElementsByName("difficultyOrder"));
 var lastVisitedElem = Array.from(document.getElementsByName("lastSeenOrder"));
 var visitsElem = Array.from(document.getElementsByName("visitsOrder"));
 var difficultiesElem = Array.from(document.getElementsByName("difficultyCheckBox"));
+
 
 visitedWithinElem.onchange = onFilterChange;
 visitedBeforeElem.onchange = onFilterChange;

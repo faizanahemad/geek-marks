@@ -2,16 +2,13 @@
 (function() {
     var head = document.getElementsByTagName("head")[0];
 
-    var linkStarter = 'http://localhost:8000/';
-    if(location.protocol==="https:") {
-        linkStarter = 'https://localhost:8443/';
-    }
 
-    var scripts = ['https://localhost:8443/js/superagent.min.js',
-                   'https://localhost:8443/js/anchorme.min.js',
-                   'https://localhost:8443/js/taggle.js',
-                   'https://localhost:8443/js/history.js',];
-    var styles = ['https://localhost:8443/css/styles.css'];
+    var scripts = [serverUrl+'/lib/js/superagent.min.js',
+                   serverUrl+'/lib/js/anchorme.min.js',
+                   serverUrl+'/lib/js/taggle.js',
+                   serverUrl+'/js/common.js',
+                   serverUrl+'/js/history.js'];
+    var styles = [serverUrl+'/css/styles.css'];
 
     scripts.forEach(s=>{
         var script = document.createElement('script');
