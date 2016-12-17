@@ -36,15 +36,69 @@ var compact = document.getElementById("compact-select-input");
 compact.onchange = ()=>display.render({compact: !compact.checked});
 display.fetchAll().render({compact: !compact.checked});
 
-var tags = [];
+
+var TagManager = class TagManager {
+    constructor(elemId, templateId, tagElemsName, onChangeCallback) {
+        this.elem = document.getElementById(elemId);
+        this.tags = Promise.resolve([]);
+        this.source = document.getElementById(templateId).innerHTML;
+        this.template = Handlebars.compile(this.source);
+        this.tagElemsName = tagElemsName;
+        this.onChangeCallback = onChangeCallback;
+        this.tagElems = Promise.resolve([]);
+    }
+
+    fetchAll() {
+        this.tags = superagent.getAsync("/bookmarks/tags").then(req=>req.body, console.error);
+        return this;
+    }
+
+    render() {
+        var self = this;
+        this.tags.then(tags=> {
+            var html = self.template(tags);
+            self.elem.innerHTML = html;
+            var tagElems = Array.from(document.getElementsByName(self.tagElemsName));
+            tagElems.forEach(t=>t.onchange=self.onChangeCallback)
+            self.tagElems = Promise.resolve(tagElems);
+        });
+        return this;
+    }
+
+    uncheck(value) {
+        this.tagElems.then(t=>{
+            t.forEach(tm=>{
+                if (tm.value ===value) {
+                    tm.checked = false;
+                }
+            })
+        })
+    }
+    check(value) {
+        this.tagElems.then(t=>{
+            t.forEach(tm=>{
+                if (tm.value ===value) {
+                    tm.checked = true;
+                }
+            })
+        })
+    }
+};
+var tm  = new TagManager("tag-selector-area","tag-area","tagCheckBox",tagChange);
+tm.fetchAll().render();
+
+
+
 var taggle = new Taggle("tagInput", {
-    tags: tags,
+    tags: [],
     duplicateTagClass: 'bounce',
     onTagAdd: function (event, tag) {
         onFilterChange();
+        tm.check(tag);
     },
     onTagRemove: function (event, tag) {
         onFilterChange();
+        tm.uncheck(tag);
     }
 });
 
@@ -74,6 +128,7 @@ var difficultyElem = Array.from(document.getElementsByName("difficultyOrder"));
 var lastVisitedElem = Array.from(document.getElementsByName("lastSeenOrder"));
 var visitsElem = Array.from(document.getElementsByName("visitsOrder"));
 var difficultiesElem = Array.from(document.getElementsByName("difficultyCheckBox"));
+
 
 
 visitedWithinElem.onchange = onFilterChange;
@@ -134,4 +189,13 @@ function getAllFilters() {
 
 function onFilterChange() {
     display.fetchWithFilters(getAllFilters()).render({compact: !compact.checked});
+}
+
+function tagChange() {
+    if (this.checked) {
+        taggle.add(this.value)
+    } else {
+
+        taggle.remove(this.value, true);
+    }
 }

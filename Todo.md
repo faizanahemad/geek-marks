@@ -1,6 +1,5 @@
 ### TODO (Features)
 - Sign Up page
-- Pocket like tags on browse page
 - Support Other Sites by having generic cross site parsing and styles based on hostnames
 - Bring Page optimised CSS/JS from server / Local Storage
 - Color chrome bookmarks separately
@@ -19,6 +18,7 @@
 - Show most rated/visited hosts in the new tab page
 - Tag Detection and suggestion
 - Add option to enable notes on a site. By default note taking will be disabled.
+- Google Drive / AWS
 
 
 

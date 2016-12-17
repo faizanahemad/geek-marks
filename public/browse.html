@@ -66,6 +66,7 @@
                     </label>
                 </div>
             </div>
+            <div id="tag-selector-area"></div>
             <div id="date-range-selector-area">
                 <label for="visitedWithinInput">Visited within:</label>
                 <input type="number" class="form-control" id="visitedWithinInput" placeholder="365"
@@ -124,6 +125,7 @@
                     </div>
                 </form>
             </div>
+
         </div>
 
         <div class="col-md-8">
@@ -186,6 +188,17 @@
             {{/if}}
         </div>
 
+    </div>
+    {{/each}}
+</script>
+<script id="tag-area" type="text/x-handlebars-template">
+    <span class="lead">Tags</span>
+    {{#each this}}
+    <div class="checkbox">
+        <label>
+            <input id="tagCheckBox-{{this}}" name="tagCheckBox" type="checkbox" value="{{this}}">
+            {{this}}
+        </label>
     </div>
     {{/each}}
 </script>
