@@ -7,15 +7,15 @@ var store = require('./model/nedb-store');
 module.exports = function(app) {
 
     app.get('/', function(req, res, next) {
-        var userId = req.cookies._id;
+        var userId = req.session.user_id;
         res.promise(store.getAll(userId));
     });
     app.get('/tags', function(req, res, next) {
-        var userId = req.cookies._id;
+        var userId = req.session.user_id;
         res.promise(store.getAllTags(userId));
     });
     app.get('/search', function(req, res, next) {
-        var userId = req.cookies._id;
+        var userId = req.session.user_id;
         var query = req.query;
         var difficulties = utils.csvToArrayNumber(query.difficulty);
         var hostnames = utils.csvToArrayString(query.hostnames);
@@ -42,9 +42,14 @@ module.exports = function(app) {
                                            userId);
         res.promise(result)
     });
-    app.post('/', function(req, res, next) {
-        var userId = req.cookies._id;
+    app.post('/entry', function(req, res, next) {
+        var userId = req.session.user_id;
         var storeInsert = store.insertOrUpdateEntry(req.body, userId);
         res.promise(storeInsert);
+    })
+    app.delete('/entry/:entryId', function(req, res, next) {
+        var userId = req.session.user_id;
+        var storeRemove = store.remove(req.params.entryId, userId);
+        res.promise(storeRemove);
     })
 };

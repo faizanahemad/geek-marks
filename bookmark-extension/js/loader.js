@@ -1,14 +1,27 @@
-function loginPopUp(loginApi) {
+function loginModal(loginApi, callback) {
+    function login() {
+        var creds = {
+            username: this.username.value,
+            password: this.password.value
+        };
+        superagent.post(loginApi).send(creds).set('Accept', 'application/json').endAsync()
+            .then(function (response) {
+                if (response.status < 299) {
+                    callback(undefined, true);
+                    closeSuccess();
+                } else {
+
+                }
+            });
+    };
     var body = document.getElementsByTagName("body")[0];
     var modalDiv = document.createElement("div");
     modalDiv.id = "bookmarkModalLogin";
 
-    var modalTemplate = `
-    <div id="myModal" class="modal" style="display: none; position: fixed; z-index: 1; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    var modalTemplate = `<div id="myModal" class="modal" style="display: none; position: fixed; z-index: 1; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
 
-    <!-- Modal content -->
     <div class="modal-content" style="width: 40%; position: relative; margin: auto; padding: 0; border: 1px solid #888; border-radius: 6px; background-color: #fefefe; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); -webkit-animation-name: animatetop; -webkit-animation-duration: 0.4s; animation-name: animatetop; animation-duration: 0.4s;">
-        <form id="loginForm">
+        <form id="loginForm" onsubmit="return false;">
             <div class="modal-header" style="padding: 2px 12px; background-color: white; color: black; text-align: center; border-bottom: 1px solid #e5e5e5;">
                 <span class="close" style="color: black; float: right; font-size: 24px; font-weight: bold;">&times;</span>
                 <h3>Enter your credentials</h3>
@@ -30,10 +43,10 @@ function loginPopUp(loginApi) {
         </form>
     </div>
 
-    </div>
-`
-    modalDiv.innerHTML = modalTemplate;
-    body.append(modalTemplate);
+    </div>`
+    var modalElement = htmlToElement(modalTemplate);
+    modalDiv.append(modalElement);
+    body.append(modalDiv);
     var modal = document.getElementById('myModal');
 
     // Get the <span> element that closes the modal
@@ -47,70 +60,57 @@ function loginPopUp(loginApi) {
     // When the user clicks on <span> (x), close the modal
     span.onclick = function close() {
         modal.style.display = "none";
+        callback(false);
+    };
+
+    function closeSuccess() {
+        modal.style.display = "none";
     };
 
     // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (event.target == modal) {
-            modal.style.display = "none";
+            close();
         }
     };
     var form = document.getElementById("loginForm");
-    form.onsubmit = function login() {
-        var creds = {
-            username:this.username.value,
-            password:this.password.value
-        };
-        console.log(creds);
-        fetch(loginApi, {
-            method: 'POST',
-            mode: 'cors',
-            redirect: 'follow',
-            body: JSON.stringify(creds),
-            headers: new Headers({
-                'Content-Type': 'application/json; charset=utf-8'
-            })
-        }).then(function(response) {
-            if (response.status<299) {
-                close();
-            } else {
-
-            }
-        });
-    };
+    form.onsubmit = login;
     show();
 }
 
 function popOpen(urlToOpen) {
-    var popup_window=window.open(urlToOpen,"myWindow","toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, copyhistory=yes, width=1000, height=600");
+    var popup_window = window.open(urlToOpen, "myWindow",
+                                   "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, copyhistory=yes, width=1000, height=600");
     try {
         popup_window.focus();
     }
     catch (e) {
-        alert("Pop-up Blocker is enabled! Please add this site to your exception list. \n\nUse following link to login: \n\n%loginUrl%".replace("%loginUrl%",loginUrl));
+        alert(
+            "Pop-up Blocker is enabled! Please add this site to your exception list. \n\nUse following link to login: \n\n%loginUrl%".replace(
+                "%loginUrl%", loginUrl));
     }
 }
-(function bookmark() {
-    window.serverUrl = "https://localhost:8444";
-    window.loginUrl = serverUrl+"/login";
-    var loginApi = serverUrl+"/login_api";
-    var head = document.getElementsByTagName("head")[0];
-    fetch(serverUrl+"/check_login",{
-        mode: 'cors'
-    }).then((res)=>{
-        if (res.status===401) {
-            popOpen(loginUrl);
-        } else if(res.status===200) {
-            var scripts = [serverUrl+'/js/loader.js'];
-            scripts.forEach(s=>{
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = s;
-                head.appendChild(script);
-            });
+function bookmark() {
+    window.loginUrl = serverUrl + "/login";
+    var loginApi = serverUrl + "/login_api";
+    var loginModalAsync = Promise.promisify(loginModal);
+    superagent.getAsync(serverUrl + "/check_login").then((res)=> {
+        if (res.status === 401) {
+            // popOpen(loginUrl);
+            loginModalAsync(loginApi).then(()=> {
+                init()
+            }, console.error);
+        } else if (res.status === 200) {
+            init();
         }
-    }).catch((err)=>{
+    }).catch((err)=> {
         console.log(err);
-        popOpen(loginUrl);
+        loginModalAsync(loginApi).then((res)=> {
+            if (res) {
+                init();
+            }
+        }, console.error);
+        // popOpen(loginUrl);
     })
-})();
+}
+bookmark();

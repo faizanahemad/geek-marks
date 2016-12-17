@@ -23,12 +23,12 @@ function doLoginPromise(req, res, next) {
     if (creds.username && creds.password) {
         return users.getOneByUserName(creds.username, creds.password).then((user)=>{
             setSession(req, res, user._id);
-            return user;
+            return {};
         });
     } else if (creds.email && creds.password) {
         return users.getOneByUserName(creds.email, creds.password).then((user)=>{
             setSession(req, res, user._id);
-            return user;
+            return {};
         })
     } else {
         return Promise.reject({})

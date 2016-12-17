@@ -85,6 +85,13 @@ lastVisitedElem.forEach(d=>d.onchange=onFilterChange);
 visitsElem.forEach(d=>d.onchange=onFilterChange);
 difficultiesElem.forEach(d=>d.onchange=onFilterChange);
 
+function deleteBookmark(elemId,bookmarkId) {
+    var bookmarkElem = document.getElementById(elemId);
+    superagent.deleteAsync("bookmarks/entry/"+bookmarkId).then((res)=>{
+        bookmarkElem.remove();
+    },console.error)
+}
+
 
 function getAllFilters() {
     var visitedWithin = parseInt(visitedWithinElem.value);

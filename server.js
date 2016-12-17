@@ -44,7 +44,7 @@ var staticDirectory = __dirname + '/public';
             promise.then(function(result) {
                 response.send(result);
             }).catch(function(error) {
-                response.statusCode(500).send(error);
+                response.status(500).send(error);
             });
         };
 

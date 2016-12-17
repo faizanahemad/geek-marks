@@ -11,6 +11,7 @@ var titleMap = new Map();
 var colorButtonId = "color-button-";
 var difficultyIdString = "difficulty-";
 var showHideButtonId = "show-hide-id";
+var browseButtonId = "browse-button-id";
 var colors=["Magenta","LimeGreen","Silver","DodgerBlue","SandyBrown"];
 var visibilityState = true;
 var tagId = "tag-id";
@@ -121,8 +122,23 @@ function createColorButtons() {
         })(i);
     }
 }
-createColorButtons();
-changeStyle(4);
+
+
+function createBrowseButton() {
+    if (document.getElementById(browseButtonId)) {
+        document.getElementById(browseButtonId).remove();
+    }
+    var btn = document.createElement("a");
+    btn.id = browseButtonId;
+    btn.href = "%server%/browse.html".replace("%server%",serverUrl);
+    btn.target = "_blank";
+    btn.innerHTML = `Bookmarks`;
+    body.appendChild(btn);
+    btn.style =
+        "top:45px; right:%rw%; position:fixed;"
+            .replaceAll("%rw%",50 + "px");
+}
+
 
 function createShowHideButton() {
     if (document.getElementById(showHideButtonId)) {
@@ -145,6 +161,11 @@ function createShowHideButton() {
             var toRemove = visibilityState?"hide":"show";
             var noteArea = document.getElementById(noteId);
             var tagArea = document.getElementById(tagId);
+            var browseButton = document.getElementById(browseButtonId);
+            if (browseButton) {
+                browseButton.classList.remove(toRemove);
+                browseButton.classList.add(toAdd);
+            }
             if (noteArea) {
                 noteArea.classList.remove(toRemove);
                 noteArea.classList.add(toAdd);
@@ -170,7 +191,7 @@ function createShowHideButton() {
         }
     })();
 }
-createShowHideButton();
+
 function getTitle() {
 
     var s1 = function () {
@@ -240,7 +261,7 @@ function boldDifficultyButton() {
 var postInput = function postInput(callback) {
     var time = (new Date()).getTime();
     cld["lastVisited"] = time;
-    superagent.post("%server%/bookmarks".replace("%server%",serverUrl), cld)
+    superagent.post("%server%/bookmarks/entry".replace("%server%",serverUrl), cld)
         .end(function (err, resp) {
             if (err !== null) {
                 console.log(err);
@@ -271,19 +292,14 @@ function createButtons() {
         })(i);
     }
 }
-setTimeout(function () {
-    refreshData(true)
-}, 1000);
-setInterval(function () {
-    refreshData(false);
-},5000);
+
 
 function refreshData(firstRun) {
     superagent.get("%server%/bookmarks".replace("%server%",serverUrl), function (err, resp) {
         if (err !== null) {
             console.log(err);
         }
-        var locationData = resp.body;
+        var locationData = resp.body || [];
         locationData.forEach((e)=> {
             pathnameSet.add(e["pathname"]);
             hrefSet.add(e["href"]);
@@ -334,22 +350,26 @@ function cleanPage() {
     });
 }
 
-cleanPage();
 
 
-var note = document.createElement("div");
-note.id = noteId;
-body.appendChild(note);
-note.style =
-    "top:180px; right:%rw%; position:fixed; width: 35em;".replaceAll("%rw%",10 + "px");
 
 
-var tagger = document.createElement("div");
-tagger.id = tagId;
-body.appendChild(tagger);
-tagger.style =
-    "top:120px; right:%rw%; position:fixed; width: 20em; padding:2px;".replaceAll("%rw%",10 + "px");
-tagger.className += "panel panel-default";
+function createNoteArea() {
+    var note = document.createElement("div");
+    note.id = noteId;
+    body.appendChild(note);
+    note.style =
+        "top:180px; right:%rw%; position:fixed; width: 35em;".replaceAll("%rw%",10 + "px");
+}
+
+function createTagArea() {
+    var tagger = document.createElement("div");
+    tagger.id = tagId;
+    body.appendChild(tagger);
+    tagger.style =
+        "top:120px; right:%rw%; position:fixed; width: 20em; padding:2px;".replaceAll("%rw%",10 + "px");
+    tagger.className += "panel panel-default";
+}
 
 function addButton() {
     var addButton =  document.createElement("button");
@@ -360,7 +380,8 @@ function addButton() {
     addButton.onclick = function () {
         addNewNote();
     };
-    note.appendChild(addButton);
+    var noteArea = document.getElementById(noteId);
+    noteArea.appendChild(addButton);
 }
 
 var template =
@@ -385,33 +406,35 @@ var editTemplate =
     `
 
 function renderNoteText() {
-    if (document.getElementById(noteId)) {
-        document.getElementById(noteId).innerHTML="";
+    var noteArea = document.getElementById(noteId);
+    if (noteArea) {
+        noteArea.innerHTML="";
     }
 
     for (var i = 0; i < cld.notes.length; i++) {
         var str = template.replaceAll("%index%",i+"");
         var htmlElement = htmlToElement(str);
         htmlElement.getElementsByClassName("note-content-"+i)[0].innerHTML = cld.notes[i];
-        note.appendChild(htmlElement);
+        noteArea.appendChild(htmlElement);
     }
     addButton();
 }
 
 function makeNoteTextEditable(index) {
-    if (document.getElementById(noteId)) {
-        document.getElementById(noteId).innerHTML="";
+    var noteArea = document.getElementById(noteId);
+    if (noteArea) {
+        noteArea.innerHTML="";
     }
     for (var i = 0; i < cld.notes.length; i++) {
         if (i == index) {
             var str = editTemplate.replaceAll("%note%",cld.notes[i]).replaceAll("%index%",i+"");
             var htmlElement = htmlToElement(str);
-            note.appendChild(htmlElement);
+            noteArea.appendChild(htmlElement);
         } else {
             var str = template.replaceAll("%index%",i+"");
             var htmlElement = htmlToElement(str);
             htmlElement.getElementsByClassName("note-content-"+i)[0].innerHTML = cld.notes[i];
-            note.appendChild(htmlElement);
+            noteArea.appendChild(htmlElement);
         }
     }
     addButton();
@@ -447,4 +470,11 @@ function renderTags() {
             postInput();
         }
     });
+}
+
+function enableComments() {
+    var a=document.getElementById("comment");
+    if(a) {
+        a.click();
+    }
 }

@@ -16,8 +16,6 @@
 <body>
 <div>
     <div id="account-action-area" class="pull-right" style="right: 10px;">
-        <a id="generate-bookmark-link" style="cursor: pointer;"><u>Generate Bookmark</u>&nbsp;</a>
-        <a>|&nbsp;</a>
         <a href="/logout"><u>Logout</u>&nbsp;&nbsp;</a>
     </div>
     <h3 class=" text-center">Browse Bookmarks</h3>
@@ -149,19 +147,24 @@
 </div>
 <script id="renderTemplate" type="text/x-handlebars-template">
     {{#each this}}
-    <div class="bs-callout bs-callout-{{difficulty}}">
-        <h4 class="text-center text-capitalize" onclick="window.open('{{href}}','mywindow');"
-            style="cursor: pointer;">
-            {{#if title}}
-            {{title}}
-            {{else if pathname}}
-            {{pathname}}
-            {{else}}
-            {{href}}
-            {{/if}}
-        </h4>
-        {{#if options.compact}}
+    <div id="single-bookmark-area-{{_id}}" class="bs-callout bs-callout-{{difficulty}}">
+
+
         <div class="container-fluid">
+            <div class="row">
+                <h4 class="text-center text-capitalize" onclick="window.open('{{href}}','mywindow');"
+                    style="cursor: pointer;">
+                    {{#if title}}
+                    {{title}}
+                    {{else if pathname}}
+                    {{pathname}}
+                    {{else}}
+                    {{href}}
+                    {{/if}}
+                </h4>
+                <a onclick="deleteBookmark('single-bookmark-area-{{_id}}','{{_id}}')" class="pull-right" style="cursor: pointer;"><span class="pull-right glyphicon glyphicon-trash"></span></a>
+            </div>
+            {{#if options.compact}}
             <div class="row">
                 <div class="col-md-12">
                     <div class="pull-left"><b>Host: </b><a href="{{protocol}}//{{hostname}}">{{hostname}}</a>
@@ -180,8 +183,9 @@
                     </div>
                 </div>
             </div>
+            {{/if}}
         </div>
-        {{/if}}
+
     </div>
     {{/each}}
 </script>

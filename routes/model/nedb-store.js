@@ -19,12 +19,14 @@ var NedbStore = class NedbStore {
 
     getAll(userId) {
         var query = {};
+        var sort = {"difficulty":-1,"lastVisited":-1,"visits":-1};
         if (userId) {
             query = {userId: userId}
         } else {
             return Promise.reject("User Id not specified");
         }
-        return this.db.findAsync(query).then(undefined, console.error);
+        var sortedOutput = Promise.promisifyAll(this.db.find(query).sort(sort));
+        return sortedOutput.execAsync().then(undefined, console.error);
     }
 
     getAllTags(userId) {
@@ -86,6 +88,23 @@ var NedbStore = class NedbStore {
                 return self.db.insertAsync(newEntryToStore)
             }
         }).then(()=>newEntryToStore)
+    }
+    remove(id,userId) {
+        var query = {};
+        if (userId && id) {
+            query = {_id: id, userId: userId};
+        } else {
+            console.error("Cannot remove entry");
+            console.error(id);
+            return Promise.reject("Cannot remove entry");
+        }
+        return this.db.removeAsync(query, { multi: true }).then((numRemoved)=>{
+            if (numRemoved==0) {
+                return Promise.reject("No such entry exists");
+            } else {
+                return id;
+            }
+        });
     }
 
     getAllByFilters(difficulties,
