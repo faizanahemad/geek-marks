@@ -55,14 +55,14 @@ var staticDirectory = __dirname + '/public';
     app.use(multer());
     app.use(userSession.verifyLogin);
     app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.urlencoded({ extended: false }));
     app.use(function(req, res, next) {
         req._startTime = new Date().getTime();
         next();
     })
 })(app);
 (function appDefault(app) {
-    app.set('port', process.env.NODE_PORT || 8000);
+    app.set('port', process.env.NODE_PORT ||config.serverConfig.port|| 8000);
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
     app.set('view cache', true);
@@ -70,7 +70,7 @@ var staticDirectory = __dirname + '/public';
 (function appRoutes(app) {
     require('./routes/routes')(app);
 })(app);
-var server = http.createServer(app).listen(app.get('port'), function() {
-    console.log('Express server listening on port: ' + app.get('port'))
+var server = http.createServer(app).listen(app.get('port'));
+var httpsServer = https.createServer(credentials, app).listen((app.get('port')+1),function() {
+    console.log('Express https server listening on port: ' + (app.get('port')+1))
 });
-var httpsServer = https.createServer(credentials, app).listen(8444);
