@@ -69,6 +69,7 @@ var NedbStore = class NedbStore {
 
     insertOrUpdateEntry(entry, userId) {
         var newEntryToStore = entry;
+        newEntryToStore.userId = userId;
         var self = this;
         var query = {};
         if (entry._id) {

@@ -25,9 +25,11 @@
   "content_scripts": [
     {
       "matches": ["*://*.geeksforgeeks.org/*","*://geeksforgeeks.org/*","*://*.wikipedia.org/*","*://wikipedia.org/*"],
-      "css": ["css/styles.css"],
+      "css": ["css/styles.css","lib/css/jquery-ui.min.css","lib/css/bootstrap.css"],
       "js": ["lib/js/bluebird.min.js",
         "lib/js/anchorme.min.js",
+        "lib/js/jquery-3.1.1.min.js",
+        "lib/js/jquery-ui.min.js",
         "lib/js/taggle.js",
         "lib/js/superagent.min.js",
         "js/common.js",

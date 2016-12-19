@@ -43,7 +43,8 @@ function doLogin(req, res, next) {
 function checkLoggedIn(req, res, next) {
     var agentValidation = checkForUserAgentValidation(req);
     var sessionValidity = isSessionValid(req);
-    if (agentValidation && sessionValidity) {
+    var tokenValidity = isTokenValid(req);
+    if (tokenValidity||(agentValidation && sessionValidity)) {
         return true
     } else {
         return false;
@@ -58,6 +59,9 @@ function verifyLogin(req, res, next) {
         clearCookies(res);
         res.redirect('/login');
     }
+}
+function isTokenValid() {
+    return false;
 }
 function logout(request, response, next) {
     request.session.destroy(function() {

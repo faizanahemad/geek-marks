@@ -16,6 +16,7 @@ var colors=["Magenta","LimeGreen","Silver","DodgerBlue","SandyBrown"];
 var visibilityState = true;
 var tagId = "tag-id";
 var noteId = "notebook-id";
+var iframeId = "bookmark-iframe";
 //=====================
 
 
@@ -72,6 +73,13 @@ function renderLinks() {
         }
         e.style = levelStyleMap.get(df);
     });
+}
+
+function createIframe() {
+    if (document.getElementById(iframeId)) {
+        document.getElementById(iframeId).remove();
+    }
+    var iframe = document.createElement("iframe");
 }
 
 
@@ -316,7 +324,7 @@ function refreshData(firstRun) {
             augmentCLD();
             render();
         }
-        if (hrefSet.has(location.href)) {
+        if (hrefSet.has(location.href) && firstRun) {
             postInput();
         }
     });
@@ -359,7 +367,7 @@ function createNoteArea() {
     note.id = noteId;
     body.appendChild(note);
     note.style =
-        "top:180px; right:%rw%; position:fixed; width: 35em;".replaceAll("%rw%",10 + "px");
+        "top:188px; right:%rw%; position:fixed; width: 35em;".replaceAll("%rw%",10 + "px");
 }
 
 function createTagArea() {
@@ -390,9 +398,8 @@ var template =
         %note%
         </p>
         <br>
-        <button style="color: darkcyan" onclick="makeNoteTextEditable(%index%)">EDIT</button>
-        <button class="pull-right" style="color: firebrick" onclick="removeNoteText(%index%)">REMOVE</button>
-        <p>&nbsp;</p>
+        <button class="edit-button" style="color: darkcyan">EDIT</button>
+        <button class="remove-button pull-right" style="color: firebrick">REMOVE</button>
     </div>
     `;
 
@@ -400,7 +407,7 @@ var editTemplate =
     `<div>
         <textarea rows="4" id="editable-note-%index%" style="width: 33em;">%note%</textarea>
         <br>
-        <button onclick="saveNoteText(%index%)">SAVE</button>
+        <button>SAVE</button>
         <p>&nbsp;</p>
     </div>
     `
@@ -414,6 +421,18 @@ function renderNoteText() {
     for (var i = 0; i < cld.notes.length; i++) {
         var str = template.replaceAll("%index%",i+"");
         var htmlElement = htmlToElement(str);
+        var editButton = htmlElement.getElementsByClassName("edit-button")[0];
+        editButton.onclick = (function (index) {
+            return function () {
+                makeNoteTextEditable(index);
+            }
+        })(i);
+        var removeButton = htmlElement.getElementsByClassName("remove-button")[0];
+        removeButton.onclick = (function (index) {
+            return function () {
+                removeNoteText(index);
+            }
+        })(i);
         htmlElement.getElementsByClassName("note-content-"+i)[0].innerHTML = cld.notes[i];
         noteArea.appendChild(htmlElement);
     }
@@ -429,10 +448,28 @@ function makeNoteTextEditable(index) {
         if (i == index) {
             var str = editTemplate.replaceAll("%note%",cld.notes[i]).replaceAll("%index%",i+"");
             var htmlElement = htmlToElement(str);
+            var saveButton = htmlElement.getElementsByTagName("button")[0];
+            saveButton.onclick = (function (index) {
+                return function () {
+                    saveNoteText(index);
+                }
+            })(i);
             noteArea.appendChild(htmlElement);
         } else {
             var str = template.replaceAll("%index%",i+"");
             var htmlElement = htmlToElement(str);
+            var editButton = htmlElement.getElementsByClassName("edit-button")[0];
+            editButton.onclick = (function (index) {
+                return function () {
+                    makeNoteTextEditable(index);
+                }
+            })(i);
+            var removeButton = htmlElement.getElementsByClassName("remove-button")[0];
+            removeButton.onclick = (function (index) {
+                return function () {
+                    removeNoteText(index);
+                }
+            })(i);
             htmlElement.getElementsByClassName("note-content-"+i)[0].innerHTML = cld.notes[i];
             noteArea.appendChild(htmlElement);
         }
@@ -458,7 +495,7 @@ function addNewNote() {
 
 function renderTags() {
     var tags = cld.tags || [];
-    new Taggle(tagId, {
+    var taggle = new Taggle(tagId, {
         tags: tags,
         duplicateTagClass: 'bounce',
         onTagAdd: function(event, tag) {
@@ -470,6 +507,23 @@ function renderTags() {
             postInput();
         }
     });
+    superagent.getAsync("%server%/bookmarks/tags".replace("%server%",serverUrl))
+        .then(req=>req.body)
+        .then(tags=> {
+            $(taggle.getInput()).autocomplete({
+                                                  source: tags, // See jQuery UI documentaton for options
+                                                  appendTo: taggle.getContainer(),
+                                                  position: { at: "left bottom", of: taggle.getContainer() },
+                                                  select: function(event, data) {
+                                                      event.preventDefault();
+                                                      //Add the tag if user clicks
+                                                      if (event.which === 1) {
+                                                          taggle.add(data.item.value);
+                                                      }
+                                                  }
+                                              });
+
+        },console.error);
 }
 
 function enableComments() {
