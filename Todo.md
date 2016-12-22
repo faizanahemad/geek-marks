@@ -1,18 +1,18 @@
 ### TODO (Features)
+- Implement login in iframe. 
+- Make Iframe responsive
+- Show hide or use on this site, per website config from plugin options / popup.html
 - Primary key of DB as hash of username + href (get current page annotations/notes/data easily easily)
 - Shift to MongoDB
 - Migrate to linux
-- Auth Token + Https + Bookmarklet - Iframe (Only tag the page n color thousand or less)
-- Support Other Sites by having generic cross site parsing and styles based on hostnames - use Iframes?
-- Make a round button (draggable) and position your content around it.
-- Two separate content_scripts - main page script + iframe script.
-- Color chrome bookmarks separately or add a [B] bracket at their end if whitespace at their end.
+- Auth Token + Https + Bookmarklet (Only tag the page n color thousand or less)
 - Enable on this site in extension popup
 - Chrome extension (Per page activate / global activate)
 - Google Drive / AWS
 - Sign Up page
 - Support Annotations
 - Explore other storage options
+- Avoid repaint of browser UI during periodic fetch if no data is updated.
 - Use extension background page / nedb on browser for cache. Versioned updates of data thought.
 - Have a blacklist option to not show on pages like fb/scoopwhoop
 - Offline save for reading, show online version if net available

@@ -1,12 +1,9 @@
 function init() {
-    createColorButtons();
-    changeStyle(4);
-    createBrowseButton();
-    createShowHideButton();
-    createNoteArea();
-    createTagArea();
     cleanPage();
     enableComments();
+    addListeners();
+    createIframe();
+    sendBookmarksRequest();
     setTimeout(function () {
         refreshData(true)
     }, 1000);

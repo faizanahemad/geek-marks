@@ -1,27 +1,19 @@
-.well {
-    min-height: 20px;
-    padding: 19px;
-    margin-bottom: 10px;
-    background-color: #f5f5f5;
-    border: 1px solid #e3e3e3;
-    border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
-}
+
 .well-sm {
-    padding: 2px;
-    border-radius: 3px;
+    padding:3px;
 }
-.pull-left {
-    float: left !important;
+.btn {
+    padding: 3px 6px;
 }
-.pull-right {
-    float: right !important;
-}
-.textarea {
+.textarea, textarea {
     width: 100%;
-    height: 300px;
     border: 1px solid red;
+}
+.close {
+    opacity: 1;
+}
+.rating-xs {
+    font-size: 1.5em;
 }
 
 .taggle_list {
@@ -65,15 +57,12 @@
 }
 
 .taggle_list .taggle .close {
-    font-size: 1.1rem;
+    font-size: 1.6rem;
     position: absolute;
-    top: 10px;
-    right: 3px;
     text-decoration: none;
     padding: 0;
     line-height: 0.5;
-    color: #ccc;
-    color: rgba(0, 0, 0, 0.2);
+    color: darkred;
     padding-bottom: 4px;
     display: none;
     border: 0;
@@ -83,24 +72,24 @@
 
 .taggle_list .taggle:hover {
     padding: 5px;
-    padding-right: 15px;
+    padding-right: 25px;
     background: #ccc;
-    transition: all .3s;
+    transition: all .2s;
 }
 
 .taggle_list .taggle:hover > .close {
-    display: block;
+    display: inline;
+    margin-top:6px;
+    margin-left:5px;
 }
 
 .taggle_list .taggle .close:hover {
-    color: #990033;
+    color: darkred;
 }
 
 .taggle_placeholder {
     position: absolute;
     color: #CCC;
-    top: 12px;
-    left: 8px;
     transition: opacity, .25s;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -163,4 +152,22 @@
 }
 .show {
     display: block !important;
+}
+
+.main-show {
+    background-clip: padding-box;
+    background-color: #2F373D;
+    border: 2px solid rgba(178, 186, 193, 0.6);
+    border-radius: 2px;
+    padding: 10px 15px 10px 10px;
+    position: relative;
+}
+.hide-show-controller-area-show {
+    margin-right: -10px;
+    margin-top: -5px;
+}
+
+.hide-show-controller-area-hide {
+    padding-top: 7px;
+    padding-right: 29px;
 }

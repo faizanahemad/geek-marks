@@ -37,3 +37,28 @@ String.prototype.replaceAll = function(search, replacement) {
 };
 var serverUrl = "https://localhost:8444";
 var superagent = Promise.promisifyAll(superagent);
+
+var postInput = function postInput(data,callback) {
+    var storageData = $.extend(true, {}, data);
+    if (storageData.notes && storageData.notes.length >0 && storageData.notes[0]) {
+        if (typeof storageData.notes[0] ==="object") {
+            storageData.notes = storageData.notes.map(n=>n.note);
+        }
+    }
+    storageData.notes = storageData.notes.filter(e=>{
+        if (e) {
+            return true;
+        }
+    });
+    var time = (new Date()).getTime();
+    storageData["lastVisited"] = time;
+    superagent.post("%server%/bookmarks/entry".replace("%server%",serverUrl), storageData)
+        .end(function (err, resp) {
+            if (err !== null) {
+                console.log(err);
+            }
+            if (callback!=undefined&&callback!==null) {
+                callback()
+            }
+        });
+};

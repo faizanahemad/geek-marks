@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="lib/js/jquery-3.1.1.min.js"></script>
+    <script src="lib/js/jquery-ui.min.js"></script>
+    <script src="lib/js/superagent.min.js"></script>
+    <script src="lib/js/taggle.js"></script>
+    <script src="lib/js/anchorme.min.js"></script>
+    <script src="lib/js/bluebird.min.js"></script>
+    <script src="lib/js/handlebars.min.js"></script>
+    <script src="lib/js/star-rating.min.js"></script>
+
+    <link rel="stylesheet" href="lib/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="lib/css/bootstrap.css">
+    <link rel="stylesheet" href="lib/css/star-rating.min.css">
+    <link rel="stylesheet" href="css/frame.css">
+
+    <script src="js/common.js"></script>
+    <script src="js/frame.js"></script>
+
+
+</head>
+<body>
+
+<div class="main-show" id="main">
+    <div id="hide-show-controller-area" class="hide-show-controller-area-show container-fluid">
+        <div class="row">
+            <button id="show-hide-bookmarks-button" class="pull-right btn btn-default"><span class="glyphicon glyphicon-menu-up"></span></button>
+        </div>
+    </div>
+    <div id="bookmark-view-container"></div>
+</div>
+<script id="bookmark-bar-template" type="text/x-handlebars-template">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <a class="pull-left btn btn-link" id="browse-button-id" href="" target="_blank">Bookmarks</a>
+                <div class="pull-right">
+                    {{#each colors}}
+                    {{#if active}}
+                    <button id="color-button-{{@index}}" class="btn btn-sm" style="border: 3px solid #e9e9e9;border-radius: 2px;background-color:{{this.color}};"></button>
+                    {{else}}
+                    <button id="color-button-{{@index}}" class="btn btn-sm"
+                            style="background-color:{{this.color}}"></button>
+                    {{/if}}
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <input id="difficulty-input" name="difficulty-name" type="number" min=1 max=5 step=1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="tag-id" class="form-control" style="padding: 2px;"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="notebook-id">
+                    {{#each notes}}
+                    {{#if editable}}
+                    <div>
+                        <textarea rows="4" id="editable-note-{{@index}}">{{this.note}}</textarea>
+                        <br>
+                        <button class="btn btn-success" id="save-note-{{@index}}"><span class="glyphicon glyphicon-saved"></span> </button>
+                        <p>&nbsp;</p>
+                    </div>
+                    {{else}}
+                    <div class="well well-sm">
+                        <p id="show-note-{{@index}}">
+
+                        </p>
+                        <button id="edit-note-{{@index}}" class="btn btn-primary edit-button"><span class="glyphicon glyphicon-edit"></span></button>
+                        <button id="remove-note-{{@index}}"
+                                class="remove-button btn btn-danger pull-right"><span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </div>
+                    {{/if}}
+                    {{/each}}
+                    <button class=" btn btn-default pull-right" id="add-note-button"><span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+</body>
+</html>
