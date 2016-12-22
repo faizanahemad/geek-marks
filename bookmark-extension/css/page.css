@@ -1,0 +1,26 @@
+iframe {
+    border-width: 0px;
+    border-style: inset;
+    border-color: initial;
+    border-image: initial;
+}
+
+.iframe-bookmark-youtube {
+    position: fixed;
+    right: 21px;
+    height: 442px;
+    display: block;
+    width: 360px;
+    z-index: 9999;
+    top: 101px;
+}
+
+.iframe-bookmark-default {
+    position: fixed;
+    right: 21px;
+    height: 442px;
+    display: block;
+    width: 360px;
+    z-index: 1000;
+    top: 21px;
+}

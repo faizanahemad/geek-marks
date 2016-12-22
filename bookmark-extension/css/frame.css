@@ -161,13 +161,19 @@
     border-radius: 2px;
     padding: 10px 15px 10px 10px;
     position: relative;
+    height:100vh;
 }
 .hide-show-controller-area-show {
-    margin-right: -10px;
+    margin-right: 0px;
     margin-top: -5px;
 }
 
 .hide-show-controller-area-hide {
     padding-top: 7px;
     padding-right: 29px;
+}
+
+.row {
+    margin-right: -25px;
+    margin-left: -25px;
 }

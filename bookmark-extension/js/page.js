@@ -126,12 +126,16 @@ function createIframe() {
         iframe.src = chrome.runtime.getURL('frame.html');
         iframe.id = iframeId;
 
-        // Some styles for a fancy sidebar
-        iframe.style.cssText = 'position:fixed;right:21px;;height:442px;display:block;' +
-                               'width:360px;z-index:1000;top:21px;';
-        iframe.className = 'css-isolation-popup';
+        iframe.classList.add(getSiteSpecificStyle(location.host));
         document.body.appendChild(iframe);
     }
+}
+
+function getSiteSpecificStyle(host) {
+    if (host.indexOf("youtube")>-1) {
+        return "iframe-bookmark-youtube";
+    }
+    return "iframe-bookmark-default"
 }
 
 function renderLinks() {

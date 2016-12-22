@@ -83,9 +83,15 @@ var NedbStore = class NedbStore {
         }
         return this.db.findOneAsync(query).then((doc)=> {
             if (doc) {
+                if ((doc.difficulty==undefined||doc.difficulty==null) && (entry.difficulty==undefined||entry.difficulty==null)) {
+                    return Promise.reject("Difficulty is mandatory to persist")
+                }
                 newEntryToStore = utils.merge(doc, entry);
                 return self.db.updateAsync({_id: doc._id}, newEntryToStore, {});
             } else {
+                if (newEntryToStore.difficulty==undefined||newEntryToStore.difficulty==null) {
+                    return Promise.reject("Difficulty is mandatory to persist")
+                }
                 return self.db.insertAsync(newEntryToStore)
             }
         }).then(()=>newEntryToStore)

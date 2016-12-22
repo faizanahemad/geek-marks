@@ -32,8 +32,16 @@
   ],
   "content_scripts": [
     {
-      "matches": ["*://*.geeksforgeeks.org/*","*://geeksforgeeks.org/*","*://*.wikipedia.org/*","*://wikipedia.org/*"],
-      "css": [],
+      "matches": [
+        "*://*.geeksforgeeks.org/*",
+        "*://geeksforgeeks.org/*",
+        "*://*.wikipedia.org/*",
+        "*://wikipedia.org/*",
+        "*://*.stackexchange.com/*",
+        "*://*.youtube.com/*",
+        "*://*.stackoverflow.com/*"
+      ],
+      "css": ["css/page.css"],
       "js": ["lib/js/bluebird.min.js",
         "lib/js/jquery-3.1.1.min.js",
         "lib/js/jquery-ui.min.js",
