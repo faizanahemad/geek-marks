@@ -1,4 +1,6 @@
-var displayData = {};
+var displayData = {
+    useless:false
+};
 var storageData = {};
 var colors = [{color: "Magenta", active: false},
     {color: "LimeGreen", active: false},
@@ -69,7 +71,7 @@ function initialiseDifficultyButton() {
                                   });
     $('#difficulty-input').rating('update', displayData.difficulty);
     $('#difficulty-input').on('rating.change', function (event, value, caption) {
-        displayData.difficulty = value;
+        displayData.difficulty = parseInt(value);
         postInput(displayData);
     });
 }
@@ -87,6 +89,12 @@ function saveNoteText(index) {
 }
 function removeNoteText(index) {
     displayData.notes.splice(index, 1);
+    postInput(displayData, render);
+}
+
+function markAsUseless() {
+    var useless = this.checked;
+    displayData.useless = useless;
     postInput(displayData, render);
 }
 
@@ -145,6 +153,7 @@ function addListeners() {
         if (msg.from === 'content_script' && msg.type == 'page_content') {
             displayData = msg;
             displayData.colors = colors;
+            displayData.useless = false;
             if (displayData.notes && displayData.notes.length > 0 && displayData.notes[0]) {
                 displayData.notes = displayData.notes.filter(e=>{
                     if (e) {
@@ -215,6 +224,8 @@ function addDomHandlers() {
     }
     var showHideBtn = document.getElementById("show-hide-bookmarks-button");
     showHideBtn.onclick = toggleDisplayStatus;
+    var uselessBtn = document.getElementById("useless-input-id");
+    uselessBtn.onclick = markAsUseless;
 }
 function render() {
     body = document.getElementById("main");

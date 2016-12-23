@@ -27,7 +27,7 @@
 
 <div class="main-show" id="main">
     <div id="hide-show-controller-area" class="hide-show-controller-area-show container-fluid">
-        <div class="row">
+        <div class="row" style="margin-right: -15px;">
             <button id="show-hide-bookmarks-button" class="pull-right btn btn-default"><span class="glyphicon glyphicon-menu-up"></span></button>
         </div>
     </div>
@@ -52,6 +52,11 @@
         </div>
         <div class="row">
             <div class="col-md-12">
+                <div class="pull-left">
+                    <label style="color: magenta;">
+                        <input id="useless-input-id" type="checkbox" {{#if useless}}  checked {{/if}}> Useless
+                    </label>
+                </div>
                 <div class="pull-right">
                     <input id="difficulty-input" name="difficulty-name" type="number" min=1 max=5 step=1>
                 </div>

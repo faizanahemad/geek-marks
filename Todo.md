@@ -1,4 +1,6 @@
 ### TODO (Features)
+- Bad resource or useless page tag.
+- Add link to previous entry since the topic is same/similar
 - Implement login in iframe. 
 - Make Iframe responsive
 - Show hide or use on this site, per website config from plugin options / popup.html

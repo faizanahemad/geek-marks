@@ -59,7 +59,8 @@ var postInput = function postInput(data, callback) {
         "notes": storageData.notes,
         "tags": storageData.tags,
         "difficulty":storageData.difficulty,
-        "userId": storageData.userId
+        "userId": storageData.userId,
+        "useless":storageData.useless
     };
     var time = (new Date()).getTime();
     postData["lastVisited"] = time;

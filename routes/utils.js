@@ -39,7 +39,8 @@ function merge(oldRecord, newRecord) {
             "notes": newRecord.notes || oldRecord.notes || [],
             "title":newRecord.title || oldRecord.title,
             "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits+1:1,
-            "tags": newRecord.tags || oldRecord.tags || []
+            "tags": newRecord.tags || oldRecord.tags || [],
+            "useless":newRecord.useless || oldRecord.useless || false
         };
         return record;
     } else if (oldRecord) {
@@ -56,7 +57,8 @@ function merge(oldRecord, newRecord) {
             "difficulty": newRecord.difficulty,
             "notes": newRecord.notes || [],
             "visits": 1,
-            "tags": newRecord.tags || []
+            "tags": newRecord.tags || [],
+            "useless":newRecord.useless || false
         };
         return record
     } else {

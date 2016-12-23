@@ -81,15 +81,25 @@ var NedbStore = class NedbStore {
             console.error(entry);
             return Promise.reject("Cannot update/insert entry");
         }
+        function isUseless(entry, doc) {
+            if (entry && entry.useless!=undefined) {
+                return entry.useless
+            } else if (doc && doc.useless!=undefined){
+                return doc.useless
+            }
+            return false;
+        }
         return this.db.findOneAsync(query).then((doc)=> {
             if (doc) {
-                if ((doc.difficulty==undefined||doc.difficulty==null) && (entry.difficulty==undefined||entry.difficulty==null)) {
+                if ((doc.difficulty==undefined||doc.difficulty==null) &&
+                    (entry.difficulty==undefined||entry.difficulty==null) &&
+                    !isUseless(entry, doc)) {
                     return Promise.reject("Difficulty is mandatory to persist")
                 }
                 newEntryToStore = utils.merge(doc, entry);
                 return self.db.updateAsync({_id: doc._id}, newEntryToStore, {});
             } else {
-                if (newEntryToStore.difficulty==undefined||newEntryToStore.difficulty==null) {
+                if ((newEntryToStore.difficulty==undefined||newEntryToStore.difficulty==null)&& !isUseless(newEntryToStore)) {
                     return Promise.reject("Difficulty is mandatory to persist")
                 }
                 return self.db.insertAsync(newEntryToStore)
@@ -123,7 +133,7 @@ var NedbStore = class NedbStore {
                     search,
                     sort,
                     userId) {
-        var query = {};
+        var query = {useless:false};
         if (userId) {
             query = {userId: userId}
         } else {

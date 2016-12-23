@@ -113,4 +113,5 @@ function bookmark() {
         // popOpen(loginUrl);
     })
 }
+superagent.getAsync(serverUrl + "/check_login").then(console.log,console.error);
 bookmark();

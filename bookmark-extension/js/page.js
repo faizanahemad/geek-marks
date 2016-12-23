@@ -139,17 +139,29 @@ function getSiteSpecificStyle(host) {
 }
 
 function renderLinks() {
-    atags.forEach((e)=> {
-        var df =-1;
-        if (hrefMap.has(e.href)) {
-            df = hrefMap.get(e.href).difficulty;
-        } else if(pathMap.has(e.pathname)) {
-            df = pathMap.get(e.pathname).difficulty;
-        } else if (titleMap.has(e.innerText.toLowerCase().trim())) {
-            df = titleMap.get(e.innerText.toLowerCase().trim())
+    var uselessIndicatorSpan = `<span style="color: orangered;">&nbsp;[X]</span>`;
+    atags.filter((e)=> {
+
+        if (hrefMap.has(e.href) || pathMap.has(e.pathname) || titleMap.has(e.innerText.toLowerCase().trim())) {
+            return true;
         }
+        return false;
+    }).forEach((e)=> {
+        var linkConfig = {};
+
+        if (hrefMap.has(e.href)) {
+            linkConfig = hrefMap.get(e.href);
+        } else if(pathMap.has(e.pathname)) {
+            linkConfig = pathMap.get(e.pathname);
+        } else if (titleMap.has(e.innerText.toLowerCase().trim())) {
+            linkConfig = titleMap.get(e.innerText.toLowerCase().trim())
+        }
+        var df = linkConfig.difficulty || -1;
         if (df>-1) {
             e.style = levelStyleMap.get(df);
+        }
+        if (linkConfig.useless) {
+            e.append(htmlToElement(uselessIndicatorSpan))
         }
     });
 }
@@ -204,7 +216,7 @@ function refreshData(firstRun) {
 }
 
 function augmentCLD() {
-    var thisLocationData = hrefMap.get(location.href) || pathMap.get(location.pathname) || {};
+    var thisLocationData = hrefMap.get(location.href) || pathMap.get(location.pathname) ||titleMap.get(cld.title) || {};
     cld.difficulty = thisLocationData.difficulty;
     cld.notes = thisLocationData.notes || [];
     cld.tags = thisLocationData.tags || [];
@@ -240,7 +252,7 @@ function addListeners() {
         if (msg.from === 'frame' && msg.type == 'color_change') {
             levelStyleMap = styleMaps[msg.style];
         } else if (msg.from === 'frame' && msg.type == 'frame_size_change' && msg.width && msg.height) {
-            var frame=document.getElementById(iframeId)
+            var frame=document.getElementById(iframeId);
             frame.style.width = msg.width;
             frame.style.height = msg.height;
         } else if (msg.from === 'background_page' && msg.type == 'bookmarks_response' && msg.bookmarks && msg.bookmarks instanceof Array) {
