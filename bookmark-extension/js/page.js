@@ -139,7 +139,7 @@ function getSiteSpecificStyle(host) {
 }
 
 function renderLinks() {
-    var uselessIndicatorSpan = `<span style="color: orangered;">&nbsp;[X]</span>`;
+    var uselessIndicatorSpan = `<span class="useless-indicator" style="color: mediumvioletred;">&nbsp;[X]</span>`;
     atags.filter((e)=> {
 
         if (hrefMap.has(e.href) || pathMap.has(e.pathname) || titleMap.has(e.innerText.toLowerCase().trim())) {
@@ -160,7 +160,7 @@ function renderLinks() {
         if (df>-1) {
             e.style = levelStyleMap.get(df);
         }
-        if (linkConfig.useless) {
+        if (linkConfig.useless && e.getElementsByClassName("useless-indicator").length==0) {
             e.append(htmlToElement(uselessIndicatorSpan))
         }
     });

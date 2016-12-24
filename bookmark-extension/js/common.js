@@ -38,6 +38,16 @@ String.prototype.replaceAll = function (search, replacement) {
 var serverUrl = "https://localhost:8444";
 var superagent = Promise.promisifyAll(superagent);
 
+var convertSecondsToMinute = function (seconds) {
+    var minutes = parseInt(seconds/60);
+    seconds = seconds - minutes*60;
+    return {
+        minutes:minutes,
+        seconds:seconds,
+        "stringRepresentation":minutes+":"+seconds
+    }
+};
+
 var postInput = function postInput(data, callback) {
     var storageData = $.extend(true, {}, data);
     if (storageData.notes && storageData.notes.length > 0 && storageData.notes[0]) {

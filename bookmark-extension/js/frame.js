@@ -43,7 +43,7 @@ function toggleDisplayStatus() {
         innerSpan.classList.remove("glyphicon-menu-down");
         controllerArea.classList.add("hide-show-controller-area-show");
         controllerArea.classList.remove("hide-show-controller-area-hide");
-        sendIframeAreaChange("360px","442px");
+        sendIframeAreaChange("360px","570px");
     }
 
     displayStatus = !displayStatus;

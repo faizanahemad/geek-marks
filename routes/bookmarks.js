@@ -46,7 +46,7 @@ module.exports = function(app) {
         var userId = req.session.user_id;
         var storeInsert = store.insertOrUpdateEntry(req.body, userId);
         res.promise(storeInsert);
-    })
+    });
     app.delete('/entry/:entryId', function(req, res, next) {
         var userId = req.session.user_id;
         var storeRemove = store.remove(req.params.entryId, userId);

@@ -1,5 +1,5 @@
 ### TODO (Features)
-- Bad resource or useless page tag.
+- move to single markdown based note and support search on note (https://github.com/NextStepWebs/simplemde-markdown-editor) (https://github.com/NextStepWebs/simplemde-markdown-editor/issues/434)
 - Add link to previous entry since the topic is same/similar
 - Implement login in iframe. 
 - Make Iframe responsive
