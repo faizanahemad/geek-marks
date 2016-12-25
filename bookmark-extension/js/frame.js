@@ -8,14 +8,40 @@ var colors = [{color: "Magenta", active: false},
     {color: "DodgerBlue", active: true},
     {color: "SandyBrown", active: false}];
 var body = document.getElementsByTagName("body")[0];
+var anchorm = function (text) {
+    return anchorme(text,{
+        attributes:{
+            "target":"_blank"
+        }
+    })
+};
+
+var SiteHeightMap = [];
+SiteHeightMap.push({
+    hostname:"youtube",
+    height:"570px",
+    width:"360px"
+                   });
+SiteHeightMap.push({
+                       hostname:"geeksforgeeks",
+                       height:"650px",
+                       width:"440px"
+                   });
+SiteHeightMap.push({
+                       hostname:"stackoverflow",
+                       height:"600px",
+                       width:"400px"
+                   });
+SiteHeightMap.push({
+                       hostname:"default",
+                       height:"570px",
+                       width:"360px"
+                   });
 
 var browseButtonId = "browse-button-id";
 var colorButtonId = "color-button-";
-var saveButtonId = "save-note-";
-var editButtonId = "edit-note-";
-var removeButtonId = "remove-note-";
-var addButtonId = "add-note-button";
-var showNoteId = "show-note-";
+var saveButtonId = "save-note";
+var removeButtonId = "remove-note";
 var displayStatus = true;
 
 var tagId = "tag-id";
@@ -43,7 +69,13 @@ function toggleDisplayStatus() {
         innerSpan.classList.remove("glyphicon-menu-down");
         controllerArea.classList.add("hide-show-controller-area-show");
         controllerArea.classList.remove("hide-show-controller-area-hide");
-        sendIframeAreaChange("360px","570px");
+        var style = SiteHeightMap.filter(s=>displayData.hostname.indexOf(s.hostname)>-1)[0]
+        if (style) {
+            sendIframeAreaChange(style.width,style.height);
+        } else {
+            style = SiteHeightMap.filter(s=>s.hostname.indexOf("default")>-1)[0];
+            sendIframeAreaChange(style.width,style.height);
+        }
     }
 
     displayStatus = !displayStatus;
@@ -76,32 +108,18 @@ function initialiseDifficultyButton() {
     });
 }
 
-function editNoteText(index) {
-    displayData.notes[index].editable = true;
-    render();
-}
-
-function saveNoteText(index) {
-    var newNoteText = document.getElementById("editable-note-" + index).value;
-    displayData.notes[index].note = newNoteText;
-    displayData.notes[index].editable = false;
-    postInput(displayData, render);
-}
-function removeNoteText(index) {
-    displayData.notes.splice(index, 1);
-    postInput(displayData, render);
+function saveNoteText(simplemde) {
+    var newNoteText = simplemde.value();
+    displayData.note = newNoteText;
+    postInput(displayData);
 }
 
 function markAsUseless() {
     var useless = this.checked;
     displayData.useless = useless;
-    postInput(displayData, render);
+    postInput(displayData);
 }
 
-function addNewNote() {
-    displayData.notes.push({note: "", editable: true});
-    render();
-}
 
 function renderTags() {
     var tags = displayData.tags || [];
@@ -117,7 +135,7 @@ function renderTags() {
             postInput(displayData);
         }
     });
-    superagent.getAsync("%server%/bookmarks/tags".replace("%server%", serverUrl))
+    superagent.getAsync(tagsUrl)
         .then(req=>req.body)
         .then(tags=> {
             $(taggle.getInput()).autocomplete({
@@ -153,25 +171,13 @@ function addListeners() {
         if (msg.from === 'content_script' && msg.type == 'page_content') {
             displayData = msg;
             displayData.colors = colors;
-            displayData.useless = false;
-            if (displayData.notes && displayData.notes.length > 0 && displayData.notes[0]) {
-                displayData.notes = displayData.notes.filter(e=>{
-                    if (e) {
-                        return true;
-                    }
-                });
-                if (typeof displayData.notes[0] === "string") {
-                    displayData.notes = displayData.notes.map(e=> {
-                        return {note: e, editable: false}
-                    });
-                }
-            }
+            displayData.useless = msg.useless;
 
         }
     });
 }
 
-function addDomHandlers() {
+function addDomHandlers(simplemde) {
     for (var i=0;i<=4;i++ ) {
         var btn=document.getElementById(colorButtonId+i);
         btn.onclick = (function (index) {
@@ -180,76 +186,119 @@ function addDomHandlers() {
             }
         })(i);
     }
-    for (var j=0;j<displayData.notes.length;j++) {
-
-        var noteShowArea = document.getElementById(showNoteId+j);
-        if (noteShowArea) {
-            var noteText = anchorme(displayData.notes[j].note, {
-                attributes:{
-                    "target":"_blank"
-                }
-            });
-            noteShowArea.innerHTML = noteText;
+    if (displayData.note && displayData.note.length>1 ) {
+        if (!simplemde.isPreviewActive()) {
+            simplemde.togglePreview();
         }
 
-        var saveBtn=document.getElementById(saveButtonId+j);
-        if (saveBtn) {
-            saveBtn.onclick = (function (index) {
-                return function () {
-                    saveNoteText(index)
-                }
-            })(j);
-        }
+    }
 
-        var editBtn=document.getElementById(editButtonId+j);
-        if (editBtn) {
-            editBtn.onclick = (function (index) {
-                return function () {
-                    editNoteText(index)
-                }
-            })(j);
-        }
-        var removeButton = document.getElementById(removeButtonId+j);
-        if (removeButton) {
-            removeButton.onclick = (function (index) {
-                return function () {
-                    removeNoteText(index)
-                }
-            })(j);
+    var saveBtn=document.getElementById(saveButtonId);
+    if (saveBtn) {
+        saveBtn.onclick = function () {
+            if (!simplemde.isPreviewActive()){
+                simplemde.togglePreview();
+            }
+            saveNoteText(simplemde);
         }
     }
-    var addButton = document.getElementById("add-note-button");
-    if (addButton) {
-        addButton.onclick = addNewNote;
+
+    var removeButton = document.getElementById(removeButtonId);
+    if (removeButton) {
+        removeButton.onclick = function () {
+            simplemde.value("");
+            console.log(simplemde.value());
+            saveNoteText(simplemde);
+        }
     }
+    simplemde.codemirror.on("beforeChange", function(instance , event){
+        console.log("beforeChange");
+        console.log(instance);
+        console.log(event);
+        var from = event.from;
+        var to = event.to;
+        var pasteText = event.text[0];
+        if (event.origin === "paste") {
+            var lineText = instance.doc.getLine(from.line);
+            if ((from.ch>1 && lineText.substring(from.ch-2, from.ch)!=="](")  || from.ch<= 1) {
+                var anchormedText = anchorm(pasteText);
+                event.update(from, to, [anchormedText]);
+            }
+        }
+
+    });
     var showHideBtn = document.getElementById("show-hide-bookmarks-button");
     showHideBtn.onclick = toggleDisplayStatus;
     var uselessBtn = document.getElementById("useless-input-id");
     uselessBtn.onclick = markAsUseless;
 }
 function render() {
+    timer("Render Start");
     body = document.getElementById("main");
     var htmlArea = document.getElementById("bookmark-view-container");
     var templateString = document.getElementById("bookmark-bar-template").innerHTML;
     var template = Handlebars.compile(templateString);
     var html = template(displayData);
     htmlArea.innerHTML = html;
+
+    var simplemde = new SimpleMDE({
+        element: document.getElementById("editable-note"),
+        placeholder:"Enter Note Content...",
+        promptURLs:false,
+        previewRender:function (text) {
+            var html = htmlToElements(simplemde.markdown(text));
+            var htmlString = Array.from(html).reduce((prev,cur)=>{
+                var nextText = "";
+                if (cur instanceof Text) {
+                    nextText =cur.data;
+                } else if (cur instanceof Node && cur.getElementsByTagName && typeof cur.getElementsByTagName==="function") {
+                    Array.from(cur.getElementsByTagName("a")).forEach(a=>a.target="_blank");
+                    nextText =cur.outerHTML;
+                } else {
+
+                }
+                return prev+nextText;
+            },"");
+            return htmlString;
+
+        },
+        spellChecker: false,
+        renderingConfig: {
+            singleLineBreaks: true,
+            codeSyntaxHighlighting: true,
+        },
+        toolbar: ["bold", "heading",
+                  "code","unordered-list","ordered-list","|", "link","image","horizontal-rule","preview"],
+        spellChecker: false,
+        status: false,
+        autosave: {
+            enabled: false,
+            unique_id: "editable-note",
+        },
+    });
+    simplemde.value(displayData.note);
+
+
     renderTags();
     initialiseDifficultyButton();
 
     document.getElementById(browseButtonId).href =
         "%server%/browse.html".replace("%server%", serverUrl);
-    addDomHandlers();
+    addDomHandlers(simplemde);
+    timer("Render End");
 
 }
 addListeners();
 
 var renderOnload = function renderOnLoad() {
     var renderTimer = setInterval(function () {
-        if (document.readyState === "complete" && displayData.notes) {
+        timer("Render Attempt");
+        if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.colors) {
+            timer("First RendeS Start");
             render();
+            timer("First RendeS End");
             clearInterval(renderTimer);
         }
-    })
+    },50);
 };
-window.onload = renderOnload;
+renderOnload();

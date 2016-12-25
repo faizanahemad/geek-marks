@@ -36,12 +36,18 @@ function merge(oldRecord, newRecord) {
             "pathname": newRecord.pathname || oldRecord.pathname,
             "lastVisited": lastVisited,
             "difficulty": newRecord.difficulty || oldRecord.difficulty,
-            "notes": newRecord.notes || oldRecord.notes || [],
+            "note": newRecord.note || oldRecord.note,
             "title":newRecord.title || oldRecord.title,
             "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits+1:1,
-            "tags": newRecord.tags || oldRecord.tags || [],
-            "useless":newRecord.useless || oldRecord.useless || false
+            "tags": newRecord.tags || oldRecord.tags || []
         };
+        if (newRecord.useless!=undefined && newRecord.useless!=null) {
+            record.useless = newRecord.useless;
+        } else if (oldRecord.useless!=undefined && oldRecord.useless!=null) {
+            record.useless = oldRecord.useless;
+        } else {
+            record.useless = false;
+        }
         return record;
     } else if (oldRecord) {
         oldRecord.lastVisited = lastVisited;
@@ -55,7 +61,7 @@ function merge(oldRecord, newRecord) {
             "pathname": newRecord.pathname,
             "lastVisited": lastVisited,
             "difficulty": newRecord.difficulty,
-            "notes": newRecord.notes || [],
+            "note": newRecord.note,
             "visits": 1,
             "tags": newRecord.tags || [],
             "useless":newRecord.useless || false

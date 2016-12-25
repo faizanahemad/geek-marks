@@ -1,12 +1,12 @@
 var body = document.getElementsByTagName("body")[0];
 var atags = Array.from(document.getElementsByTagName("a"));
 
-var pathnameSet = new Set();
-var hrefSet = new Set();
 var hrefMap = new Map();
 var pathMap = new Map();
 var titleMap = new Map();
 var iframeId = "bookmark-iframe";
+var uselessIndicatorSpan = `<span class="useless-indicator" style="color: mediumvioletred;">&nbsp;[X]</span>`;
+var bookmarkIndicatorSpan = `<span style="color: Violet;">&nbsp;[B]</span>`;
 
 var pinkStyle = new Map();
 pinkStyle.set(1, "color: Plum !important; font-weight:lighter;");
@@ -134,19 +134,17 @@ function createIframe() {
 function getSiteSpecificStyle(host) {
     if (host.indexOf("youtube")>-1) {
         return "iframe-bookmark-youtube";
+    } else if (host.indexOf("geeksforgeeks")>-1) {
+        return "iframe-bookmark-geeksforgeeks";
+    } else if (host.indexOf("stackoverflow")>-1) {
+        return "iframe-bookmark-stackoverflow";
     }
     return "iframe-bookmark-default"
 }
 
 function renderLinks() {
-    var uselessIndicatorSpan = `<span class="useless-indicator" style="color: mediumvioletred;">&nbsp;[X]</span>`;
-    atags.filter((e)=> {
-
-        if (hrefMap.has(e.href) || pathMap.has(e.pathname) || titleMap.has(e.innerText.toLowerCase().trim())) {
-            return true;
-        }
-        return false;
-    }).forEach((e)=> {
+    atags.filter((e)=> hrefMap.has(e.href) || pathMap.has(e.pathname) || titleMap.has(e.innerText.toLowerCase().trim()))
+        .forEach((e)=> {
         var linkConfig = {};
 
         if (hrefMap.has(e.href)) {
@@ -162,6 +160,8 @@ function renderLinks() {
         }
         if (linkConfig.useless && e.getElementsByClassName("useless-indicator").length==0) {
             e.append(htmlToElement(uselessIndicatorSpan))
+        } else if (!linkConfig.useless && e.getElementsByClassName("useless-indicator").length>0) {
+            e.getElementsByClassName("useless-indicator")[0].remove();
         }
     });
 }
@@ -176,7 +176,6 @@ function sendBookmarksRequest() {
 function renderBookmarkLinks(bookmarks) {
     var hrefBookmarkSet = new Set();
     var titleBookmarkSet = new Set();
-    var bookmarkIndicatorSpan = `<span style="color: Violet;">&nbsp;[B]</span>`;
     bookmarks.forEach(b=>{
         hrefBookmarkSet.add(b.url);
         titleBookmarkSet.add(b.title);
@@ -187,14 +186,12 @@ function renderBookmarkLinks(bookmarks) {
 
 
 function refreshData(firstRun) {
-    superagent.get("%server%/bookmarks".replace("%server%",serverUrl), function (err, resp) {
+    superagent.get(bookmarksUrl, function (err, resp) {
         if (err !== null) {
             console.log(err);
         }
         var locationData = resp.body || [];
         locationData.forEach((e)=> {
-            pathnameSet.add(e["pathname"]);
-            hrefSet.add(e["href"]);
             hrefMap.set(e["href"], e);
             pathMap.set(e["pathname"],e);
 
@@ -207,10 +204,9 @@ function refreshData(firstRun) {
         if (firstRun) {
             augmentCLD();
             sendCLD();
-
-        }
-        if (hrefSet.has(location.href) && firstRun) {
-            postInput(cld);
+            if (hrefMap.has(location.href)) {
+                postInput(cld);
+            }
         }
     });
 }
@@ -218,8 +214,12 @@ function refreshData(firstRun) {
 function augmentCLD() {
     var thisLocationData = hrefMap.get(location.href) || pathMap.get(location.pathname) ||titleMap.get(cld.title) || {};
     cld.difficulty = thisLocationData.difficulty;
-    cld.notes = thisLocationData.notes || [];
+    cld.note = thisLocationData.note;
     cld.tags = thisLocationData.tags || [];
+    cld.useless = thisLocationData.useless;
+    if (cld.useless==undefined) {
+        cld.useless=false;
+    }
 }
 
 function cleanPage() {

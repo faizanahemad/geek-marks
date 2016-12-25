@@ -8,12 +8,12 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
         }
     }
 };
+var template = document.createElement('template');
 /**
  * @param {String} HTML representing a single element
  * @return {Element}
  */
 function htmlToElement(html) {
-    var template = document.createElement('template');
     template.innerHTML = html;
     return template.content.firstChild;
 }
@@ -23,7 +23,6 @@ function htmlToElement(html) {
  * @return {NodeList}
  */
 function htmlToElements(html) {
-    var template = document.createElement('template');
     template.innerHTML = html;
     return template.content.childNodes;
 }
@@ -35,7 +34,15 @@ String.prototype.replaceAll = function (search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
+
+function timer(text) {
+    console.log(text+":"+Date.now()+", relative time:"+(Date.now()%10000))
+}
+timer("common loaded @ " + location.href);
 var serverUrl = "https://localhost:8444";
+var bookmarksUrl = "%server%/bookmarks".replace("%server%",serverUrl);
+var entryUrl = "%server%/bookmarks/entry".replace("%server%", serverUrl);
+var tagsUrl = "%server%/bookmarks/tags".replace("%server%", serverUrl);
 var superagent = Promise.promisifyAll(superagent);
 
 var convertSecondsToMinute = function (seconds) {
@@ -50,23 +57,14 @@ var convertSecondsToMinute = function (seconds) {
 
 var postInput = function postInput(data, callback) {
     var storageData = $.extend(true, {}, data);
-    if (storageData.notes && storageData.notes.length > 0 && storageData.notes[0]) {
-        if (typeof storageData.notes[0] === "object") {
-            storageData.notes = storageData.notes.map(n=>n.note);
-        }
-    }
-    storageData.notes = storageData.notes.filter(e=> {
-        if (e) {
-            return true;
-        }
-    });
+
     var postData = {
         "href": storageData.href,
         "protocol": storageData.protocol,
         "hostname": storageData.hostname,
         "pathname": storageData.pathname,
         "title": storageData.title,
-        "notes": storageData.notes,
+        "note": storageData.note,
         "tags": storageData.tags,
         "difficulty":storageData.difficulty,
         "userId": storageData.userId,
@@ -74,7 +72,7 @@ var postInput = function postInput(data, callback) {
     };
     var time = (new Date()).getTime();
     postData["lastVisited"] = time;
-    superagent.post("%server%/bookmarks/entry".replace("%server%", serverUrl), postData)
+    superagent.post(entryUrl, postData)
         .end(function (err, resp) {
             if (err !== null) {
                 console.log(err);

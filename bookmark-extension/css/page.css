@@ -24,3 +24,21 @@ iframe {
     z-index: 1000;
     top: 21px;
 }
+.iframe-bookmark-geeksforgeeks{
+    position: fixed;
+    right: 21px;
+    height: 650px;
+    display: block;
+    width: 440px;
+    z-index: 1000;
+    top: 21px;
+}
+.iframe-bookmark-stackoverflow{
+    position: fixed;
+    right: 21px;
+    height: 600px;
+    display: block;
+    width: 400px;
+    z-index: 1000;
+    top: 21px;
+}

@@ -12,10 +12,15 @@
     <script src="lib/js/bluebird.min.js"></script>
     <script src="lib/js/handlebars.min.js"></script>
     <script src="lib/js/star-rating.min.js"></script>
+    <script src="lib/js/highlight.min.js"></script>
+    <script src="lib/js/simplemde.min.js"></script>
 
     <link rel="stylesheet" href="lib/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="lib/css/font-awesome.min.css">
     <link rel="stylesheet" href="lib/css/bootstrap.css">
     <link rel="stylesheet" href="lib/css/star-rating.min.css">
+    <link rel="stylesheet" href="lib/css/simplemde.min.css">
+    <link rel="stylesheet" href="lib/css/highlight.min.css">
     <link rel="stylesheet" href="css/frame.css">
 
     <script src="js/common.js"></script>
@@ -75,28 +80,12 @@
         <div class="row">
             <div class="col-md-12">
                 <div id="notebook-id">
-                    {{#each notes}}
-                    {{#if editable}}
-                    <div>
-                        <textarea rows="4" id="editable-note-{{@index}}">{{this.note}}</textarea>
+                        <textarea rows="4" id="editable-note">{{note}}</textarea>
                         <br>
-                        <button class="btn btn-success" id="save-note-{{@index}}"><span class="glyphicon glyphicon-saved"></span> </button>
-                        <p>&nbsp;</p>
-                    </div>
-                    {{else}}
-                    <div class="well well-sm">
-                        <p id="show-note-{{@index}}">
-
-                        </p>
-                        <button id="edit-note-{{@index}}" class="btn btn-primary edit-button"><span class="glyphicon glyphicon-edit"></span></button>
-                        <button id="remove-note-{{@index}}"
+                        <button id="save-note" class="pull-left btn btn-success edit-button"><span class="fa fa-floppy-o"></span></button>
+                        <button id="remove-note"
                                 class="remove-button btn btn-danger pull-right"><span class="glyphicon glyphicon-trash"></span>
                         </button>
-                    </div>
-                    {{/if}}
-                    {{/each}}
-                    <button class=" btn btn-default pull-right" id="add-note-button"><span class="glyphicon glyphicon-plus"></span>
-                    </button>
                 </div>
             </div>
         </div>

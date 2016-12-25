@@ -177,3 +177,11 @@
     margin-right: -25px;
     margin-left: -25px;
 }
+
+.editor-toolbar {
+    background: white;
+    opacity: 1;
+}
+.editor-toolbar:hover {
+    opacity: 1;
+}

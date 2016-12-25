@@ -163,7 +163,7 @@ var NedbStore = class NedbStore {
         if (search && typeof search == "string" && search.length > 0) {
             var searchRegex = new RegExp(search, "i");
             var searchQuery = {
-                $or: [{title: {$regex: searchRegex}}, {href: {$regex: searchRegex}},
+                $or: [{title: {$regex: searchRegex}}, {href: {$regex: searchRegex}},{note: {$regex: searchRegex}},
                     {pathname: {$regex: searchRegex}}]
             };
             query = {$and: [_.cloneDeep(query), searchQuery]}
