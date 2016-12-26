@@ -33,6 +33,11 @@ SiteHeightMap.push({
                        width:"400px"
                    });
 SiteHeightMap.push({
+                       hostname:"stackexchange",
+                       height:"600px",
+                       width:"400px"
+                   });
+SiteHeightMap.push({
                        hostname:"default",
                        height:"570px",
                        width:"360px"

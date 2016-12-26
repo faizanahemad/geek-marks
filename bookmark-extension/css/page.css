@@ -33,7 +33,7 @@ iframe {
     z-index: 1000;
     top: 21px;
 }
-.iframe-bookmark-stackoverflow{
+.iframe-bookmark-stackoverflow, .iframe-bookmark-stackexchange{
     position: fixed;
     right: 21px;
     height: 600px;

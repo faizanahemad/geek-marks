@@ -138,6 +138,8 @@ function getSiteSpecificStyle(host) {
         return "iframe-bookmark-geeksforgeeks";
     } else if (host.indexOf("stackoverflow")>-1) {
         return "iframe-bookmark-stackoverflow";
+    } else if (host.indexOf("stackexchange")>-1) {
+        return "iframe-bookmark-stackexchange";
     }
     return "iframe-bookmark-default"
 }

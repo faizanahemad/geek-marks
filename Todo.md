@@ -18,7 +18,7 @@
 - Have a blacklist option to not show on pages like fb/scoopwhoop
 - Offline save for reading, show online version if net available
 - Give a use only offline option
-- Detect whether the user has read the page based on scroll/mouse move/cursor patterns
+- Detect whether the user has read the page based on scroll/mouse move/cursor patterns or stay duration of 1 min
 - Per user metadata like used tags etc.
 - pagination/Infinite scroll - browse page
 - Tag Detection and suggestion
@@ -27,7 +27,6 @@
 - Recognise mobile and desktop versions of the site by hrefs and collate data
 - Show most rated/visited hosts in the new tab page
 - Edit tags to already added bookmark from browse page
-- Useless link. Classify link as useless and make sure that I can avoid it in future.
  
 
 
