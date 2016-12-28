@@ -225,10 +225,16 @@ function addDomHandlers(simplemde) {
         var pasteText = event.text[0];
         if (event.origin === "paste") {
             var lineText = instance.doc.getLine(from.line);
-            if ((from.ch>1 && lineText.substring(from.ch-2, from.ch)!=="](")  || from.ch<= 1) {
-                var anchormedText = anchorm(pasteText);
-                event.update(from, to, [anchormedText]);
+            var toBePasted = []
+            for (var i=0;i<event.text.length;i++) {
+                if ((from.ch>1 && lineText.substring(from.ch-2, from.ch)!=="](")  || from.ch<= 1) {
+                    var anchormedText = anchorm(event.text[i]);
+                    toBePasted.push(anchormedText)
+                } else {
+                    toBePasted.push(event.text[i])
+                }
             }
+            event.update(from, to, toBePasted);
         }
 
     });
@@ -287,8 +293,7 @@ function render() {
     renderTags();
     initialiseDifficultyButton();
 
-    document.getElementById(browseButtonId).href =
-        "%server%/browse.html".replace("%server%", serverUrl);
+    document.getElementById(browseButtonId).href = browsePageUrl;
     addDomHandlers(simplemde);
     timer("Render End");
 
@@ -296,12 +301,17 @@ function render() {
 addListeners();
 
 var renderOnload = function renderOnLoad() {
+    var renderAttemptCount = 0;
     var renderTimer = setInterval(function () {
+        renderAttemptCount++;
         timer("Render Attempt");
         if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.colors) {
-            timer("First RendeS Start");
+            timer("First Render Start");
             render();
-            timer("First RendeS End");
+            timer("First Render End");
+            clearInterval(renderTimer);
+        }
+        if (renderAttemptCount>100) {
             clearInterval(renderTimer);
         }
     },50);

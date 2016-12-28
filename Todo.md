@@ -1,6 +1,14 @@
 ### TODO (Features)
+- Use trie for Prefix matching of Href
+- Use background page to update/sync Browser DB, Iframe to only update, and content_script to only consume, http calls from background page
+- Unify DB files for all layers
+- Unify login/sign_up for all layers
+- Provide configurable options to store programs for various extraction logic like title/href-match
+- doo payload validation at client end and only post to server if a valid payload is present.
+- Login in new window, close window once login completes, open actual iframe once logged in.
+- Admin Login
+- Enable on Quora and Medium
 - Add link to previous entry since the topic is same/similar
-- Implement login in iframe. 
 - Make Iframe responsive
 - Show hide or use on this site, per website config from plugin options / popup.html
 - Primary key of DB as hash of username + href (get current page annotations/notes/data easily easily)

@@ -56,7 +56,7 @@ function getTitle() {
             return title[0].innerText
         }
         return "";
-    }
+    };
 
     var s1 = function () {
         var h1s = document.getElementsByTagName("h1");
@@ -88,6 +88,7 @@ function getTitle() {
     var strategyArray = [s0, s1, s2, s3];
     tmap.set("www.geeksforgeeks.org",s3);
     tmap.set("www.quiz.geeksforgeeks.org",s3);
+    tmap.set("www.youtube.com",s2);
     var curStrategy = tmap.get(location.hostname);
     var title = "";
     if (curStrategy) {
@@ -151,7 +152,7 @@ function renderLinks() {
 
         if (hrefMap.has(e.href)) {
             linkConfig = hrefMap.get(e.href);
-        } else if(pathMap.has(e.pathname)) {
+        } else if(pathMap.has(e.pathname) && location.hostname!=="www.youtube.com") {
             linkConfig = pathMap.get(e.pathname);
         } else if (titleMap.has(e.innerText.toLowerCase().trim())) {
             linkConfig = titleMap.get(e.innerText.toLowerCase().trim())
@@ -206,6 +207,7 @@ function refreshData(firstRun) {
         if (firstRun) {
             augmentCLD();
             sendCLD();
+            setTimeout(()=>sendCLD(),300);
             if (hrefMap.has(location.href)) {
                 postInput(cld);
             }
@@ -214,7 +216,16 @@ function refreshData(firstRun) {
 }
 
 function augmentCLD() {
-    var thisLocationData = hrefMap.get(location.href) || pathMap.get(location.pathname) ||titleMap.get(cld.title) || {};
+    var thisLocationData = hrefMap.get(location.href) ||titleMap.get(cld.title) || null;
+    if (!thisLocationData) {
+        if (location.hostname!=="www.youtube.com") {
+            thisLocationData = pathMap.get(location.pathname) || {};
+        } else {
+            var entries = Array.from(hrefMap.entries());
+            thisLocationData = entries.filter(e=>e[0].startsWith(location.href))[0][1]||{};
+
+        }
+    }
     cld.difficulty = thisLocationData.difficulty;
     cld.note = thisLocationData.note;
     cld.tags = thisLocationData.tags || [];
@@ -259,6 +270,8 @@ function addListeners() {
             frame.style.height = msg.height;
         } else if (msg.from === 'background_page' && msg.type == 'bookmarks_response' && msg.bookmarks && msg.bookmarks instanceof Array) {
             renderBookmarkLinks(msg.bookmarks)
+        } else if (msg.from === 'frame' && msg.type == 'request_cld') {
+            sendCLD();
         }
     });
 }
