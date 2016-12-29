@@ -43,6 +43,10 @@
         "*://wikipedia.org/*",
         "*://*.stackexchange.com/*",
         "*://*.youtube.com/*",
+        "*://*.opendatastructures.org/*",
+        "*://*.hackerearth.com/*",
+        "*://opendatastructures.org/*",
+        "*://hackerearth.com/*",
         "*://*.stackoverflow.com/*"
       ],
       "css": ["css/page.css"],

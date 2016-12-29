@@ -8,6 +8,8 @@
 - Login in new window, close window once login completes, open actual iframe once logged in.
 - Admin Login
 - Enable on Quora and Medium
+- Bucketing tags into topics to support wider use on other sites,
+- User preference to start the browse page with selected config, allow creation of custom browse pages
 - Add link to previous entry since the topic is same/similar
 - Make Iframe responsive
 - Show hide or use on this site, per website config from plugin options / popup.html

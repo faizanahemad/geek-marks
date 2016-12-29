@@ -222,8 +222,12 @@ function augmentCLD() {
             thisLocationData = pathMap.get(location.pathname) || {};
         } else {
             var entries = Array.from(hrefMap.entries());
-            thisLocationData = entries.filter(e=>e[0].startsWith(location.href))[0][1]||{};
-
+            var entry = entries.filter(e=>e[0].startsWith(location.href))[0];
+            if(entry && entry instanceof Array && entry.length==1) {
+                thisLocationData = entry[1];
+            } else {
+                thisLocationData = {}
+            }
         }
     }
     cld.difficulty = thisLocationData.difficulty;
