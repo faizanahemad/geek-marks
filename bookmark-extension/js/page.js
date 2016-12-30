@@ -52,7 +52,7 @@ function getTitle() {
 
     var s0 = function () {
         var title = document.getElementsByTagName("title");
-        if (title && title instanceof Array && title.length>0) {
+        if (Array.isArray(title) && title.length>0) {
             return title[0].innerText
         }
         return "";
@@ -173,7 +173,9 @@ function sendBookmarksRequest() {
     var msg={};
     msg.from = "content_script";
     msg.type = "bookmarks_query";
-    chrome.runtime.sendMessage(msg);
+    sendMessage(msg).then(doc=>{
+        renderBookmarkLinks(doc.bookmarks)
+    });
 }
 
 function renderBookmarkLinks(bookmarks) {
@@ -187,13 +189,25 @@ function renderBookmarkLinks(bookmarks) {
         .forEach((e)=>e.append(htmlToElement(bookmarkIndicatorSpan)));
 }
 
+function recordVisit(id) {
+    var timeTracker = 0;
+    var visitTimer = setInterval(()=>{
+        if(document.hasFocus()) {
+            timeTracker+=10;
+            if(timeTracker>=60) {
+                storage.logVisit(id);
+                clearInterval(visitTimer);
+            }
+        }
+    },10000);
+}
 
 function refreshData(firstRun) {
-    superagent.get(bookmarksUrl, function (err, resp) {
-        if (err !== null) {
-            console.log(err);
-        }
-        var locationData = resp.body || [];
+    if(firstRun){
+        timer("RefreshData with firstRun");
+    }
+    var allPromise = storage.getAll();
+    Promise.all([allPromise]).spread(locationData=>{
         locationData.forEach((e)=> {
             hrefMap.set(e["href"], e);
             pathMap.set(e["pathname"],e);
@@ -202,17 +216,18 @@ function refreshData(firstRun) {
                 titleMap.set(e.title, e)
             }
         });
-
         renderLinks();
         if (firstRun) {
             augmentCLD();
             sendCLD();
             setTimeout(()=>sendCLD(),300);
             if (hrefMap.has(location.href)) {
-                postInput(cld);
+                recordVisit(cld._id)
             }
         }
     });
+    allPromise.then(undefined,console.error);
+    return allPromise
 }
 
 function augmentCLD() {
@@ -223,7 +238,7 @@ function augmentCLD() {
         } else {
             var entries = Array.from(hrefMap.entries());
             var entry = entries.filter(e=>e[0].startsWith(location.href))[0];
-            if(entry && entry instanceof Array && entry.length==1) {
+            if(Array.isArray(entry) && entry.length==1) {
                 thisLocationData = entry[1];
             } else {
                 thisLocationData = {}
@@ -234,6 +249,8 @@ function augmentCLD() {
     cld.note = thisLocationData.note;
     cld.tags = thisLocationData.tags || [];
     cld.useless = thisLocationData.useless;
+    cld._id = thisLocationData._id;
+    cld.userId = thisLocationData.userId || cld.userId;
     if (cld.useless==undefined) {
         cld.useless=false;
     }
@@ -262,7 +279,7 @@ function enableComments() {
 function sendCLD() {
     cld.from = "content_script";
     cld.type = "page_content";
-    chrome.runtime.sendMessage(cld);
+    sendMessage(cld);
 }
 function addListeners() {
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
@@ -272,8 +289,6 @@ function addListeners() {
             var frame=document.getElementById(iframeId);
             frame.style.width = msg.width;
             frame.style.height = msg.height;
-        } else if (msg.from === 'background_page' && msg.type == 'bookmarks_response' && msg.bookmarks && msg.bookmarks instanceof Array) {
-            renderBookmarkLinks(msg.bookmarks)
         } else if (msg.from === 'frame' && msg.type == 'request_cld') {
             sendCLD();
         }

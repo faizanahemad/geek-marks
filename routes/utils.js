@@ -29,6 +29,7 @@ function merge(oldRecord, newRecord) {
     var lastVisited = Date.now();
     if (oldRecord && newRecord) {
         record = {
+            "_id":oldRecord._id,
             "userId":newRecord.userId||oldRecord.userId,
             "href": newRecord.href || oldRecord.href,
             "protocol": newRecord.protocol || oldRecord.protocol,
@@ -38,7 +39,7 @@ function merge(oldRecord, newRecord) {
             "difficulty": newRecord.difficulty || oldRecord.difficulty,
             "note": newRecord.note || oldRecord.note,
             "title":newRecord.title || oldRecord.title,
-            "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits+1:1,
+            "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits:1,
             "tags": newRecord.tags || oldRecord.tags || []
         };
         if (newRecord.useless!=undefined && newRecord.useless!=null) {

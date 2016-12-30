@@ -109,20 +109,20 @@ function initialiseDifficultyButton() {
     $('#difficulty-input').rating('update', displayData.difficulty);
     $('#difficulty-input').on('rating.change', function (event, value, caption) {
         displayData.difficulty = parseInt(value);
-        postInput(displayData);
+        storage.insertOrUpdateEntry(displayData);
     });
 }
 
 function saveNoteText(simplemde) {
     var newNoteText = simplemde.value();
     displayData.note = newNoteText;
-    postInput(displayData);
+    storage.insertOrUpdateEntry(displayData);
 }
 
 function markAsUseless() {
     var useless = this.checked;
     displayData.useless = useless;
-    postInput(displayData);
+    storage.insertOrUpdateEntry(displayData);
 }
 
 
@@ -133,16 +133,14 @@ function renderTags() {
         duplicateTagClass: 'bounce',
         onTagAdd: function (event, tag) {
             displayData.tags.push(tag);
-            postInput(displayData);
+            storage.insertOrUpdateEntry(displayData);
         },
         onTagRemove: function (event, tag) {
             displayData.tags = displayData.tags.filter(item => item !== tag);
-            postInput(displayData);
+            storage.insertOrUpdateEntry(displayData);
         }
     });
-    superagent.getAsync(tagsUrl)
-        .then(req=>req.body)
-        .then(tags=> {
+    storage.getAllTags().then(tags=> {
             $(taggle.getInput()).autocomplete({
                                                   source: tags, // See jQuery UI documentaton for
                                                                 // options
@@ -171,8 +169,6 @@ function sendColorChange(styleId) {
 }
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-        console.log("Received from content_script");
-        console.log(msg);
         if (msg.from === 'content_script' && msg.type == 'page_content') {
             displayData = msg;
             displayData.colors = colors;
@@ -244,7 +240,6 @@ function addDomHandlers(simplemde) {
     uselessBtn.onclick = markAsUseless;
 }
 function render() {
-    timer("Render Start");
     body = document.getElementById("main");
     var htmlArea = document.getElementById("bookmark-view-container");
     var templateString = document.getElementById("bookmark-bar-template").innerHTML;
@@ -295,7 +290,6 @@ function render() {
 
     document.getElementById(browseButtonId).href = browsePageUrl;
     addDomHandlers(simplemde);
-    timer("Render End");
 
 }
 addListeners();
@@ -304,11 +298,8 @@ var renderOnload = function renderOnLoad() {
     var renderAttemptCount = 0;
     var renderTimer = setInterval(function () {
         renderAttemptCount++;
-        timer("Render Attempt");
         if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.colors) {
-            timer("First Render Start");
             render();
-            timer("First Render End");
             clearInterval(renderTimer);
         }
         if (renderAttemptCount>100) {

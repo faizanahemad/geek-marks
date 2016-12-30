@@ -17,9 +17,16 @@ var NedbStore = class NedbStore {
         this.db.ensureIndex({fieldName: 'difficulty'});
     }
 
-    getAll(userId) {
+    getByIds(ids,sort) {
+        ids = ids || [];
+        var query = {"_id":{$in: ids}};
+        var sortedOutput = Promise.promisifyAll(this.db.find(query).sort(sort));
+        return sortedOutput.execAsync().then(undefined, console.error);
+    }
+
+    getAll(userId,sort) {
         var query = {};
-        var sort = {"difficulty":-1,"lastVisited":-1,"visits":-1};
+        sort = sort || {};
         if (userId) {
             query = {userId: userId}
         } else {
@@ -34,7 +41,7 @@ var NedbStore = class NedbStore {
             .then((allDocs)=> {
                 var tagSet = new CSet();
                 allDocs.forEach(d=> {
-                    if (d.tags && d.tags instanceof Array) {
+                    if (Array.isArray(d.tags)) {
                         d.tags.forEach(tag=>tagSet.add(tag))
                     }
                 });
@@ -59,12 +66,27 @@ var NedbStore = class NedbStore {
         } else {
             return Promise.reject("User Id not specified");
         }
-        if (hostnames && hostnames instanceof Array) {
+        if (Array.isArray(hostnames)) {
             query.hostname = {$in: hostnames};
             return this.db.findAsync(query, console.error);
         } else {
             return Promise.resolve([]);
         }
+    }
+
+    logVisit(id,userId) {
+        var self = this;
+        return self.db.findOneAsync({_id:id,userId: userId}).then(doc=>{
+            if(doc) {
+                doc.visits = doc.visits || 0;
+                doc.visits = doc.visits+1;
+                doc.lastVisited=Date.now();
+                self.db.updateAsync({_id:doc._id},doc);
+                return doc;
+            } else {
+                Promise.reject("Document not found");
+            }
+        },console.error);
     }
 
     insertOrUpdateEntry(entry, userId) {
@@ -97,14 +119,14 @@ var NedbStore = class NedbStore {
                     return Promise.reject("Difficulty is mandatory to persist")
                 }
                 newEntryToStore = utils.merge(doc, entry);
-                return self.db.updateAsync({_id: doc._id}, newEntryToStore, {});
+                return self.db.updateAsync({_id: doc._id}, newEntryToStore, {returnUpdatedDocs:true}).then(()=>[newEntryToStore,false]);
             } else {
                 if ((newEntryToStore.difficulty==undefined||newEntryToStore.difficulty==null)&& !isUseless(newEntryToStore)) {
                     return Promise.reject("Difficulty is mandatory to persist")
                 }
-                return self.db.insertAsync(newEntryToStore)
+                return self.db.insertAsync(newEntryToStore).then(doc=>[doc,true])
             }
-        }).then(()=>newEntryToStore)
+        }).then((doc)=>doc)
     }
     remove(id,userId) {
         var query = {};
@@ -141,10 +163,10 @@ var NedbStore = class NedbStore {
         }
         sort = sort || {};
         var thenFunc = (v)=>v;
-        if (difficulties && difficulties instanceof Array && difficulties.length > 0) {
+        if (Array.isArray(difficulties) && difficulties.length > 0) {
             query.difficulty = {$in: difficulties}
         }
-        if (hostnames && hostnames instanceof Array && hostnames.length > 0) {
+        if (Array.isArray(hostnames) && hostnames.length > 0) {
             query.hostname = {$in: hostnames}
         }
         if (visitsGreaterThan && typeof visitsGreaterThan == "number") {
@@ -156,7 +178,7 @@ var NedbStore = class NedbStore {
         if (lastVisitedDaysBeyond && typeof lastVisitedDaysBeyond == "number") {
             query.lastVisited = {$lte: utils.subtractDaysFromNow(lastVisitedDaysBeyond)}
         }
-        if (tags && tags instanceof Array && tags.length > 0) {
+        if (Array.isArray(tags) && tags.length > 0) {
             query.tags = tags[0];
             thenFunc = docs=>docs.filter(d=>utils.isSuperSet(d.tags, tags))
         }

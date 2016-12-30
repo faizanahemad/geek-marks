@@ -1,6 +1,7 @@
 {
   "datafile":"history.db",
   "userfile":"users.db",
+  "syncfile":"sync.db",
   "salt":"my_first_bookmark_service",
   "serverConfig":{
     "host":"",

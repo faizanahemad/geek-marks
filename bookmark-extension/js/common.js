@@ -39,12 +39,6 @@ function timer(text) {
     console.log(text+":"+Date.now()+", relative time:"+(Date.now()%10000))
 }
 timer("common loaded @ " + location.href);
-var serverUrl = "https://localhost:8444";
-var bookmarksUrl = "%server%/bookmarks".replace("%server%",serverUrl);
-var entryUrl = "%server%/bookmarks/entry".replace("%server%", serverUrl);
-var tagsUrl = "%server%/bookmarks/tags".replace("%server%", serverUrl);
-var browsePageUrl = "%server%/browse.html".replace("%server%", serverUrl);
-var superagent = Promise.promisifyAll(superagent);
 
 var convertSecondsToMinute = function (seconds) {
     var minutes = parseInt(seconds/60);
@@ -55,31 +49,18 @@ var convertSecondsToMinute = function (seconds) {
         "stringRepresentation":minutes+":"+seconds
     }
 };
-
-var postInput = function postInput(data, callback) {
-    var storageData = $.extend(true, {}, data);
-
-    var postData = {
-        "href": storageData.href,
-        "protocol": storageData.protocol,
-        "hostname": storageData.hostname,
-        "pathname": storageData.pathname,
-        "title": storageData.title,
-        "note": storageData.note,
-        "tags": storageData.tags,
-        "difficulty":storageData.difficulty,
-        "userId": storageData.userId,
-        "useless":storageData.useless
-    };
-    var time = (new Date()).getTime();
-    postData["lastVisited"] = time;
-    superagent.post(entryUrl, postData)
-        .end(function (err, resp) {
-            if (err !== null) {
-                console.log(err);
-            }
-            if (callback != undefined && callback !== null) {
-                callback()
-            }
+function sendMessage(msg) {
+    return new Promise(function (resolve, reject) {
+        chrome.runtime.sendMessage(msg,(reply)=>{
+            resolve(reply);
         });
-};
+    });
+}
+
+function isSelected() {
+    if(document.hasFocus()) {
+        return sendMessage({type:"is_selected"})
+    } else {
+        return Promise.resolve({active:false})
+    }
+}

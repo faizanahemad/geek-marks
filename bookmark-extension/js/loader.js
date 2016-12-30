@@ -90,6 +90,7 @@ function popOpen(urlToOpen) {
                 "%loginUrl%", loginUrl));
     }
 }
+var superagent = Promise.promisifyAll(superagent);
 function bookmark() {
     window.loginUrl = serverUrl + "/login";
     var loginApi = serverUrl + "/login_api";

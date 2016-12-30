@@ -18,6 +18,7 @@
     "cookies",
     "history",
     "storage",
+    "cookies",
     "https://ajax.googleapis.com/",
     "https://localhost:8444/*",
     "https://localhost:8443/*",
@@ -47,15 +48,19 @@
         "*://*.hackerearth.com/*",
         "*://opendatastructures.org/*",
         "*://hackerearth.com/*",
+        "*://www.quora.com/*",
+        "*://*.www.quora.com/*",
+        "*://www.quora.com/*",
+        "*://*.www.quora.com/*",
         "*://*.stackoverflow.com/*"
       ],
       "css": ["css/page.css"],
       "js": ["lib/js/bluebird.min.js",
         "lib/js/jquery-3.1.1.min.js",
-        "lib/js/jquery-ui.min.js",
-        "lib/js/taggle.js",
         "lib/js/superagent.min.js",
+        "js/config.js",
         "js/common.js",
+        "js/storage-proxy.js",
         "js/page.js",
         "js/init.js",
         "js/loader.js"],
@@ -63,7 +68,14 @@
     }
   ],
   "background": {
-    "scripts": ["js/background.js"]
+    "scripts": ["lib/js/bluebird.min.js",
+      "lib/js/superagent.min.js",
+      "lib/js/jquery-3.1.1.min.js",
+      "lib/js/pouchdb.js",
+      "lib/js/pouchdb.find.js",
+      "js/config.js",
+      "js/storage.js",
+      "js/background.js"]
   },
   "content_security_policy": "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'self'"
 }
