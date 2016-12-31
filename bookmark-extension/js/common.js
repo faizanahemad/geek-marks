@@ -79,7 +79,7 @@ function sendMessage(msg) {
 
 function isSelected() {
     if(document.hasFocus()) {
-        return sendMessage({type:"is_selected"})
+        return Promise.resolve({active:true})
     } else {
         return Promise.resolve({active:false})
     }

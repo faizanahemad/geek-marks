@@ -11,6 +11,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         sendBookmarks(sendResponse);
         return true;
     }
+    if (msg && msg.from ==="content_script" && msg.type==="tab_id_query") {
+        sendResponse({from:"background_page",type:"tab_id_response",id:sender.tab.id});
+        return true;
+    }
+    if (msg && msg.from ==="login_extension_page" && msg.type==="login_info") {
+        chrome.tabs.sendMessage(msg.id, msg);
+    }
     if(msg.type == "is_selected") {
         chrome.tabs.query({active:true}, function(tabs){
             sendResponse({active:tabs.some(tab=>tab.id == sender.tab.id)});

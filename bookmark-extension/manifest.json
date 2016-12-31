@@ -29,6 +29,7 @@
   ],
   "web_accessible_resources": [
     "frame.html",
+    "extension-login.html",
     "js/**",
     "css/**",
     "lib/js/**",

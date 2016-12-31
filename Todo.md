@@ -1,4 +1,6 @@
 ### TODO (Features)
+- Sign Up page, Topcoder etc support, dev mode, forgot password on login page, move to http
+- handle login errors
 - Resync if Client version > DB version
 - Show hide or use on this site, per website config from plugin options / popup.html
 - Unify login/sign_up for all layers
@@ -13,9 +15,7 @@
 - Shift to MongoDB
 - Migrate to linux
 - Auth Token + Https + Bookmarklet (color thousand or less)
-- Sign Up page
 - Support Annotations
-- Avoid repaint of browser UI during periodic fetch if no data is updated.
 - Have a blacklist option to not show on pages like fb/scoopwhoop
 - Offline save for reading, show online version if net available
 - Give a use only offline option

@@ -3,7 +3,9 @@
 <head>
     <link rel="stylesheet" href="lib/css/bootstrap.css">
     <link rel="stylesheet" href="css/login.css">
-    <script src="lib/js/jquery-3.1.1.min.js" rel="script"></script>
+    <script src="lib/js/bluebird.min.js" rel="script"></script>
+    <script src="lib/js/superagent.min.js" rel="script"></script>
+    <script src="js/common.js"></script>
     <title>Login</title>
 </head>
 <body data-spy="scroll" data-target=".navspy" data-twttr-rendered="true" data-offset="180">
@@ -11,7 +13,7 @@
     <div class="col-md-3"></div>
     <div class="col-md-6 loginInnerDiv"><h3 class="pull-center">Use Your Credentials</h3>
         <div class="row">
-            <form id="loginForm" method="post" action="/login" class="form-horizontal">
+            <form id="loginForm" class="form-horizontal">
                 <div class="col-md-3"></div>
                 <div class="col-md-6">
                     <div class="form-group"><input id="username" minlength="6" type="text" name="username"
@@ -28,6 +30,7 @@
                             <span>&nbsp;|&nbsp;</span>
                             <a href="" target="_blank">forgot password?</a>
                         </div>
+
                     </div>
                 </div>
                 <div class="col-md-3"></div>
@@ -36,5 +39,6 @@
     </div>
     <div class="col-md-3"><span></span></div>
 </div>
+<script src="js/extension-login.js" rel="script"></script>
 </body>
 </html>

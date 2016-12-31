@@ -1,7 +1,7 @@
 {
-  "datafile":"history.db",
-  "userfile":"users.db",
-  "syncfile":"sync.db",
+  "datafile":"data/history.db",
+  "userfile":"data/users.db",
+  "syncfile":"data/sync.db",
   "salt":"my_first_bookmark_service",
   "serverConfig":{
     "host":"",
@@ -16,7 +16,7 @@
     "loginSuccessRedirect": "/browse.html",
     "loginFailureRedirect": "/login.html",
     "loginPage": "login/login_app",
-    "noLoginPathStartPathList":["/login","/login.html","/create","/js","/css","/check_login","/bookmarksapp.manifest"],
+    "noLoginPathStartPathList":["/login","/login.html","/extension-login.html","/create","/js","/css","/check_login","/bookmarksapp.manifest"],
     "noLoginExactMatch":["/bookmarksapp.manifest"]
   }
 }
