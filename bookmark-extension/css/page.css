@@ -42,3 +42,31 @@ iframe {
     z-index: 1000;
     top: 21px;
 }
+
+.youtube-time-cature-display {
+    padding:2px 5px 2px 5px;
+    border: 1px rgba(0, 0, 0, 0.16) solid;
+    border-radius: 2px;
+    text-align: center;
+    margin-bottom: 2px;
+}
+.youtube-timer-delete {
+
+}
+
+.youtube-timer-delete:hover {
+    color: darkred;
+    cursor: pointer;
+}
+.time-capture-description-area {
+    padding-right: 1px;
+    padding-left: 0px;
+}
+#time-capture-description-input {
+    width: 98%;
+    display: initial;
+}
+.time-capture-timer-area {
+    padding-left: 1px;
+    padding-right: 5px;
+}

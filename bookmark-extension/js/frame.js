@@ -1,7 +1,6 @@
 var displayData = {
     useless:false
 };
-var storageData = {};
 var colors = [{color: "Magenta", active: false},
     {color: "LimeGreen", active: false},
     {color: "Silver", active: false},
@@ -74,7 +73,7 @@ function toggleDisplayStatus() {
         innerSpan.classList.remove("glyphicon-menu-down");
         controllerArea.classList.add("hide-show-controller-area-show");
         controllerArea.classList.remove("hide-show-controller-area-hide");
-        var style = SiteHeightMap.filter(s=>displayData.hostname.indexOf(s.hostname)>-1)[0]
+        var style = SiteHeightMap.filter(s=>displayData.hostname.indexOf(s.hostname)>-1)[0];
         if (style) {
             sendIframeAreaChange(style.width,style.height);
         } else {
@@ -218,7 +217,6 @@ function addDomHandlers(simplemde) {
         console.log(event);
         var from = event.from;
         var to = event.to;
-        var pasteText = event.text[0];
         if (event.origin === "paste") {
             var lineText = instance.doc.getLine(from.line);
             var toBePasted = []
@@ -302,7 +300,10 @@ var renderOnload = function renderOnLoad() {
             render();
             clearInterval(renderTimer);
         }
-        if (renderAttemptCount>100) {
+        if (renderAttemptCount>75) {
+            sendMessage({from:"frame",type:"request_cld"})
+        }
+        if (renderAttemptCount>150) {
             clearInterval(renderTimer);
         }
     },50);

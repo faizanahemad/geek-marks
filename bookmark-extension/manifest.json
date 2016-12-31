@@ -54,14 +54,17 @@
         "*://*.www.quora.com/*",
         "*://*.stackoverflow.com/*"
       ],
-      "css": ["css/page.css"],
+      "css": ["lib/css/bootstrap.css","css/page.css"],
       "js": ["lib/js/bluebird.min.js",
         "lib/js/jquery-3.1.1.min.js",
         "lib/js/superagent.min.js",
         "js/config.js",
         "js/common.js",
         "js/storage-proxy.js",
+        "js/page_link_colors.js",
+        "js/page_sites.js",
         "js/page.js",
+        "js/bookmarks-render.js",
         "js/init.js",
         "js/loader.js"],
       "run_at" : "document_idle"

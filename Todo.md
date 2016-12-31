@@ -1,4 +1,5 @@
 ### TODO (Features)
+- Resync if Client version > DB version
 - Show hide or use on this site, per website config from plugin options / popup.html
 - Unify login/sign_up for all layers
 - Provide configurable options to store programs for various extraction logic like title/href-match

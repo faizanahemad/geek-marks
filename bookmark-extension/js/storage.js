@@ -12,6 +12,7 @@ var postInput = function postInput(data) {
         "tags": storageData.tags,
         "difficulty":storageData.difficulty,
         "userId": storageData.userId,
+        "videoTime" : storageData.videoTime,
         "useless":storageData.useless
     };
     postData["lastVisited"] = Date.now();

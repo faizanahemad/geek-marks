@@ -26,6 +26,13 @@ function htmlToElements(html) {
     template.innerHTML = html;
     return template.content.childNodes;
 }
+
+function appendMany(elem,children) {
+    Array.from(htmlToElements(children)).forEach(child=>elem.appendChild(child))
+}
+function prependMany(elem,children) {
+    Array.from(htmlToElements(children)).forEach(child=>elem.prepend(child))
+}
 function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
@@ -42,13 +49,26 @@ timer("common loaded @ " + location.href);
 
 var convertSecondsToMinute = function (seconds) {
     var minutes = parseInt(seconds/60);
-    seconds = seconds - minutes*60;
+    seconds = parseInt(seconds - minutes*60);
+    var secondsString = seconds+"";
+    if(seconds/10<1){
+        secondsString = "0"+secondsString;
+    }
     return {
         minutes:minutes,
         seconds:seconds,
-        "stringRepresentation":minutes+":"+seconds
+        "stringRepresentation":minutes+":"+secondsString
     }
 };
+
+var convertStringToSeconds = function (input) {
+    var splittedInput = input.split(":");
+    if(splittedInput.length>=2) {
+       return parseInt(splittedInput[0])*60 + parseInt(splittedInput[1])
+    } else {
+        return parseInt(splittedInput[0])
+    }
+}
 function sendMessage(msg) {
     return new Promise(function (resolve, reject) {
         chrome.runtime.sendMessage(msg,(reply)=>{

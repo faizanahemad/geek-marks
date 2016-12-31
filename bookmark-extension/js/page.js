@@ -5,107 +5,12 @@ var hrefMap = new Map();
 var pathMap = new Map();
 var titleMap = new Map();
 var iframeId = "bookmark-iframe";
+var timeCaptureAreaId = "youtube-time-cature-area";
 var uselessIndicatorSpan = `<span class="useless-indicator" style="color: mediumvioletred;">&nbsp;[X]</span>`;
 var bookmarkIndicatorSpan = `<span style="color: Violet;">&nbsp;[B]</span>`;
 
-var pinkStyle = new Map();
-pinkStyle.set(1, "color: Plum !important; font-weight:lighter;");
-pinkStyle.set(2, "color: Violet !important;");
-pinkStyle.set(3, "color: Magenta !important;");
-pinkStyle.set(4, "color: BlueViolet !important;");
-pinkStyle.set(5, "color: Indigo !important; font-weight:bolder;");
-
-var greenStyle = new Map();
-greenStyle.set(1, "color: GreenYellow !important; font-weight:lighter;");
-greenStyle.set(2, "color: Lime !important;");
-greenStyle.set(3, "color: LimeGreen !important;");
-greenStyle.set(4, "color: SeaGreen !important;");
-greenStyle.set(5, "color: ForestGreen !important; font-weight:bolder;");
-
-var grayStyle = new Map();
-grayStyle.set(1, "color: Gainsboro !important; font-weight:lighter;");
-grayStyle.set(2, "color: Silver !important;");
-grayStyle.set(3, "color: DarkGray !important;");
-grayStyle.set(4, "color: DarkSlateGray !important;");
-grayStyle.set(5, "color: Black !important; font-weight:bolder;");
-
-var blueStyle = new Map();
-blueStyle.set(1, "color: LightSkyBlue !important; font-weight:lighter;");
-blueStyle.set(2, "color: DeepSkyBlue !important;");
-blueStyle.set(3, "color: DodgerBlue !important;");
-blueStyle.set(4, "color: MediumBlue !important;");
-blueStyle.set(5, "color: DarkBlue !important; font-weight:bolder;");
-
-var redStyle = new Map();
-redStyle.set(1, "color: Wheat !important; font-weight:lighter;");
-redStyle.set(2, "color: BurlyWood !important;");
-redStyle.set(3, "color: DarkGoldenrod !important;");
-redStyle.set(4, "color: IndianRed !important;");
-redStyle.set(5, "color: DarkRed !important; font-weight:bolder;");
-
-var styleMaps = [pinkStyle,greenStyle,grayStyle,blueStyle,redStyle];
-
-var levelStyleMap = blueStyle;
 
 
-function getTitle() {
-
-    var s0 = function () {
-        var title = document.getElementsByTagName("title");
-        if (Array.isArray(title) && title.length>0) {
-            return title[0].innerText
-        }
-        return "";
-    };
-
-    var s1 = function () {
-        var h1s = document.getElementsByTagName("h1");
-        var h1Elem = h1s[0];
-        if (h1Elem) {
-            return h1Elem.textContent.trim().toLowerCase();
-        }
-        return "";
-    };
-
-    var s2 = function () {
-        var h1s = document.getElementsByTagName("h1");
-        var h1Elem = h1s[h1s.length-1];
-        if (h1Elem) {
-            return h1Elem.textContent.trim().toLowerCase();
-        }
-        return "";
-    };
-    var s3 = function () {
-        var h1s = document.getElementsByClassName("entry-title");
-        var h1Elem = h1s[0];
-        if (h1Elem) {
-            return h1Elem.textContent.trim().toLowerCase();
-        }
-        return "";
-    };
-
-    var tmap = new Map();
-    var strategyArray = [s0, s1, s2, s3];
-    tmap.set("www.geeksforgeeks.org",s3);
-    tmap.set("www.quiz.geeksforgeeks.org",s3);
-    tmap.set("www.youtube.com",s2);
-    var curStrategy = tmap.get(location.hostname);
-    var title = "";
-    if (curStrategy) {
-        title = curStrategy();
-    }
-    if (title.length==0) {
-        title = strategyArray.reduce((prev,cur)=>{
-            if (prev && prev.length>0) {
-                return prev;
-            } else {
-                return cur();
-            }
-        },title);
-    }
-    return title;
-
-}
 
 var cld = {
     "href": location.href,
@@ -132,19 +37,6 @@ function createIframe() {
     }
 }
 
-function getSiteSpecificStyle(host) {
-    if (host.indexOf("youtube")>-1) {
-        return "iframe-bookmark-youtube";
-    } else if (host.indexOf("geeksforgeeks")>-1) {
-        return "iframe-bookmark-geeksforgeeks";
-    } else if (host.indexOf("stackoverflow")>-1) {
-        return "iframe-bookmark-stackoverflow";
-    } else if (host.indexOf("stackexchange")>-1) {
-        return "iframe-bookmark-stackexchange";
-    }
-    return "iframe-bookmark-default"
-}
-
 function renderLinks() {
     atags.filter((e)=> hrefMap.has(e.href) || pathMap.has(e.pathname) || titleMap.has(e.innerText.toLowerCase().trim()))
         .forEach((e)=> {
@@ -167,26 +59,6 @@ function renderLinks() {
             e.getElementsByClassName("useless-indicator")[0].remove();
         }
     });
-}
-
-function sendBookmarksRequest() {
-    var msg={};
-    msg.from = "content_script";
-    msg.type = "bookmarks_query";
-    sendMessage(msg).then(doc=>{
-        renderBookmarkLinks(doc.bookmarks)
-    });
-}
-
-function renderBookmarkLinks(bookmarks) {
-    var hrefBookmarkSet = new Set();
-    var titleBookmarkSet = new Set();
-    bookmarks.forEach(b=>{
-        hrefBookmarkSet.add(b.url);
-        titleBookmarkSet.add(b.title);
-    });
-    atags.filter((e)=>hrefBookmarkSet.has(e.href) || titleBookmarkSet.has(e.innerText.toLowerCase().trim()))
-        .forEach((e)=>e.append(htmlToElement(bookmarkIndicatorSpan)));
 }
 
 function recordVisit(id) {
@@ -220,6 +92,7 @@ function refreshData(firstRun) {
         if (firstRun) {
             augmentCLD();
             sendCLD();
+            youtubeTimeCapture();
             setTimeout(()=>sendCLD(),300);
             if (hrefMap.has(location.href)) {
                 recordVisit(cld._id)
@@ -250,32 +123,12 @@ function augmentCLD() {
     cld.tags = thisLocationData.tags || [];
     cld.useless = thisLocationData.useless;
     cld._id = thisLocationData._id;
+    cld.videoTime = thisLocationData.videoTime || cld.videoTime|| [];
     cld.userId = thisLocationData.userId || cld.userId;
     if (cld.useless==undefined) {
         cld.useless=false;
     }
 }
-
-function cleanPage() {
-    var discusPrompt = document.getElementById("onboard");
-    var practiceText = document.getElementById("practice");
-    var removables = [];
-    removables.push(discusPrompt);
-    removables.push(practiceText);
-    removables.forEach(e=>{
-        if (e) {
-            e.remove();
-        }
-    });
-}
-
-function enableComments() {
-    var a=document.getElementById("comment");
-    if(a) {
-        a.click();
-    }
-}
-
 function sendCLD() {
     cld.from = "content_script";
     cld.type = "page_content";

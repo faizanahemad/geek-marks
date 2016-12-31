@@ -39,6 +39,7 @@ function merge(oldRecord, newRecord) {
             "difficulty": newRecord.difficulty || oldRecord.difficulty,
             "note": newRecord.note || oldRecord.note,
             "title":newRecord.title || oldRecord.title,
+            "videoTime": newRecord.videoTime || oldRecord.videoTime || [],
             "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits:1,
             "tags": newRecord.tags || oldRecord.tags || []
         };
@@ -65,6 +66,7 @@ function merge(oldRecord, newRecord) {
             "note": newRecord.note,
             "visits": 1,
             "tags": newRecord.tags || [],
+            "videoTime": newRecord.videoTime || [],
             "useless":newRecord.useless || false
         };
         return record
