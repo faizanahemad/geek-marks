@@ -1,16 +1,11 @@
 function popUpOnload() {
     var siteSettings = {area:"site"};
-    var globalSettings = {area:"global"};
+    var globalSettings = {area:"global",isGlobal:true};
     var settingsTemplateString = document.getElementById("settings-area-template").innerHTML;
     var template = Handlebars.compile(settingsTemplateString);
 
     function renderArea(data,area) {
         area = area || data.area;
-        if(!data.settings["enabled"]) {
-            data.settings["show-on-load"] = false;
-            data.settings["bookmarks"] = false;
-            data.settings["notes"] = false;
-        }
         var html = template(data);
         var outer = document.getElementById(area+"-area");
         outer.innerHTML = html;
@@ -34,9 +29,9 @@ function popUpOnload() {
     function save(area) {
         var data = getData(area);
         if(area==="site") {
-            chromeStorage.setSiteSettings(data).then(renderSiteArea)
+            chromeStorage.setSiteSettings(data).then(renderAreaData)
         } else if(area==="global") {
-            chromeStorage.setGlobalSettings(data).then(renderGlobalArea)
+            chromeStorage.setGlobalSettings(data).then(renderAreaData)
 
         }
     }
@@ -70,22 +65,36 @@ function popUpOnload() {
 
     }
 
-    function renderGlobalArea() {
+    function renderAreaData() {
         chromeStorage.getGlobalSettings().then(settings=>{
             $.extend(globalSettings,settings);
-            renderArea(globalSettings,"global")
-        });
-    }
-
-    function renderSiteArea() {
-        chromeStorage.getSiteSettings().then(settings=>{
+            renderArea(globalSettings,"global");
+            return globalSettings;
+        }).then(gs=>{
+            return Promise.join(chromeStorage.getSiteSettings(),gs)
+        }).then(data=>{
+            var gs=data[1];
+            var settings=data[0];
+            console.log("Site Settings");
             console.log(settings);
             $.extend(siteSettings,settings);
-            renderArea(siteSettings,"site")
-        });
+            if(!gs.settings.enabled) {
+                siteSettings.settings.enabledDisable = true;
+            } else {
+                if(!gs.settings.notes || !siteSettings.settings.enabled) {
+                    siteSettings.settings.notesDisable = true;
+                }
+                if(!gs.settings.bookmarks || !siteSettings.settings.enabled) {
+                    siteSettings.settings.bookmarksDisable = true;
+                }
+                if(!gs.settings.show_on_load || !siteSettings.settings.enabled) {
+                    siteSettings.settings.show_on_loadDisable = true;
+                }
+            }
+            return siteSettings;
+        }).then(siteSettings=>renderArea(siteSettings,"site"));
     }
-    renderGlobalArea();
-    renderSiteArea();
+    renderAreaData();
 }
 
 window.onload = popUpOnload;

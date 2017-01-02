@@ -48,4 +48,8 @@ function bookmark() {
         }
     });
 }
-bookmark();
+chromeStorage.getCombinedSettings().then(data=>{
+    if(data.settings.enabled) {
+        bookmark();
+    }
+})

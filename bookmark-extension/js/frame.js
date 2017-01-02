@@ -15,33 +15,6 @@ var anchorm = function (text) {
     })
 };
 
-var SiteHeightMap = [];
-SiteHeightMap.push({
-    hostname:"youtube",
-    height:"570px",
-    width:"360px"
-                   });
-SiteHeightMap.push({
-                       hostname:"geeksforgeeks",
-                       height:"650px",
-                       width:"440px"
-                   });
-SiteHeightMap.push({
-                       hostname:"stackoverflow",
-                       height:"600px",
-                       width:"400px"
-                   });
-SiteHeightMap.push({
-                       hostname:"stackexchange",
-                       height:"600px",
-                       width:"400px"
-                   });
-SiteHeightMap.push({
-                       hostname:"default",
-                       height:"570px",
-                       width:"360px"
-                   });
-
 var browseButtonId = "browse-button-id";
 var colorButtonId = "color-button-";
 var saveButtonId = "save-note";
@@ -50,22 +23,15 @@ var displayStatus = true;
 
 var tagId = "tag-id";
 
-function toggleDisplayStatus() {
-    var showHideBtn = document.getElementById("show-hide-bookmarks-button");
-    var innerSpan = showHideBtn.getElementsByTagName("span")[0];
-    body = document.getElementById("main");
-    var htmlArea = document.getElementById("bookmark-view-container");
-    var controllerArea = document.getElementById("hide-show-controller-area");
-    if (displayStatus) {
-        htmlArea.classList.remove("show");
-        body.classList.remove("main-show");
-        htmlArea.classList.add("hide");
-        innerSpan.classList.remove("glyphicon-menu-up");
-        innerSpan.classList.add("glyphicon-menu-down");
-        controllerArea.classList.remove("hide-show-controller-area-show");
-        controllerArea.classList.add("hide-show-controller-area-hide");
-        sendIframeAreaChange("35px","35px");
-    } else {
+function setDisplayStatus(status) {
+    // show = true
+    if (status) {
+        var showHideBtn = document.getElementById("show-hide-bookmarks-button");
+        var innerSpan = showHideBtn.getElementsByTagName("span")[0];
+        body = document.getElementById("main");
+        var htmlArea = document.getElementById("bookmark-view-container");
+        var controllerArea = document.getElementById("hide-show-controller-area");
+
         htmlArea.classList.remove("hide");
         htmlArea.classList.add("show");
         body.classList.add("main-show");
@@ -73,18 +39,46 @@ function toggleDisplayStatus() {
         innerSpan.classList.remove("glyphicon-menu-down");
         controllerArea.classList.add("hide-show-controller-area-show");
         controllerArea.classList.remove("hide-show-controller-area-hide");
-        var style = SiteHeightMap.filter(s=>displayData.hostname.indexOf(s.hostname)>-1)[0];
-        if (style) {
-            sendIframeAreaChange(style.width,style.height);
-        } else {
-            style = SiteHeightMap.filter(s=>s.hostname.indexOf("default")>-1)[0];
-            sendIframeAreaChange(style.width,style.height);
-        }
-    }
+        chromeStorage.getCombinedSettings().then(data=>{
+            if(data.style)
+                return data.style;
+            else
+                return globalSettings.style;
+        },()=>Promise.resolve(globalSettings.style)).then(style=>{
+            sendIframeAreaChange(style)
+        })
+    } else {
+        var showHideBtn = document.getElementById("show-hide-bookmarks-button");
+        var innerSpan = showHideBtn.getElementsByTagName("span")[0];
+        body = document.getElementById("main");
+        var htmlArea = document.getElementById("bookmark-view-container");
+        var controllerArea = document.getElementById("hide-show-controller-area");
 
-    displayStatus = !displayStatus;
+        htmlArea.classList.remove("show");
+        body.classList.remove("main-show");
+        htmlArea.classList.add("hide");
+        innerSpan.classList.remove("glyphicon-menu-up");
+        innerSpan.classList.add("glyphicon-menu-down");
+        controllerArea.classList.remove("hide-show-controller-area-show");
+        controllerArea.classList.add("hide-show-controller-area-hide");
+        chromeStorage.getCombinedSettings().then(data=>{
+            if(data.style)
+                return data.style;
+            else
+                return globalSettings.style;
+        },()=>Promise.resolve(globalSettings.style)).then(style=>{
+            style.height = frameHiddenStyleDefault.height;
+            style.width = frameHiddenStyleDefault.width;
+            sendIframeAreaChange(style)
+        })
+    }
+    displayStatus = status
 }
 
+var toggleDisplayStatus = ()=>{
+    setDisplayStatus(!displayStatus);
+    chromeStorage.updateSiteSettings({settings:{show_on_load:displayStatus}})
+};
 function changeStyle(style) {
     if (style >= 0 && style <= 4) {
         sendColorChange(style)
@@ -160,8 +154,11 @@ function renderTags() {
         }, console.error);
 }
 
-function sendIframeAreaChange(width, height) {
-    chrome.runtime.sendMessage({from: 'frame', type: 'frame_size_change', width: width, height:height});
+function sendIframeAreaChange(style) {
+    style = style || {};
+    var msg = {from: 'frame', type: 'frame_size_change'};
+    $.extend(msg,style);
+    chrome.runtime.sendMessage(msg);
 }
 function sendColorChange(styleId) {
     chrome.runtime.sendMessage({from: 'frame', type: 'color_change', style: styleId});
@@ -169,6 +166,7 @@ function sendColorChange(styleId) {
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         if (msg.from === 'content_script' && msg.type == 'page_content') {
+            console.log(msg.sequence);
             displayData = msg;
             displayData.colors = colors;
             displayData.useless = msg.useless;
@@ -237,6 +235,10 @@ function addDomHandlers(simplemde) {
     var uselessBtn = document.getElementById("useless-input-id");
     uselessBtn.onclick = markAsUseless;
 }
+
+function setInitialDisplayStatus() {
+    chromeStorage.getCombinedSettings().then(data=>setDisplayStatus(data.settings.show_on_load))
+}
 function render() {
     body = document.getElementById("main");
     var htmlArea = document.getElementById("bookmark-view-container");
@@ -288,7 +290,7 @@ function render() {
 
     document.getElementById(browseButtonId).href = browsePageUrl;
     addDomHandlers(simplemde);
-
+    setInitialDisplayStatus();
 }
 addListeners();
 
@@ -300,10 +302,10 @@ var renderOnload = function renderOnLoad() {
             render();
             clearInterval(renderTimer);
         }
-        if (renderAttemptCount>75) {
+        if (renderAttemptCount>20 && renderAttemptCount < 70) {
             sendMessage({from:"frame",type:"request_cld"})
         }
-        if (renderAttemptCount>150) {
+        if (renderAttemptCount>120) {
             clearInterval(renderTimer);
         }
     },50);

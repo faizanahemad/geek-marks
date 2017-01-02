@@ -148,10 +148,38 @@ var ChromeStorage = class ChromeStorage {
         })
     }
 
+    getCombinedSettings() {
+        return Promise.join(this.getGlobalSettings(),this.getSiteSettings())
+            .then(combined=>{
+                var site = combined[1];
+                var global = combined[0];
+                var item = {};
+                item.style = site.style;
+                item["settings"] = site.settings;
+                if(global.settings.enabled && site.settings.enabled) {
+                    if(!global.settings.notes) {
+                        item.settings.notes = false;
+                    }
+                    if(!global.settings.bookmarks) {
+                        item.settings.bookmarks = false;
+                    }
+                    if(!global.settings.show_on_load) {
+                        item.settings.show_on_load = false;
+                    }
+                } else {
+                    item.settings.enabled = false;
+                    item.settings.show_on_load = false;
+                    item.settings.bookmarks =  false;
+                    item.settings.notes = false;
+                }
+                return item;
+        })
+    }
+
     setGlobalSettings(settings) {
         settings = this._transformForStorage(settings);
         var self = this;
-        var persist = {}
+        var persist = {};
         persist[self.globalKey] = settings;
         return self.set(persist)
     }
@@ -170,6 +198,14 @@ var ChromeStorage = class ChromeStorage {
         return this._currentDomainPath().then(uri=>{
             return self.setSpecificSiteSettings(uri.hostname, settings)
         })
+    }
+
+    updateSiteSettings(settings) {
+        var self = this;
+        this.getSiteSettings().then(data=>{
+            $.extend(true,data,settings);
+            return data;
+        }).then(data=>self.setSiteSettings(data))
     }
 };
 var chromeStorage = new ChromeStorage();

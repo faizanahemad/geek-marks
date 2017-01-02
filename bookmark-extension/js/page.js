@@ -20,7 +20,8 @@ var cld = {
     "title":getTitle()
 };
 
-function createIframe() {
+function createIframe(data) {
+    var style = data.style || {};
     if (document.getElementById(iframeId)) {
         document.getElementById(iframeId).remove();
     }
@@ -30,11 +31,21 @@ function createIframe() {
         var iframe = document.createElement('iframe');
         // Must be declared at web_accessible_resources in manifest.json
         iframe.src = chrome.runtime.getURL('frame.html');
+        document.body.appendChild(iframe);
         iframe.id = iframeId;
 
         iframe.classList.add("iframe-bookmark-default");
-        iframe.classList.add(getSiteSpecificStyle(location.host));
-        document.body.appendChild(iframe);
+        iframe.style.top = style.top+ "px";
+        iframe.style.right = style.right+ "px";
+        iframe.style.width = style.width + "px";
+
+        iframe.style.right = style.right+ "px";
+        if(data.settings && data.settings.show_on_load) {
+        } else {
+            iframe.style.height = frameHiddenStyleDefault.height+ "px";
+            iframe.style.width = frameHiddenStyleDefault.width + "px";
+        }
+
     }
 }
 
@@ -75,12 +86,9 @@ function recordVisit(id) {
     },10000);
 }
 
-function refreshData(firstRun) {
-    if(firstRun){
-        timer("RefreshData with firstRun");
-    }
+function prepareData(firstRun) {
     var allPromise = storage.getAll();
-    Promise.all([allPromise]).spread(locationData=>{
+    allPromise.then(locationData=>{
         locationData.forEach((e)=> {
             hrefMap.set(e["href"], e);
             pathMap.set(e["pathname"],e);
@@ -89,12 +97,10 @@ function refreshData(firstRun) {
                 titleMap.set(e.title, e)
             }
         });
-        renderLinks();
         if (firstRun) {
             augmentCLD();
-            sendCLD();
-            youtubeTimeCapture();
-            setTimeout(()=>sendCLD(),300);
+            sendCLD(1);
+            setTimeout(()=>sendCLD(2),300);
             if (hrefMap.has(location.href)) {
                 recordVisit(cld._id)
             }
@@ -102,6 +108,13 @@ function refreshData(firstRun) {
     });
     allPromise.then(undefined,console.error);
     return allPromise
+}
+
+function refreshDisplay(firstRun) {
+    prepareData(false).then(renderLinks);
+    if (firstRun) {
+        youtubeTimeCapture();
+    }
 }
 
 function augmentCLD() {
@@ -130,9 +143,10 @@ function augmentCLD() {
         cld.useless=false;
     }
 }
-function sendCLD() {
+function sendCLD(sequence) {
     cld.from = "content_script";
     cld.type = "page_content";
+    cld.sequence = sequence || -1;
     sendMessage(cld);
 }
 function addListeners() {
@@ -141,10 +155,12 @@ function addListeners() {
             levelStyleMap = styleMaps[msg.style];
         } else if (msg.from === 'frame' && msg.type == 'frame_size_change' && msg.width && msg.height) {
             var frame=document.getElementById(iframeId);
-            frame.style.width = msg.width;
-            frame.style.height = msg.height;
+            frame.style.width = msg.width+ "px";
+            frame.style.height = msg.height+ "px";
+            frame.style.top = msg.top+ "px";
+            frame.style.right = msg.right+ "px";
         } else if (msg.from === 'frame' && msg.type == 'request_cld') {
-            sendCLD();
+            sendCLD(3);
         }
     });
 }

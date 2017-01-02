@@ -30,10 +30,14 @@ var globalSettings = {
             "value":""
         },
         "bookmarks":true,
-        "notes":true
+        "notes":false
     }
 };
 
+var frameHiddenStyleDefault = {
+    height:35,
+    width:35
+}
 var defaultSettingsMap = {
     "www.youtube.com":{
         "style":{

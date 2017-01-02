@@ -53,39 +53,39 @@
                     <div class="row">
                         <div>
                             <div class="col-xs-6"><label>Enabled</label></div>
-                            <div class="col-xs-6"><input id="{{area}}-enabled" {{#if settings.enabled}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                            <div class="col-xs-6"><input id="{{area}}-enabled" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.enabled}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div>
                             <div class="col-xs-6"><label>Notes Enabled</label></div>
-                            <div class="col-xs-6"><input id="{{area}}-notes" {{#unless settings.enabled}} disabled {{/unless}} {{#if settings.notes}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                            <div class="col-xs-6"><input id="{{area}}-notes" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.notesDisable}} disabled {{/if}} {{#if settings.notes}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div>
-                            <div class="col-xs-6"><label>Show Notes Bar</label></div>
-                            <div class="col-xs-6"><input id="{{area}}-show-on-load" {{#unless settings.enabled}} disabled {{/unless}} {{#if settings.show_on_load}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                            <div class="col-xs-6"><label>Show Notes On Load</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-show-on-load" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.show_on_loadDisable}} disabled {{/if}} {{#if settings.show_on_load}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div>
                             <div class="col-xs-6"><label>Link Coloring</label></div>
-                            <div class="col-xs-6"><input id="{{area}}-bookmarks" {{#unless settings.enabled}} disabled {{/unless}} {{#if settings.bookmarks}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                            <div class="col-xs-6"><input id="{{area}}-bookmarks" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.bookmarksDisable}} disabled {{/if}} {{#if settings.bookmarks}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div>
                             <div class="col-xs-3"><label>If Path</label></div>
                             <div class="col-xs-4">
-                                <select {{#unless settings.enabled}} disabled {{/unless}} class="form-control" id="{{area}}-path-matcher">
+                                <select {{#if settings.enabledDisable}} disabled {{/if}} {{#if isGlobal}}  disabled {{/if}} class="form-control" id="{{area}}-path-matcher">
                                     <option {{#if settings.path.startsWith}}  selected {{/if}}>startsWith</option>
                                     <option {{#if settings.path.endsWith}}  selected {{/if}}>endsWith</option>
                                     <option {{#if settings.path.equals}}  selected {{/if}}>equals</option>
                                     <option {{#if settings.path.contains}}  selected {{/if}}>contains</option>
                                 </select>
                             </div>
-                            <div class="col-xs-5"><input class="form-control" {{#unless settings.enabled}} disabled {{/unless}} id="{{area}}-path" type="text" value="{{settings.path.value}}"></div>
+                            <div class="col-xs-5"><input class="form-control" {{#unless settings.enabled}} disabled {{/unless}} {{#if isGlobal}}  disabled {{/if}} id="{{area}}-path" type="text" value="{{settings.path.value}}"></div>
                         </div>
                     </div>
                 </div>
