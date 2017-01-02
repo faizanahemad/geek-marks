@@ -1,37 +1,126 @@
 <!doctype html>
-<!--
- This page is shown when the extension button is clicked, because the
- "browser_action" field in manifest.json contains the "default_popup" key with
- value "popup.html".
- -->
-<html>
-  <head>
-    <title>Getting Started Extension's Popup</title>
-    <style>
-      body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
-      }
-      #status {
-        /* avoid an excessively wide status text */
-        white-space: pre;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 400px;
-      }
-    </style>
+<html style="width: 768px;">
+<head>
+    <title>Bookmark Extension Options</title>
+    <script src="lib/js/jquery-3.1.1.min.js"></script>
+    <script src="lib/js/jquery-ui.min.js"></script>
+    <script src="lib/js/handlebars.min.js"></script>
+    <script src="lib/js/bluebird.min.js"></script>
+    <script src="lib/js/bootstrap.min.js"></script>
+    <script src="lib/js/bootstrap-toggle.min.js"></script>
 
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-     -->
-    <script src="popup.js"></script>
-  </head>
-  <body>
-    <div id="status"></div>
-    <img id="image-result" hidden>
-  </body>
+
+    <link rel="stylesheet" href="lib/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="lib/css/font-awesome.min.css">
+    <link rel="stylesheet" href="lib/css/bootstrap.css">
+    <link rel="stylesheet" href="lib/css/bootstrap-toggle.min.css">
+
+
+    <script src="js/config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/chrome_storage.js"></script>
+
+    <script src="js/popup.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-6">
+                <h4 class="text-center">Site Specific</h4>
+                <hr>
+            </div>
+            <div class="col-xs-6">
+                <h4 class="text-center">Global</h4>
+                <hr>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-6" id="site-area">
+
+            </div>
+            <div class="col-xs-6" id="global-area">
+
+            </div>
+        </div>
+
+    </div>
+    <script id="settings-area-template" type="text/x-template">
+        <div class="settings-area">
+            <div>
+                <span class="lead">Settings</span>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div>
+                            <div class="col-xs-6"><label>Enabled</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-enabled" {{#if settings.enabled}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <div class="col-xs-6"><label>Notes Enabled</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-notes" {{#unless settings.enabled}} disabled {{/unless}} {{#if settings.notes}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <div class="col-xs-6"><label>Show Notes Bar</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-show-on-load" {{#unless settings.enabled}} disabled {{/unless}} {{#if settings.show_on_load}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <div class="col-xs-6"><label>Link Coloring</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-bookmarks" {{#unless settings.enabled}} disabled {{/unless}} {{#if settings.bookmarks}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <div class="col-xs-3"><label>If Path</label></div>
+                            <div class="col-xs-4">
+                                <select {{#unless settings.enabled}} disabled {{/unless}} class="form-control" id="{{area}}-path-matcher">
+                                    <option {{#if settings.path.startsWith}}  selected {{/if}}>startsWith</option>
+                                    <option {{#if settings.path.endsWith}}  selected {{/if}}>endsWith</option>
+                                    <option {{#if settings.path.equals}}  selected {{/if}}>equals</option>
+                                    <option {{#if settings.path.contains}}  selected {{/if}}>contains</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-5"><input class="form-control" {{#unless settings.enabled}} disabled {{/unless}} id="{{area}}-path" type="text" value="{{settings.path.value}}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <span class="lead">Style</span>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="{{area}}-top" class="col-sm-2 control-label">Top</label>
+                        <div class="col-sm-10">
+                            <input type="number" value="{{style.top}}" class="form-control" id="{{area}}-top" placeholder="top...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-right" class="col-sm-2 control-label">Right</label>
+                        <div class="col-sm-10">
+                            <input type="number" value="{{style.right}}" class="form-control" id="{{area}}-right" placeholder="right...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-height" class="col-sm-2 control-label">Height</label>
+                        <div class="col-sm-10">
+                            <input type="number" value="{{style.height}}" class="form-control" id="{{area}}-height" placeholder="height...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-width" class="col-sm-2 control-label">Width</label>
+                        <div class="col-sm-10">
+                            <input type="number" value="{{style.width}}" class="form-control" id="{{area}}-width" placeholder="width...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+</body>
 </html>
 

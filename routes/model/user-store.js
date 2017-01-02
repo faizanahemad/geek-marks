@@ -17,7 +17,7 @@ var UserStore = class UserStore {
     }
 
     getAll() {
-        return this.db.findAsync({}).then(undefined, console.error);
+        return this.db.findAsync({}).then((d)=>d, console.error);
     }
     getOneByUserName(username,password) {
         return this.db.findOneAsync({username:username,password:password}).then((doc)=>{

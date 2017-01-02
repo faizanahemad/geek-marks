@@ -32,6 +32,7 @@ function createIframe() {
         iframe.src = chrome.runtime.getURL('frame.html');
         iframe.id = iframeId;
 
+        iframe.classList.add("iframe-bookmark-default");
         iframe.classList.add(getSiteSpecificStyle(location.host));
         document.body.appendChild(iframe);
     }

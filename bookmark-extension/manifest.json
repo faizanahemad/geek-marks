@@ -18,7 +18,6 @@
     "cookies",
     "history",
     "storage",
-    "cookies",
     "https://ajax.googleapis.com/",
     "https://localhost:8444/*",
     "https://localhost:8443/*",
@@ -79,6 +78,7 @@
       "lib/js/pouchdb.find.js",
       "js/config.js",
       "js/storage.js",
+      "js/chrome_storage.js",
       "js/background.js"]
   },
   "content_security_policy": "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'self'"

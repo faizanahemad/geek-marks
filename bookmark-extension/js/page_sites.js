@@ -94,7 +94,7 @@ function bootstrapGlyph() {
     document.head.appendChild(fa);
 }
 function youtubeTimeCapture() {
-    if(location.hostname==="www.youtube.com") {
+    if(location.hostname==="www.youtube.com" && location.pathname==="/watch") {
         cld.videoTime = cld.videoTime || [];
         bootstrapGlyph();
         var videoElem = document.getElementsByTagName("video")[0];

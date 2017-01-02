@@ -6,7 +6,9 @@ function getCookies(domain, name, callback) {
     });
 }
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
-    chrome.tabs.sendMessage(sender.tab.id, msg);
+    if(sender && sender.tab && sender.tab.id) {
+        chrome.tabs.sendMessage(sender.tab.id, msg);
+    }
     if (msg && msg.from ==="content_script" && msg.type==="bookmarks_query") {
         sendBookmarks(sendResponse);
         return true;
@@ -18,13 +20,36 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg && msg.from ==="login_extension_page" && msg.type==="login_info") {
         chrome.tabs.sendMessage(msg.id, msg);
     }
+    if(msg && msg.type==="domain_path_query") {
+        if(msg.url) {
+            sendResponse(getLocation(msg.url))
+        } else {
+            chrome.tabs.query({active:true,currentWindow: true,windowType:"normal"}, function(tabs){
+                sendResponse(getLocation(tabs[0].url));
+            });
+            return true;
+        }
+    }
     if(msg.type == "is_selected") {
-        chrome.tabs.query({active:true}, function(tabs){
+        chrome.tabs.query({active:true,currentWindow: true,windowType:"normal"}, function(tabs){
             sendResponse({active:tabs.some(tab=>tab.id == sender.tab.id)});
         });
         return true;
     }
 });
+
+function getLocation(href) {
+    var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
+    return match && {
+            protocol: match[1],
+            host: match[2],
+            hostname: match[3],
+            port: match[4],
+            pathname: match[5],
+            search: match[6],
+            hash: match[7]
+        }
+}
 
 
 function sendBookmarks(sendResponse) {
@@ -89,3 +114,27 @@ function addStorageListeners() {
     });
 }
 addStorageListeners();
+
+function storeDefaultGlobalsIfnotPresent() {
+    chromeStorage.getGlobalSettings().then(settings=>{
+        if(!settings) {
+            return chromeStorage.setGlobalSettings(globalSettings);
+        } else {
+            return settings;
+        }
+    })
+}
+storeDefaultGlobalsIfnotPresent();
+
+var defaultSites = ["youtube.com","geeksforgeeks.org","quiz.geeksforgeeks.org","stackoverflow.com","stackexchange.com"];
+function storeDefaultSiteSpecificSettings() {
+    defaultSites.forEach(ds=>{
+        chromeStorage.getSpecificSiteSettings(ds).then(item=>{
+            if(!item.present) {
+                var newItem = defaultSettingsMap[ds];
+                chromeStorage.setSpecificSiteSettings(ds,newItem)
+            }
+        })
+    })
+}
+storeDefaultSiteSpecificSettings();

@@ -76,12 +76,11 @@ module.exports = function(app) {
         var version =  req.body.version;
         var finalResult = syncStore.getChangedIds(userId,version).then(vdata=>{
             var changeIds = (new SortedSet(vdata.changeIds)).toArray();
-            var data = Promise.resolve([]);
+            var data = [];
             if(changeIds.length>0) {
                 data = store.getByIds(changeIds.toArray());
             }
-            var meta = Promise.resolve(vdata);
-            return Promise.join(data,meta);
+            return Promise.join(data,vdata);
         });
         var f3 = finalResult.then((data)=>{
             var meta = data[1];

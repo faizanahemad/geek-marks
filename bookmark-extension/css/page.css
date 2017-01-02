@@ -1,18 +1,8 @@
 iframe {
-    border-width: 0px;
-    border-style: inset;
-    border-color: initial;
-    border-image: initial;
-}
-
-.iframe-bookmark-youtube {
-    position: fixed;
-    right: 2px;
-    height: 570px;
-    display: block;
-    width: 360px;
-    z-index: 9999;
-    top: 90px;
+    border-width: initial !important;
+    border-style: none !important;
+    border-color: initial !important;
+    border-image: initial !important;
 }
 
 .iframe-bookmark-default {
@@ -23,6 +13,16 @@ iframe {
     width: 360px;
     z-index: 1000;
     top: 21px;
+}
+
+.iframe-bookmark-youtube {
+    position: fixed;
+    right: 2px;
+    height: 570px;
+    display: block;
+    width: 360px;
+    z-index: 9999;
+    top: 90px;
 }
 .iframe-bookmark-geeksforgeeks{
     position: fixed;
