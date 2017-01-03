@@ -55,7 +55,6 @@ var staticDirectory = __dirname + '/public';
     })
     var multer = require('multer'),
         bodyParser = require('body-parser');
-    app.use(multer());
     app.use(userSession.verifyLogin);
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
