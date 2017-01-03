@@ -1,4 +1,4 @@
-var serverUrl = "https://localhost:8444";
+var serverUrl = "https://139.162.25.64:8444";
 var healthUrl = "%server%/health".replace("%server%",serverUrl);
 var bookmarksUrl = "%server%/bookmarks".replace("%server%",serverUrl);
 var entryUrl = "%server%/bookmarks/entry".replace("%server%", serverUrl);
