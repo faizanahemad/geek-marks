@@ -35,3 +35,15 @@ String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
+function getQueryParam(name) {
+    var parameters = {};
+    var query = location.search.substring(1);
+    var keyValues = query.split(/&/);
+    keyValues.forEach(keyValue => {
+        var keyValuePairs = keyValue.split(/=/);
+        var key = keyValuePairs[0];
+        var value = keyValuePairs[1];
+        parameters[key] = value;
+    });
+    return parameters[name];
+}

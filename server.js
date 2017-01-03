@@ -52,11 +52,10 @@ var staticDirectory = __dirname + '/public';
         };
 
         next();
-    })
-    var multer = require('multer'),
-        bodyParser = require('body-parser');
-    app.use(userSession.verifyLogin);
+    });
+    var bodyParser = require('body-parser');
     app.use(bodyParser.json());
+    app.use(userSession.verifyLogin);
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(function(req, res, next) {
         req._startTime = new Date().getTime();

@@ -1,4 +1,4 @@
-function createLoginPage(tabid,loginApi) {
+function createLoginPage(tabid,loginApi,signUpUrl,signUpApi) {
     var iframeId = "extension-login-iframe";
     if (document.getElementById(iframeId)) {
         document.getElementById(iframeId).remove();
@@ -8,12 +8,16 @@ function createLoginPage(tabid,loginApi) {
     if (!location.ancestorOrigins.contains(extensionOrigin)) {
         // Must be declared at web_accessible_resources in manifest.json
         var src = chrome.runtime.getURL('extension-login.html');
-        return window.open(src+"?tab="+tabid + "&loginApi="+loginApi, "_blank");
+        return window.open(src+"?tab="+tabid + "&loginApi="+loginApi + "&signUpUrl="+signUpUrl + "&signUpApi" + signUpApi, "_blank");
     }
 }
 
-function popOpen(tabid,loginApi) {
-    var popup_window = createLoginPage(tabid,loginApi);
+function openRemoteLoginPage(tabid,loginApi,signUpUrl,signUpApi) {
+    return window.open(externalLogin+"?tab="+tabid + "&loginApi="+loginApi + "&signUpUrl="+signUpUrl + "&signUpApi=" + signUpApi, "_blank");
+}
+
+function popOpen(tabid,loginApi,signUpUrl,signUpApi) {
+    var popup_window = openRemoteLoginPage(tabid,loginApi,signUpUrl,signUpApi);
     try {
         popup_window.focus();
     }
@@ -32,14 +36,14 @@ function bookmark() {
     }).then(id=>{
         superagent.getAsync(serverUrl + "/check_login").then((res)=> {
             if (res.status === 401) {
-                popOpen(id,loginApi);
+                popOpen(id,loginApi,signUpUrl,signUpApi);
                 return Promise.reject();
             } else if (res.status === 200) {
                 init();
             }
         }).catch((err)=> {
             console.log(err);
-            popOpen(id,loginApi);
+            popOpen(id,loginApi,signUpUrl,signUpApi);
         });
     });
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {

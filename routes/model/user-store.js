@@ -24,9 +24,18 @@ var UserStore = class UserStore {
             if (doc){
                 return Promise.resolve(doc)
             } else {
-                return Promise.reject()
+                return this.db.findOneAsync({username:username}).then((doc)=>{
+                    if(doc) {
+                        return Promise.reject({error:"Incorrect Password!"})
+                    } else {
+                        return Promise.reject({error:"User doesn't exist!"})
+                    }
+                });
             }
-        }, console.error);
+        }, (err)=>{
+            console.error(err);
+            return Promise.reject({error:"Server Error."});
+        });
     }
     getOneByEmail(email,password) {
         return this.db.findOneAsync({email:email,password:password}).then((doc)=>{
@@ -47,7 +56,7 @@ var UserStore = class UserStore {
                 if (doc) {
                     console.error("User Already Exists");
                     console.error(entry);
-                    Promise.reject("User Already Exists");
+                    return Promise.reject("User Already Exists");
                 } else {
                     return self.db.insertAsync(entry)
                 }
@@ -55,7 +64,7 @@ var UserStore = class UserStore {
         } else {
             console.error("Cannot insert user");
             console.error(entry);
-            Promise.reject("Insufficient data for User Creation");
+            return Promise.reject("Insufficient data for User Creation");
         }
     }
 

@@ -1,6 +1,7 @@
 ### TODO (Features)
 - Offline JS
-- Sign Up page, dev mode, forgot password on login page
+- Bug on github clone link
+- dev mode, forgot password on login page
 - Migrate to PouchDB
 - Active conditions - match path
 - enable disable sync/online storage, default link color

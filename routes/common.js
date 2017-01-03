@@ -15,7 +15,7 @@ module.exports = function(app) {
     });
 
     app.get("/health",function (req, res, next) {
-        res.send(204);
+        res.sendStatus(204);
     });
     // other common routes except the ones specified above should go in separate files in common folder
 };

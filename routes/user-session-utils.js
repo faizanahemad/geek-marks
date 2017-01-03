@@ -7,12 +7,16 @@ function doCreate(req, res, next) {
     var creds = req.body;
     if (creds.username && creds.email && creds.password) {
         creds.password = getSHA512ofJSON(creds.password);
-        users.insertUser(creds).then((user)=>{
-            setSession(req, res, user._id);
-            res.redirect(loginConfig.loginSuccessRedirect);
-        },()=>res.redirect(config.loginConfig.loginFailureRedirect));
+        var userCreatePromise =  users.insertUser(creds)
+            .then((user)=> {
+                setSession(req, res, user._id);
+                res.send({});
+            }, (msg)=> {
+                return Promise.reject({error: msg})
+            });
+        res.promise(userCreatePromise);
     } else {
-        res.redirect(config.loginConfig.loginFailureRedirect);
+        res.promise(Promise.reject({error: "Insufficient data for User Creation"}));
     }
 
 }
@@ -26,12 +30,12 @@ function doLoginPromise(req, res, next) {
             return {};
         });
     } else if (creds.email && creds.password) {
-        return users.getOneByUserName(creds.email, creds.password).then((user)=>{
+        return users.getOneByEmail(creds.email, creds.password).then((user)=>{
             setSession(req, res, user._id);
             return {};
         })
     } else {
-        return Promise.reject({})
+        return Promise.reject({error:"Provide both username and password for login"})
     }
 }
 

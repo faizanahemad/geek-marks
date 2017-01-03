@@ -1,16 +1,19 @@
 var serverUrl = "https://139.162.25.64:8444";
 var healthUrl = "%server%/health".replace("%server%",serverUrl);
+var externalLogin = "%server%/extension-login.html".replace("%server%",serverUrl);
 var bookmarksUrl = "%server%/bookmarks".replace("%server%",serverUrl);
 var entryUrl = "%server%/bookmarks/entry".replace("%server%", serverUrl);
 var tagsUrl = "%server%/bookmarks/tags".replace("%server%", serverUrl);
 var browsePageUrl = "%server%/browse.html".replace("%server%", serverUrl);
 var syncUrl = "%server%/bookmarks/sync".replace("%server%", serverUrl);
+var signUpApi = "%server%/create".replace("%server%", serverUrl);
+var signUpUrl = "%server%/signup.html".replace("%server%", serverUrl);
 var getVisitUrl = function (id) {
     return "%server%/bookmarks/visit/%id%".replace("%server%", serverUrl).replace("%id%",id);
 };
 var getDeleteUrl = function (id) {
     return "%server%/bookmarks/entry/%id%".replace("%server%", serverUrl).replace("%id%",id);
-}
+};
 var dbName = "history.db";
 
 var globalSettings = {

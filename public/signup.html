@@ -6,39 +6,40 @@
     <script src="lib/js/bluebird.min.js" rel="script"></script>
     <script src="lib/js/superagent.min.js" rel="script"></script>
     <script src="js/common.js"></script>
-    <title>Login</title>
+    <title>SignUp</title>
 </head>
 <body data-spy="scroll" data-target=".navspy" data-twttr-rendered="true" data-offset="180">
 <div class="container loginDiv">
     <div class="col-md-3"></div>
     <div class="col-md-6 loginInnerDiv"><h3 class="pull-center">Use Your Credentials</h3>
         <div class="row">
-            <form id="loginForm" class="form-horizontal">
+            <div id="loginForm" class="form-horizontal">
                 <div class="col-md-3"></div>
                 <div class="col-md-6">
-                    <div class="form-group"><input id="username" minlength="6" type="text" name="username"
+                    <div id="action-area"></div>
+                    <div class="form-group"><input id="username" minlength="6" type="text"
+                                                   name="username"
                                                    autofocus="autofocus" placeholder="Username"
                                                    required="" class="form-control"></div>
-                    <div class="form-group"><input id="password" minlength="8" type="password" name="password"
+                    <div class="form-group"><input id="email" type="email"
+                                                   name="email"
+                                                   placeholder="Email" required=""
+                                                   class="form-control"></div>
+                    <div class="form-group"><input id="password" minlength="8" type="password"
+                                                   name="password"
                                                    placeholder="Password" required=""
                                                    class="form-control"></div>
                     <div class="form-group">
-                        <button type="submit" class="btn submit pull-right"><b>&nbsp;Log
-                            in&nbsp;</b></button>
-                        <div class="pull-left">
-                            <a href="" id="sign-up-link" target="_blank">signup</a>
-                            <span>&nbsp;|&nbsp;</span>
-                            <a href="" target="_blank">forgot password?</a>
-                        </div>
-
+                        <a id="submit-button" class="btn submit pull-right"><b>&nbsp;Sign Up&nbsp;</b></a>
                     </div>
+                    <span class="lead pull-center"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;&nbsp;Close page after signup</span>
                 </div>
                 <div class="col-md-3"></div>
-            </form>
+            </div>
         </div>
     </div>
     <div class="col-md-3"><span></span></div>
 </div>
-<script src="js/extension-login.js" rel="script"></script>
+<script src="js/signup.js" rel="script"></script>
 </body>
 </html>

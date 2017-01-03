@@ -16,7 +16,7 @@
     "loginSuccessRedirect": "/browse.html",
     "loginFailureRedirect": "/login.html",
     "loginPage": "login/login_app",
-    "noLoginPathStartPathList":["/login","/health","/login.html","/extension-login.html","/create","/js","/css","/check_login"],
+    "noLoginPathStartPathList":["/login","/health","/login.html","/signup.html","/extension-login.html","/create","/js","/css","/check_login"],
     "noLoginExactMatch":[]
   }
 }

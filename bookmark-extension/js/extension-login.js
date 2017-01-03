@@ -26,6 +26,10 @@ function login() {
             }
         });
 };
+
+var signupLink = document.getElementById("sign-up-link");
+signupLink.href = getQueryParam("signUpUrl") + "?signUpApi=" + getQueryParam("signUpApi");
+
 var form = document.getElementById("loginForm");
 form.onsubmit = login;
 
