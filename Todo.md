@@ -1,6 +1,8 @@
 ### TODO (Features)
-- Sign Up page, Topcoder etc support, dev mode, forgot password on login page
-- Active conditions - match href, match path, match domain (regex matchers)
+- Offline JS
+- Sign Up page, dev mode, forgot password on login page
+- Migrate to PouchDB
+- Active conditions - match path
 - enable disable sync/online storage, default link color
 - All Urls in one place
 - Handle runtime.lastError where possible in chrome.* apis

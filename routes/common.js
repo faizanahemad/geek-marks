@@ -14,10 +14,8 @@ module.exports = function(app) {
         res.redirect('/');
     });
 
-    app.get("/bookmarksapp.manifest", function(req, res){
-        res.header("Content-Type", "text/cache-manifest");
-        res.sendFile("public/bookmarksapp.manifest");
-        res.end();
+    app.get("/health",function (req, res, next) {
+        res.send(204);
     });
     // other common routes except the ones specified above should go in separate files in common folder
 };

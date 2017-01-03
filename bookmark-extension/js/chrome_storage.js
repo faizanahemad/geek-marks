@@ -26,7 +26,7 @@ var ChromeStorage = class ChromeStorage {
         var settings = {};
         storeItem["settings"] = settings;
         if(item.settings.enabled===undefined || item.settings.enabled==null) {
-            settings.enabled = globalSettings.settings.enabled;
+            settings.enabled = false;
         } else {
             settings.enabled = item.settings.enabled
         }

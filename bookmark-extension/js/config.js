@@ -1,4 +1,5 @@
 var serverUrl = "https://localhost:8444";
+var healthUrl = "%server%/health".replace("%server%",serverUrl);
 var bookmarksUrl = "%server%/bookmarks".replace("%server%",serverUrl);
 var entryUrl = "%server%/bookmarks/entry".replace("%server%", serverUrl);
 var tagsUrl = "%server%/bookmarks/tags".replace("%server%", serverUrl);
@@ -29,7 +30,7 @@ var globalSettings = {
             "contains":false,
             "value":""
         },
-        "bookmarks":true,
+        "bookmarks":false,
         "notes":false
     }
 };
@@ -47,7 +48,7 @@ var defaultSettingsMap = {
             "width":400
         },
         "settings":{
-            "enabled":true,
+            "enabled":false,
             "show_on_load":false,
             "path":{
                 "startsWith":true,
@@ -57,7 +58,7 @@ var defaultSettingsMap = {
                 "value":"/watch"
             },
             "bookmarks":true,
-            "notes":true
+            "notes":false
         }
     },
     "quiz.geeksforgeeks.org":{
@@ -110,7 +111,7 @@ var defaultSettingsMap = {
             "width":400
         },
         "settings":{
-            "enabled":true,
+            "enabled":false,
             "show_on_load":true,
             "path":{
                 "startsWith":false,
@@ -131,7 +132,7 @@ var defaultSettingsMap = {
             "width":400
         },
         "settings":{
-            "enabled":true,
+            "enabled":false,
             "show_on_load":true,
             "path":{
                 "startsWith":false,

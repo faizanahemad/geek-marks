@@ -41,7 +41,7 @@ function bookmark() {
             console.log(err);
             popOpen(id,loginApi);
         });
-    })
+    });
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         if (msg.from === 'login_extension_page' && msg.type == 'login_info' && msg.login) {
             init();
@@ -50,6 +50,12 @@ function bookmark() {
 }
 chromeStorage.getCombinedSettings().then(data=>{
     if(data.settings.enabled) {
-        bookmark();
+        if(Offline.state) {
+            bookmark();
+        }
+        if(data.settings.notes) {
+            Offline.options = {checks: {xhr: {url: healthUrl}}};
+            Offline.check();
+        }
     }
 })
