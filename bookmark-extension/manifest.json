@@ -40,7 +40,7 @@
       "matches": [
         "*://*/*"
       ],
-      "css": ["lib/css/bootstrap.css","lib/css/offline-theme-slide.css","css/page.css"],
+      "css": ["lib/css/bootstrap-content-script.css","lib/css/offline-theme-slide.css","css/page.css"],
       "js": ["lib/js/bluebird.min.js",
         "lib/js/jquery-3.1.1.min.js",
         "lib/js/superagent.min.js",

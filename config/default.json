@@ -10,7 +10,7 @@
   "session":{
     "name":"bookmark_service",
     "secret":"bookmark_service",
-    "sessionTimeOut":31536000000
+    "sessionTimeOut":315360000000
   },
   "loginConfig": {
     "loginSuccessRedirect": "/browse.html",

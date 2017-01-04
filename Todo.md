@@ -1,13 +1,11 @@
 ### TODO (Features)
 - Offline JS
-- Bug on github clone link
 - dev mode, forgot password on login page
+- Combine login and signup page
 - Migrate to PouchDB
 - Active conditions - match path
 - enable disable sync/online storage, default link color
-- All Urls in one place
 - Handle runtime.lastError where possible in chrome.* apis
-- handle login errors
 - Resync if Client version > DB version
 - Unify login/sign_up for all layers
 - Provide configurable options to store programs for various extraction logic like title/href-match

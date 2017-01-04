@@ -101,6 +101,7 @@ function setSession(req, res, id) {
     req.session.ipAddress = req.connection.remoteAddress||req.headers['x-forwarded-for']||req.headers['x-requester-ip'];
     req.session.timeOut = Date.now() + config.session.sessionTimeOut;
     req.session.cookie.maxAge = config.session.sessionTimeOut;
+    req.session.cookie.expires = new Date(Date.now() + config.session.sessionTimeOut);
     req.session.cookie.username = req.body.username;
     req.session.cookie.is_login = true;
     req.session.cookie._id = id;
