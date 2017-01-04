@@ -56,19 +56,6 @@ function getTitle() {
     return title;
 
 }
-function getSiteSpecificStyle(host) {
-    if (host.indexOf("youtube")>-1) {
-        return "iframe-bookmark-youtube";
-    } else if (host.indexOf("geeksforgeeks")>-1) {
-        return "iframe-bookmark-geeksforgeeks";
-    } else if (host.indexOf("stackoverflow")>-1) {
-        return "iframe-bookmark-stackoverflow";
-    } else if (host.indexOf("stackexchange")>-1) {
-        return "iframe-bookmark-stackexchange";
-    }
-    return "iframe-bookmark-default"
-}
-
 
 function bootstrapGlyph() {
     var fa = document.createElement('style');
@@ -129,15 +116,12 @@ function youtubeTimeCapture() {
             tcapArea.remove();
         }
 
-        function timerUpdate() {
+        function timerUpdate(timer,description) {
             var updater = setInterval(()=>{
-                var timer = document.getElementById("time-capture-timer-input");
-                if(timer !== document.activeElement) {
+                if(timer !== document.activeElement && description !==document.activeElement) {
                     timer.value = convertSecondsToMinute(videoElem.currentTime).stringRepresentation
                 }
-            },1000);
-            var timer = document.getElementById("time-capture-timer-input");
-
+            },500);
             timer.onchange = (e)=>{
                 clearInterval(updater);
             };
@@ -181,7 +165,9 @@ function youtubeTimeCapture() {
         }
         htmlContainer.appendChild(addTimerRow);
         container.prepend(htmlContainer);
-        timerUpdate();
+        var timer = document.getElementById("time-capture-timer-input");
+        var description = document.getElementById("time-capture-description-input");
+        timerUpdate(timer,description);
     }
 }
 

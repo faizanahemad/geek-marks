@@ -14,16 +14,6 @@ iframe {
     z-index: 1000;
     top: 21px;
 }
-
-.iframe-bookmark-youtube {
-    position: fixed;
-    right: 2px;
-    height: 570px;
-    display: block;
-    width: 360px;
-    z-index: 9999;
-    top: 90px;
-}
 .iframe-bookmark-geeksforgeeks{
     position: fixed;
     right: 21px;
@@ -33,16 +23,6 @@ iframe {
     z-index: 1000;
     top: 21px;
 }
-.iframe-bookmark-stackoverflow, .iframe-bookmark-stackexchange{
-    position: fixed;
-    right: 21px;
-    height: 600px;
-    display: block;
-    width: 400px;
-    z-index: 1000;
-    top: 21px;
-}
-
 .youtube-time-cature-display {
     padding:2px 5px 2px 5px;
     border: 1px rgba(0, 0, 0, 0.16) solid;
