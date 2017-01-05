@@ -31,20 +31,13 @@ var superagent = Promise.promisifyAll(superagent);
 function bookmark() {
     window.loginUrl = serverUrl + "/login";
     var loginApi = serverUrl + "/login_api";
-    sendMessage({from:"content_script",type:"tab_id_query"}).then(msg=>{
-        return msg.id
-    }).then(id=>{
-        superagent.getAsync(serverUrl + "/check_login").then((res)=> {
-            if (res.status === 401) {
-                popOpen(id,loginApi,signUpUrl,signUpApi);
-                return Promise.reject();
-            } else if (res.status === 200) {
-                init();
-            }
-        }).catch((err)=> {
-            console.log(err);
+    sendMessage({from:"content_script",type:"check_login"}).then(msg=>{
+        var id = msg.id;
+        if(msg.login) {
+            init();
+        } else {
             popOpen(id,loginApi,signUpUrl,signUpApi);
-        });
+        }
     });
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         if (msg.from === 'login_extension_page' && msg.type == 'login_info' && msg.login) {

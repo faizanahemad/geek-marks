@@ -92,10 +92,12 @@ var ChromeStorage = class ChromeStorage {
         var self = this;
         return new Promise(function (resolve, reject) {
             try {
-                return self.db.get(key,(result)=>{
-                    if(chrome.runtime.lastError) {
-                        reject(chrome.runtime.lastError);
-                        return false;
+                return self.db.get(key,function (result) {
+                    if(chrome.runtime.lastError || chrome.extension.lastError) {
+                        var error = chrome.runtime.lastError || chrome.extension.lastError;
+                        console.log("Error in Chrome Storage get");
+                        console.log(error);
+                        resolve(false);
                     }
                     resolve(result)
                 })
@@ -120,13 +122,12 @@ var ChromeStorage = class ChromeStorage {
 
     getGlobalSettings() {
         var self = this;
-        return self.get(self.globalKey).then(data=>{
-            data = data||{};
+        return self.get(self.globalKey).then(data=> {
+            data = data || {};
             return data[self.globalKey]
+        }).then((data)=> {
+            return self._transformForView(data)
         })
-            .then((data)=>{
-                return self._transformForView(data)
-            })
     }
 
     getSpecificSiteSettings(domain) {

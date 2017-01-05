@@ -66,7 +66,9 @@ module.exports = function(app) {
     app.delete('/entry/:entryId', function(req, res, next) {
         var userId = req.session.user_id;
         var storeRemove = store.remove(req.params.entryId, userId).then(id=>{
-            syncStore.logChange(userId,[id],-1)
+            if(id) {
+                syncStore.logChange(userId,[id],-1)
+            }
         });
         res.promise(storeRemove);
     });

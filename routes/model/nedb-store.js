@@ -139,7 +139,7 @@ var NedbStore = class NedbStore {
         }
         return this.db.removeAsync(query, { multi: true }).then((numRemoved)=>{
             if (numRemoved==0) {
-                return Promise.reject("No such entry exists");
+                return Promise.resolve();
             } else {
                 return id;
             }

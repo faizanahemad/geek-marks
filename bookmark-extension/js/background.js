@@ -17,6 +17,15 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         sendResponse({from:"background_page",type:"tab_id_response",id:sender.tab.id});
         return true;
     }
+    if (msg && msg.from ==="content_script" && msg.type==="check_login") {
+        var loginPromise = superagent.getTimed(checkLoginUrl,1000);
+        loginPromise.then(()=>{
+            sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:true});
+        },()=>{
+            sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:false});
+        });
+        return true;
+    }
     if (msg && msg.from ==="login_extension_page" && msg.type==="login_info") {
         chrome.tabs.sendMessage(msg.id, msg);
     }

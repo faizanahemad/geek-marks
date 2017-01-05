@@ -121,12 +121,6 @@ input {
     line-height: normal;
 }
 input[type="checkbox"],
-input[type="radio"] {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 0;
-}
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     height: auto;
@@ -1042,13 +1036,13 @@ th {
 .glyphicon-menu-up:before {
     content: "\e260";
 }
-* {
+.row,.col-md-1,.col-md-5,.col-md-2,.form-group,.form-control {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-*:before,
-*:after {
+.row,.col-md-1,.col-md-5,.col-md-2,.form-group,.form-control:before,
+.row,.col-md-1,.col-md-5,.col-md-2,.form-group,.form-control:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -1427,27 +1421,6 @@ pre code {
 .pre-scrollable {
     max-height: 340px;
     overflow-y: scroll;
-}
-.container {
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
-}
-@media (min-width: 768px) {
-    .container {
-        width: 750px;
-    }
-}
-@media (min-width: 992px) {
-    .container {
-        width: 970px;
-    }
-}
-@media (min-width: 1200px) {
-    .container {
-        width: 1170px;
-    }
 }
 .container-fluid {
     padding-right: 15px;
@@ -2112,11 +2085,6 @@ label {
     max-width: 100%;
     margin-bottom: 5px;
     font-weight: bold;
-}
-input[type="search"] {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
 }
 input[type="radio"],
 input[type="checkbox"] {
@@ -4933,36 +4901,6 @@ button.close {
 }
 @media (min-width: 992px) and (max-width: 1199px) {
     .visible-md-inline-block {
-        display: inline-block !important;
-    }
-}
-@media (min-width: 1200px) {
-    .visible-lg {
-        display: block !important;
-    }
-    table.visible-lg {
-        display: table !important;
-    }
-    tr.visible-lg {
-        display: table-row !important;
-    }
-    th.visible-lg,
-    td.visible-lg {
-        display: table-cell !important;
-    }
-}
-@media (min-width: 1200px) {
-    .visible-lg-block {
-        display: block !important;
-    }
-}
-@media (min-width: 1200px) {
-    .visible-lg-inline {
-        display: inline !important;
-    }
-}
-@media (min-width: 1200px) {
-    .visible-lg-inline-block {
         display: inline-block !important;
     }
 }

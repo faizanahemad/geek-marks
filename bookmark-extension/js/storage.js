@@ -1,4 +1,18 @@
 var superagent = Promise.promisifyAll(superagent);
+superagent.getTimed = function (url, time) {
+    var loginPromise = new Promise(function (resolve, reject) {
+        var timer = setTimeout(()=>reject(),time);
+        superagent.getAsync(url).then((res)=>{
+            clearTimeout(timer);
+            if (res.status >= 200 && res.status <= 210) {
+                resolve(res);
+            } else {
+                reject(res)
+            }
+        },(err)=>reject(err));
+    });
+    return loginPromise;
+}
 var postInput = function postInput(data) {
     var storageData = $.extend(true, {}, data);
 
