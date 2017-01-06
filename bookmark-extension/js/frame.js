@@ -88,6 +88,12 @@ function changeStyle(style) {
     render();
 }
 
+function updateStorage() {
+    storage.insertOrUpdateEntry(displayData).then(doc=>{
+        $.extend(displayData,doc);
+        initialiseDifficultyButton()
+    });
+}
 function initialiseDifficultyButton() {
     $("#difficulty-input").rating({
                                       min: 0,
@@ -102,20 +108,20 @@ function initialiseDifficultyButton() {
     $('#difficulty-input').rating('update', displayData.difficulty);
     $('#difficulty-input').on('rating.change', function (event, value, caption) {
         displayData.difficulty = parseInt(value);
-        storage.insertOrUpdateEntry(displayData);
+        updateStorage();
     });
 }
 
 function saveNoteText(simplemde) {
     var newNoteText = simplemde.value();
     displayData.note = newNoteText;
-    storage.insertOrUpdateEntry(displayData);
+    updateStorage();
 }
 
 function markAsUseless() {
     var useless = this.checked;
     displayData.useless = useless;
-    storage.insertOrUpdateEntry(displayData);
+    updateStorage();
 }
 
 
@@ -126,11 +132,11 @@ function renderTags() {
         duplicateTagClass: 'bounce',
         onTagAdd: function (event, tag) {
             displayData.tags.push(tag);
-            storage.insertOrUpdateEntry(displayData);
+            updateStorage();
         },
         onTagRemove: function (event, tag) {
             displayData.tags = displayData.tags.filter(item => item !== tag);
-            storage.insertOrUpdateEntry(displayData);
+            updateStorage();
         }
     });
     storage.getAllTags().then(tags=> {

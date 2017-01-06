@@ -165,17 +165,18 @@ var Storage = class Storage {
         return self.db.get(entry._id).then(localDoc=>{
             if (localDoc) {
                 entry._rev = localDoc._rev;
-                return self.db.put(entry);
+                // refetching the document after put since put only returns id
+                return self.db.put(entry).then((data)=>self.db.get(data.id));
             } else {
-                return self.db.put(entry);
+                return self.db.put(entry).then((data)=>self.db.get(data.id));
             }
-        },()=>self.db.put(entry))
+        },()=>self.db.put(entry).then((data)=>self.db.get(data.id)))
     }
 
     insertOrUpdateEntry(entry, userId) {
         var self = this;
         return postInput(entry).then(doc=>{
-            return self._insertOrUpdateEntry(doc)
+            return self._insertOrUpdateEntry(doc);
         },console.error)
     }
 

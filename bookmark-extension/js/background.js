@@ -108,7 +108,9 @@ function addStorageListeners() {
                     storage.getAllTags(msg.userId).then(docs=>sendResponse(docs));
                     break;
                 case "insert_or_update":
-                    storage.insertOrUpdateEntry(msg.entry,msg.userId).then(docs=>sendResponse(docs));
+                    storage.insertOrUpdateEntry(msg.entry,msg.userId).then(docs=>{
+                        sendResponse(docs)
+                    });
                     break;
                 case "remove":
                     storage.remove(msg.id,msg.userId).then(docs=>sendResponse(docs));

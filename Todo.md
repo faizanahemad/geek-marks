@@ -1,6 +1,5 @@
 ### TODO (Features)
 - Offline JS
-- Only Email - no username, unite login and signup page , if user not present then signup else attempt login.
 - Youtube video - use a default difficulty/rating
 - Rename difficulty to rating
 - Default styles not picked up on selected sites
