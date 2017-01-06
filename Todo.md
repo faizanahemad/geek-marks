@@ -55,6 +55,7 @@
 - http://stackoverflow.com/questions/19288202/inject-javascript-in-an-iframe-using-chrome-extension
 - http://stackoverflow.com/questions/9457700/chrome-extension-not-injecting-javascript-into-iframe
 - http://stackoverflow.com/questions/9602022/chrome-extension-retrieving-gmails-original-message
+- http://codepen.io/tommywang/pen/rVLBbq
 
 ### Annotations
 - http://www.annotationstudio.org/
