@@ -79,9 +79,8 @@ function mergeUserRecord(oldRecord, newRecord) {
     var record = {};
     if (oldRecord && newRecord) {
         record = {
-            "username":oldRecord.username,
             "password":newRecord.password||oldRecord.password,
-            "email":newRecord.email||oldRecord.email
+            "email":newRecord.email
         };
         return record;
     } else if (oldRecord) {

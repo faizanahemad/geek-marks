@@ -15,7 +15,6 @@ var certificate = fs.readFileSync('localhost.cert', 'utf8');
 
 var credentials = {key: privateKey, cert: certificate};
 
-// your express configuration here
 
 
 var app = express();

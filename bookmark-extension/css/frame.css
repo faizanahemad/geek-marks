@@ -26,7 +26,7 @@
 .taggle_input {
     border: none;
     outline: none;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 300;
 }
 
@@ -41,7 +41,7 @@
 .taggle_list .taggle {
     margin-right: 8px;
     background: #E2E1DF;
-    padding: 5px 10px;
+    padding: 2px 8px;
     border-radius: 3px;
     position: relative;
     cursor: pointer;
@@ -71,8 +71,8 @@
 }
 
 .taggle_list .taggle:hover {
-    padding: 5px;
-    padding-right: 25px;
+    padding: 2px;
+    padding-right: 20px;
     background: #ccc;
     transition: all .2s;
 }
@@ -80,7 +80,7 @@
 .taggle_list .taggle:hover > .close {
     display: inline;
     margin-top:6px;
-    margin-left:5px;
+    margin-left:4px;
 }
 
 .taggle_list .taggle .close:hover {
@@ -95,12 +95,14 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    margin-top: 2px;
+    margin-left: 4px;
 }
 
 .taggle_input {
     padding: 4px;
     float: left;
-    margin-top: -5px;
+    margin-top: -3px;
     background: none;
     width: 100%;
     max-width: 100%;
@@ -113,6 +115,11 @@
     top: -500px;
     z-index: -1;
     visibility: hidden;
+}
+
+#tag-id {
+    padding: 2px;
+    height: 30px;
 }
 
 .panel-default {

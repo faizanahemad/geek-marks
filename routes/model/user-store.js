@@ -12,23 +12,26 @@ var UserStore = class UserStore {
         Promise.promisifyAll(this.db);
         this.db.persistence.compactDatafile();
         this.db.persistence.setAutocompactionInterval(utils.minsToMilliseconds(5));
-        this.db.ensureIndex({fieldName: 'username', unique: true});
         this.db.ensureIndex({fieldName: 'email', unique: true});
     }
 
     getAll() {
         return this.db.findAsync({}).then((d)=>d, console.error);
     }
-    getOneByUserName(username,password) {
-        return this.db.findOneAsync({username:username,password:password}).then((doc)=>{
+    getOrCreateOneByEmail(email, password) {
+        var self = this;
+        return this.db.findOneAsync({email:email,password:password}).then((doc)=>{
             if (doc){
                 return Promise.resolve(doc)
             } else {
-                return this.db.findOneAsync({username:username}).then((doc)=>{
+                return this.db.findOneAsync({email:email}).then((doc)=>{
                     if(doc) {
                         return Promise.reject({error:"Incorrect Password!"})
                     } else {
-                        return Promise.reject({error:"User doesn't exist!"})
+                        return self.insertUser({email:email,password:password}).then((user)=>{
+                            user.created = true;
+                            return user;
+                        })
                     }
                 });
             }
@@ -37,21 +40,32 @@ var UserStore = class UserStore {
             return Promise.reject({error:"Server Error."});
         });
     }
-    getOneByEmail(email,password) {
+
+    getOneByEmail(email, password) {
+        var self = this;
         return this.db.findOneAsync({email:email,password:password}).then((doc)=>{
             if (doc){
                 return Promise.resolve(doc)
             } else {
-                return Promise.reject()
+                return this.db.findOneAsync({email:email}).then((doc)=>{
+                    if(doc) {
+                        return Promise.reject({error:"Incorrect Password!"})
+                    } else {
+                        return Promise.reject({error:"Both email and username needed"})
+                    }
+                });
             }
-        }, console.error);
+        }, (err)=>{
+            console.error(err);
+            return Promise.reject({error:"Server Error."});
+        });
     }
 
     insertUser(entry) {
         var self = this;
         var query = {};
-        if (entry.username && entry.email && entry.password) {
-            query = {username: entry.username};
+        if (entry.email && entry.password) {
+            query = {email: entry.email};
             return this.db.findOneAsync(query).then((doc)=> {
                 if (doc) {
                     console.error("User Already Exists");
@@ -72,8 +86,8 @@ var UserStore = class UserStore {
         var newEntryToStore = entry;
         var self = this;
         var query = {};
-        if (entry.username) {
-            query = {username: entry.username};
+        if (entry.email) {
+            query = {email: entry.email};
             return this.db.findOneAsync(query).then((doc)=> {
                 if (doc) {
                     newEntryToStore = utils.mergeUserRecord(doc, entry);
@@ -85,7 +99,7 @@ var UserStore = class UserStore {
         } else {
             console.error("Cannot update/insert entry");
             console.error(entry);
-            return Promise.reject("UserName not specified")
+            return Promise.reject("Email not specified")
         }
     }
 };

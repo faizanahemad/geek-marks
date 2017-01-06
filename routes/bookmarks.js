@@ -76,17 +76,24 @@ module.exports = function(app) {
     app.post('/sync', function(req, res, next) {
         var userId = req.session.user_id;
         var version =  req.body.version;
-        var finalResult = syncStore.getChangedIds(userId,version).then(vdata=>{
-            var changeIds = (new SortedSet(vdata.changeIds)).toArray();
-            var data = [];
-            if(changeIds.length>0) {
-                data = store.getByIds(changeIds.toArray());
-            }
-            return Promise.join(data,vdata);
+
+        var finalResult = syncStore.reconcile(userId,version).then(()=>{
+            return syncStore.getChangedIds(userId,version).then(vdata=>{
+                var changeIds = (new SortedSet(vdata.changeIds)).toArray();
+                var data = [];
+                var length = vdata.total;
+                if(changeIds.length>0) {
+                    data = store.getByIds(changeIds.toArray());
+                    length = store.getAllCount(userId)
+                }
+                return Promise.join(data,vdata,length);
+            });
         });
         var f3 = finalResult.then((data)=>{
             var meta = data[1];
-            data = data[0]
+            var length = data[2];
+            data = data[0];
+
             var cIdsSet = new SortedSet(meta.changeIds);
             var deleted = cIdsSet.difference(data.map(d=>d._id));
             return {
@@ -96,7 +103,7 @@ module.exports = function(app) {
                 clientVersion:version,
                 changeIds:meta.changeIds,
                 hasNext:meta.hasNext,
-                total:meta.total
+                total:length
             }
         });
         res.promise(f3);

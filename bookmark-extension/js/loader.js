@@ -17,7 +17,7 @@ function openRemoteLoginPage(tabid,loginApi,signUpUrl,signUpApi) {
 }
 
 function popOpen(tabid,loginApi,signUpUrl,signUpApi) {
-    var popup_window = openRemoteLoginPage(tabid,loginApi,signUpUrl,signUpApi);
+    var popup_window = createLoginPage(tabid,loginApi,signUpUrl,signUpApi);
     try {
         popup_window.focus();
     }

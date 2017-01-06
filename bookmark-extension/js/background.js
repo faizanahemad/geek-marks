@@ -29,6 +29,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg && msg.from ==="login_extension_page" && msg.type==="login_info") {
         chrome.tabs.sendMessage(msg.id, msg);
     }
+    if (msg && msg.from ==="login_extension_page" && msg.type==="sync_request") {
+        backgroundSync();
+    }
     if(msg && msg.type==="domain_path_query") {
         if(msg.url) {
             sendResponse(getLocation(msg.url))
@@ -80,15 +83,16 @@ function accumulateBookmarks(root, accumulator) {
 }
 
 var storage = new Storage(dbName);
-function syncCallback() {
+
+function backgroundSync() {
     getCookies(serverUrl,"_id",(userId)=>{
         sync(userId,storage);
     });
+}
+function syncCallback() {
+    backgroundSync();
     setInterval(()=>{
-        getCookies(serverUrl,"_id",(userId)=>{
-            sync(userId,storage);
-        });
-
+        backgroundSync();
     },60000);
 }
 syncCallback();

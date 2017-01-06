@@ -1,7 +1,6 @@
 ### TODO (Features)
 - Offline JS
 - Only Email - no username, unite login and signup page , if user not present then signup else attempt login.
-- Show a "you can close this page now. Refresh the previous page"
 - Youtube video - use a default difficulty/rating
 - Rename difficulty to rating
 - Default styles not picked up on selected sites
@@ -9,7 +8,6 @@
 - Secure send password over http by hashing
 - Fix logout issues by migrating to a persist store for sessions
 - dev mode, forgot password on login page
-- Combine login and signup page
 - Migrate to PouchDB
 - Active conditions - match path
 - enable disable sync/online storage, default link color

@@ -48,7 +48,12 @@ function reconcile(userId, storage, total) {
             return Promise.reject(false);
     }).then(undefined,(err)=>{
         console.error(err);
-        return storage.setDbVersion(0,userId)
+        var removerPromise = storage.getAll(userId)
+            .then(docs=>{
+                return docs.map(d=>d._id)
+            })
+            .then(ids=>Promise.all(ids.map(id=>storage.removeLocal(id, userId))));
+        return Promise.join(storage.setDbVersion(0,userId),removerPromise)
     })
 }
 function sync(userId,storage) {
@@ -135,7 +140,7 @@ var Storage = class Storage {
                          selector: {userId: userId},
                      })
             .then(result=>{
-                return result.docs.filter(d=>d._id.indexOf(userId+ "_metainfo_")<0)
+                return result.docs.filter(d=>d._id.indexOf("_metainfo_")<0)
             },console.error)
     }
 
@@ -179,6 +184,11 @@ var Storage = class Storage {
         return deleteEntry(id).then(()=>{
             return self.db.get(id).then(doc=>self.db.remove(doc),console.error)
         },console.error)
+    }
+
+    removeLocal(id, userId) {
+        var self = this;
+        return this.db.get(id).then(doc=>self.db.remove(doc),console.error)
     }
 
     logVisit(id, userId) {

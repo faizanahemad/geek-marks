@@ -5,7 +5,7 @@ var loginConfig = require('config').loginConfig;
 var users = require("./model/user-store");
 function doCreate(req, res, next) {
     var creds = req.body;
-    if (creds.username && creds.email && creds.password) {
+    if (creds.email && creds.password) {
         creds.password = getSHA512ofJSON(creds.password);
         var userCreatePromise =  users.insertUser(creds)
             .then((user)=> {
@@ -24,25 +24,27 @@ function doCreate(req, res, next) {
 function doLoginPromise(req, res, next) {
     var creds = req.body;
     creds.password = getSHA512ofJSON(creds.password);
-    if (creds.username && creds.password) {
-        return users.getOneByUserName(creds.username, creds.password).then((user)=>{
+    if (creds.email && creds.password) {
+        return users.getOrCreateOneByEmail(creds.email, creds.password).then((user)=>{
             setSession(req, res, user._id);
-            return {};
-        });
-    } else if (creds.email && creds.password) {
-        return users.getOneByEmail(creds.email, creds.password).then((user)=>{
-            setSession(req, res, user._id);
-            return {};
+            return {email:user.email,created:user.created || false};
         })
     } else {
-        return Promise.reject({error:"Provide both username and password for login"})
+        return Promise.reject({error:"Provide both email and password for login"})
     }
 }
 
 function doLogin(req, res, next) {
-    doLoginPromise(req, res, next).then((doc)=>res.redirect(loginConfig.loginSuccessRedirect),
-                                        ()=>res.redirect(config.loginConfig.loginFailureRedirect));
-
+    var creds = req.body;
+    creds.password = getSHA512ofJSON(creds.password);
+    if (creds.email && creds.password) {
+        users.getOneByEmail(creds.email, creds.password).then((user)=>{
+            setSession(req, res, user._id);
+            res.redirect(loginConfig.loginSuccessRedirect);
+        },()=>res.redirect(config.loginConfig.loginFailureRedirect))
+    } else {
+        res.redirect(config.loginConfig.loginFailureRedirect)
+    }
 }
 function checkLoggedIn(req, res, next) {
     var agentValidation = checkForUserAgentValidation(req);
@@ -93,7 +95,6 @@ function clearCookies(res) {
     res.clearCookie(config.session.secret);
 };
 function setSession(req, res, id) {
-    req.session.username = req.body.username;
     req.session.is_login = true;
     req.session.user_id = id;
     req.session.type = config.session.name;
@@ -102,7 +103,6 @@ function setSession(req, res, id) {
     req.session.timeOut = Date.now() + config.session.sessionTimeOut;
     req.session.cookie.maxAge = config.session.sessionTimeOut;
     req.session.cookie.expires = new Date(Date.now() + config.session.sessionTimeOut);
-    req.session.cookie.username = req.body.username;
     req.session.cookie.is_login = true;
     req.session.cookie._id = id;
     res.cookie('username', req.body.username);
@@ -142,7 +142,6 @@ function isSessionActive(sessionObject) {
 }
 function isSessionValid(request) {
     return (request.session && request.cookies
-            && (request.cookies.username === request.session.username)
             && (request.session.user_id === request.cookies._id)
             && checkForCookieValidation(request)
             && isSessionActive(request.session));

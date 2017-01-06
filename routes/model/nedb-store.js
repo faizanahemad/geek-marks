@@ -24,6 +24,10 @@ var NedbStore = class NedbStore {
         return sortedOutput.execAsync().then(undefined, console.error);
     }
 
+    getAllCount(userId) {
+        return this.getAll(userId).then(docs=>docs.length)
+    }
+
     getAll(userId,sort) {
         var query = {};
         sort = sort || {};
@@ -89,11 +93,28 @@ var NedbStore = class NedbStore {
         },console.error);
     }
 
-    _isUseless(entry, doc) {
-        if (entry && entry.useless!=undefined) {
-            return entry.useless
-        } else if (doc && doc.useless!=undefined){
-            return doc.useless
+    _isPersistable(newEntry, oldEntry) {
+        var hasFields = (entry)=>((entry.tags && entry.tags.length>0) || (entry.videoTime && entry.videoTime.length>0) || (entry.note && entry.note.length>0))?true:false;
+        if (newEntry && newEntry.useless) {
+            return true
+        } else if (oldEntry && oldEntry.useless){
+            return true
+        }
+        if(!oldEntry) {
+            if(newEntry) {
+                if(newEntry.difficulty) {
+                    return true;
+                } else if(hasFields(newEntry)) {
+                    newEntry.difficulty = newEntry.difficulty || 2;
+                    return true;
+                }
+            }
+        } else {
+            if(newEntry.difficulty || oldEntry.difficulty) {
+                return true;
+            } else if(hasFields(newEntry) || hasFields(oldEntry)) {
+                return true;
+            }
         }
         return false;
     }
@@ -113,15 +134,13 @@ var NedbStore = class NedbStore {
         }
         return this.db.findOneAsync(query).then((doc)=> {
             if (doc) {
-                if ((doc.difficulty==undefined||doc.difficulty==null) &&
-                    (entry.difficulty==undefined||entry.difficulty==null) &&
-                    !self._isUseless(entry, doc)) {
+                if (!self._isPersistable(entry, doc)) {
                     return Promise.reject("Difficulty is mandatory to persist")
                 }
                 newEntryToStore = utils.merge(doc, entry);
                 return self.db.updateAsync({_id: doc._id}, newEntryToStore, {returnUpdatedDocs:true}).then(()=>[newEntryToStore,false]);
             } else {
-                if ((newEntryToStore.difficulty==undefined||newEntryToStore.difficulty==null)&& !self._isUseless(newEntryToStore)) {
+                if (!self._isPersistable(newEntryToStore)) {
                     return Promise.reject("Difficulty is mandatory to persist")
                 }
                 return self.db.insertAsync(newEntryToStore).then(doc=>[doc,true])
