@@ -131,8 +131,8 @@ function youtubeTimeCapture() {
             var time = document.getElementById("time-capture-timer-input").value;
             time = convertStringToSeconds(time);
             cld.videoTime.push({description:description,time:time});
-            storage.insertOrUpdateEntry(cld);
-            youtubeTimeCapture();
+            storage.insertOrUpdateEntry(cld).then((entry)=>youtubeTimeCapture());
+
         }
         function playCallBackGenerator(time) {
             return ()=>videoElem.currentTime=time;
@@ -140,8 +140,7 @@ function youtubeTimeCapture() {
         function deleteCallBackGenerator(index) {
             return ()=>{
                 cld.videoTime.splice( index, 1 );
-                storage.insertOrUpdateEntry(cld);
-                youtubeTimeCapture();
+                storage.insertOrUpdateEntry(cld).then((entry)=>youtubeTimeCapture());
             };
         }
         var addTimerRow = htmlToElement(addTimerTemplate);

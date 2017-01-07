@@ -111,10 +111,11 @@ function prepareData(firstRun) {
 }
 
 function refreshDisplay(firstRun) {
-    prepareData(false).then(renderLinks);
-    if (firstRun) {
-        youtubeTimeCapture();
-    }
+    prepareData(false).then(renderLinks).then(()=>{
+        if (firstRun) {
+            youtubeTimeCapture();
+        }
+    });
 }
 
 function augmentCLD() {

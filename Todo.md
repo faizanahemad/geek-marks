@@ -49,6 +49,7 @@
 - http://stackoverflow.com/questions/4612374/iframe-inherit-from-parent
 - http://stackoverflow.com/questions/12235806/can-html-iframes-inherit-css-and-javascript-data
 - http://stackoverflow.com/questions/13591983/onclick-within-chrome-extension-not-working
+- https://pouchdb.com/2015/04/05/filtered-replication.html
 
 ### Iframe chrome extensions
 - http://stackoverflow.com/questions/11325415/access-iframe-content-from-a-chromes-extension-content-script
