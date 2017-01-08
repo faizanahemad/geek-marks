@@ -219,7 +219,7 @@ function addDomHandlers(simplemde) {
         triggerSaveIfChanged(simplemde)
     },1000);
     simplemde.codemirror.on("blur", function(){
-        saveNoteText(simplemde);
+        triggerSaveIfChanged(simplemde);
     });
     simplemde.codemirror.on("beforeChange", function(instance , event){
         console.log("beforeChange");
@@ -286,7 +286,7 @@ function render() {
             codeSyntaxHighlighting: true,
         },
         toolbar: ["bold", "heading",
-                  "code","unordered-list","ordered-list","|", "link","image","horizontal-rule","preview","clean-block"],
+                  "code","unordered-list","ordered-list","|", "link","image","horizontal-rule","|","preview","clean-block"],
         spellChecker: false,
         status: false,
         autosave: {
