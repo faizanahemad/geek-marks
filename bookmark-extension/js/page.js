@@ -100,7 +100,6 @@ function prepareData(firstRun) {
         if (firstRun) {
             augmentCLD();
             sendCLD(1);
-            setTimeout(()=>sendCLD(2),300);
             if (hrefMap.has(location.href)) {
                 recordVisit(cld._id)
             }
@@ -133,13 +132,24 @@ function augmentCLD() {
             }
         }
     }
+    augmentCldWithData(thisLocationData);
+}
+
+function augmentCldWithData(thisLocationData) {
     cld.difficulty = thisLocationData.difficulty;
-    cld.note = thisLocationData.note;
+    if(thisLocationData.note) {
+        cld.note = thisLocationData.note;
+    }
     cld.tags = thisLocationData.tags || [];
     cld.useless = thisLocationData.useless;
     cld._id = thisLocationData._id;
     cld.videoTime = thisLocationData.videoTime || cld.videoTime|| [];
     cld.userId = thisLocationData.userId || cld.userId;
+    cld.href= cld.href||thisLocationData.href;
+    cld.protocol= cld.protocol||thisLocationData.protocol;
+    cld.hostname= cld.hostname||thisLocationData.hostname;
+    cld.pathname= cld.pathname||thisLocationData.pathname;
+    cld.title=cld.title||getTitle();
     if (cld.useless==undefined) {
         cld.useless=false;
     }
@@ -149,6 +159,20 @@ function sendCLD(sequence) {
     cld.type = "page_content";
     cld.sequence = sequence || -1;
     sendMessage(cld);
+}
+function sendCLDWithRender(sequence) {
+    cld.from = "content_script";
+    cld.type = "page_content_render";
+    cld.sequence = sequence || -1;
+    sendMessage(cld);
+}
+
+function updateStorage(data) {
+    storage.insertOrUpdateEntry(data).then((entry)=>{
+        augmentCldWithData(entry);
+        sendCLDWithRender();
+        youtubeTimeCapture();
+    });
 }
 function addListeners() {
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {

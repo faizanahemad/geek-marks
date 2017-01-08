@@ -29,6 +29,7 @@ iframe {
     border-radius: 2px;
     text-align: center;
     margin-bottom: 2px;
+    box-sizing: border-box;
 }
 .youtube-timer-delete {
 

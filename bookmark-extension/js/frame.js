@@ -118,6 +118,13 @@ function saveNoteText(simplemde) {
     updateStorage();
 }
 
+function triggerSaveIfChanged(simplemde) {
+    var newNoteText = simplemde.value();
+    if(newNoteText!==displayData.note) {
+        saveNoteText(simplemde)
+    }
+}
+
 function markAsUseless() {
     var useless = this.checked;
     displayData.useless = useless;
@@ -175,7 +182,18 @@ function addListeners() {
             console.log(msg.sequence);
             displayData = msg;
             displayData.colors = colors;
+            displayData.note = displayData.note || "";
             displayData.useless = msg.useless;
+
+        }
+    });
+    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+        if (msg.from === 'content_script' && msg.type == 'page_content_render') {
+            console.log(msg.sequence);
+            $.extend(true,displayData,msg);
+            displayData.note = displayData.note || "";
+            displayData.colors = colors;
+            render();
 
         }
     });
@@ -197,24 +215,12 @@ function addDomHandlers(simplemde) {
 
     }
 
-    var saveBtn=document.getElementById(saveButtonId);
-    if (saveBtn) {
-        saveBtn.onclick = function () {
-            if (!simplemde.isPreviewActive()){
-                simplemde.togglePreview();
-            }
-            saveNoteText(simplemde);
-        }
-    }
-
-    var removeButton = document.getElementById(removeButtonId);
-    if (removeButton) {
-        removeButton.onclick = function () {
-            simplemde.value("");
-            console.log(simplemde.value());
-            saveNoteText(simplemde);
-        }
-    }
+    setInterval(()=>{
+        triggerSaveIfChanged(simplemde)
+    },1000);
+    simplemde.codemirror.on("blur", function(){
+        saveNoteText(simplemde);
+    });
     simplemde.codemirror.on("beforeChange", function(instance , event){
         console.log("beforeChange");
         console.log(instance);
@@ -223,7 +229,7 @@ function addDomHandlers(simplemde) {
         var to = event.to;
         if (event.origin === "paste") {
             var lineText = instance.doc.getLine(from.line);
-            var toBePasted = []
+            var toBePasted = [];
             for (var i=0;i<event.text.length;i++) {
                 if ((from.ch>1 && lineText.substring(from.ch-2, from.ch)!=="](")  || from.ch<= 1) {
                     var anchormedText = anchorm(event.text[i]);
@@ -280,7 +286,7 @@ function render() {
             codeSyntaxHighlighting: true,
         },
         toolbar: ["bold", "heading",
-                  "code","unordered-list","ordered-list","|", "link","image","horizontal-rule","preview"],
+                  "code","unordered-list","ordered-list","|", "link","image","horizontal-rule","preview","clean-block"],
         spellChecker: false,
         status: false,
         autosave: {

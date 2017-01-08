@@ -1,7 +1,7 @@
 ### TODO (Features)
 - Offline JS
-- Youtube video - use a default difficulty/rating
 - Rename difficulty to rating
+- Color preferences save
 - Default styles not picked up on selected sites
 - Resize and reposition by drag drop
 - Secure send password over http by hashing

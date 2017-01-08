@@ -37,12 +37,16 @@ function merge(oldRecord, newRecord) {
             "pathname": newRecord.pathname || oldRecord.pathname,
             "lastVisited": lastVisited,
             "difficulty": newRecord.difficulty || oldRecord.difficulty,
-            "note": newRecord.note || oldRecord.note,
             "title":newRecord.title || oldRecord.title,
             "videoTime": newRecord.videoTime || oldRecord.videoTime || [],
             "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits:1,
             "tags": newRecord.tags || oldRecord.tags || []
         };
+        if(newRecord.note===undefined) {
+            record.note = oldRecord.note;
+        } else {
+            record.note = newRecord.note;
+        }
         if (newRecord.useless!=undefined && newRecord.useless!=null) {
             record.useless = newRecord.useless;
         } else if (oldRecord.useless!=undefined && oldRecord.useless!=null) {
