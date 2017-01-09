@@ -1,5 +1,6 @@
 var serverUrl = "http://139.162.25.64:8443";
-var healthUrl = "%server%/health".replace("%server%",serverUrl);
+var serverUrlHttps = "https://139.162.25.64:8444";
+var healthUrl = "%server%/health".replace("%server%",serverUrlHttps);
 var checkLoginUrl = "%server%/check_login".replace("%server%",serverUrl);
 var externalLogin = "%server%/extension-login.html".replace("%server%",serverUrl);
 var bookmarksUrl = "%server%/bookmarks".replace("%server%",serverUrl);

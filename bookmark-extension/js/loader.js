@@ -47,12 +47,6 @@ function bookmark() {
 }
 chromeStorage.getCombinedSettings().then(data=>{
     if(data.settings.enabled) {
-        if(Offline.state) {
-            bookmark();
-        }
-        if(data.settings.notes) {
-            Offline.options = {checks: {xhr: {url: healthUrl}}};
-            Offline.check();
-        }
+        bookmark();
     }
-})
+});
