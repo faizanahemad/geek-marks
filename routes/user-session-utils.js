@@ -61,10 +61,13 @@ function isTokenValid() {
     return false;
 }
 function logout(request, response, next) {
-    request.session.destroy(function() {
-        response.clearCookie('_id');
-        response.redirect('/login');
-    });
+    response.clearCookie('_id');
+    if(request.session && request.session.destroy) {
+        request.session.destroy(function() {
+            response.clearCookie('_id');
+            response.redirect('/login');
+        });
+    }
 }
 function md5(name) {
     var hash = crypto.createHash('md5').update(name).digest('hex');
@@ -81,12 +84,11 @@ var getSHA512ofJSON = function(input){
 function setSession(req, res, id) {
     req.session.user_id = id;
     req.session.cookie._id = id;
-    res.cookie('_id',id);
+    res.cookie('_id',id,{maxAge:config.session.sessionTimeOut});
 
 }
 function isSessionValid(request) {
-    return (request.session && request.cookies
-            && request.session.user_id === request.cookies._id);
+    return (request.session && request.session.user_id);
 }
 
 function startsWith (path, pattern){
