@@ -110,40 +110,12 @@ function setSession(req, res, id) {
     res.cookie('is_login', 'true');
 
 }
-
-function checkForCookieValidation(request) {
-    return (ipAddressCheck(request) && !isConnectionDestroyed(request));
-}
-function isConnectionDestroyed(request) {
-    if (request.connection) {
-        if(request.connection.destroyed){
-            console.logger.error('Request Connection Connection Destroyed');
-            return true;
-        }
-        return false;
-    } else{
-        console.logger.error('Request Does Not Have Connection Object');
-        return true;
-    }
-}
-function ipAddressCheck(request) {
-    var ipAddress = request.connection.remoteAddress||request.headers['x-forwarded-for']||request.headers['x-requester-ip'];
-    if(!request.session.ipAddress){
-        return false;
-    }
-    if (request.session.ipAddress != ipAddress) {
-
-        return false;
-    }
-    return true;
-}
 function isSessionActive(sessionObject) {
     return (Date.now() < sessionObject.timeOut);
 }
 function isSessionValid(request) {
     return (request.session && request.cookies
             && (request.session.user_id === request.cookies._id)
-            && checkForCookieValidation(request)
             && isSessionActive(request.session));
 }
 
