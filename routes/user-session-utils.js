@@ -47,22 +47,13 @@ function doLogin(req, res, next) {
     }
 }
 function checkLoggedIn(req, res, next) {
-    var agentValidation = checkForUserAgentValidation(req);
-    var sessionValidity = isSessionValid(req);
-    var tokenValidity = isTokenValid(req);
-    if (tokenValidity||(agentValidation && sessionValidity)) {
-        return true
-    } else {
-        return false;
-    }
+    return isSessionValid(req)||isTokenValid(req);
 }
 function verifyLogin(req, res, next) {
-    var isLoggedIn = checkLoggedIn(req, res, next);
-    var isWhiteListed = isWhiteListedURL(req, res);
-    if (isLoggedIn||isWhiteListed) {
+    if (checkLoggedIn(req, res, next)||isWhiteListedURL(req, res)) {
         next();
     } else {
-        clearCookies(res);
+        logout(res,res,next);
         res.redirect('/login');
     }
 }
@@ -71,9 +62,7 @@ function isTokenValid() {
 }
 function logout(request, response, next) {
     request.session.destroy(function() {
-        response.clearCookie('is_login');
-        response.clearCookie('username');
-        response.clearCookie(config.session.secret);
+        response.clearCookie('_id');
         response.redirect('/login');
     });
 }
@@ -89,41 +78,17 @@ var getSHA512ofJSON = function(input){
     }
     return hash;
 };
-function clearCookies(res) {
-    res.clearCookie('is_login');
-    res.clearCookie('username');
-    res.clearCookie(config.session.secret);
-};
 function setSession(req, res, id) {
-    req.session.is_login = true;
     req.session.user_id = id;
-    req.session.type = config.session.name;
-    req.session.userAgent = md5(req.headers['user-agent']);
-    req.session.ipAddress = req.connection.remoteAddress||req.headers['x-forwarded-for']||req.headers['x-requester-ip'];
-    req.session.timeOut = Date.now() + config.session.sessionTimeOut;
-    req.session.cookie.maxAge = config.session.sessionTimeOut;
-    req.session.cookie.expires = new Date(Date.now() + config.session.sessionTimeOut);
-    req.session.cookie.is_login = true;
     req.session.cookie._id = id;
-    res.cookie('username', req.body.username);
     res.cookie('_id',id);
-    res.cookie('is_login', 'true');
 
-}
-function isSessionActive(sessionObject) {
-    return (Date.now() < sessionObject.timeOut);
 }
 function isSessionValid(request) {
     return (request.session && request.cookies
-            && (request.session.user_id === request.cookies._id)
-            && isSessionActive(request.session));
+            && request.session.user_id === request.cookies._id);
 }
 
-
-function checkForUserAgentValidation(request) {
-    var requestUserAgent = md5(request.headers['user-agent']);
-    return (requestUserAgent === request.session.userAgent);
-}
 function startsWith (path, pattern){
     return (path.indexOf(pattern) === 0);
 }
@@ -152,7 +117,7 @@ function isWhiteListedURL(request, response) {
 
     return anyStartsWith(path, loginConfig.noLoginPathStartPathList) ||
            anyExactMatch(path, loginConfig.noLoginExactMatch) ||
-           ((!(request.session && request.session.is_login) && path=="/"));
+           (!request.session && path=="/");
 }
 
 module.exports = {

@@ -19,7 +19,6 @@
     "compression": "^1.6.2",
     "config": "~1.24.0",
     "connect-cache-manifest": "^0.2.2",
-    "cookie-parser": "^1.4.3",
     "dustjs-linkedin": "^2.7.4",
     "express": "4.x",
     "express-session": "^1.14.2",

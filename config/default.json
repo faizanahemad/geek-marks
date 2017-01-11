@@ -8,7 +8,6 @@
     "port":8443
   },
   "session":{
-    "name":"bookmark_service",
     "secret":"bookmark_service",
     "sessionTimeOut":315360000000
   },

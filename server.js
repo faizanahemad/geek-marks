@@ -21,7 +21,7 @@ var app = express();
 var staticDirectory = __dirname + '/public';
 
 (function middlewareSetup(app) {
-    app.use(compression({filter: (res, resp)=>true}));
+    app.use(compression({filter: (res, resp)=>true, level:9,memLevel:9}));
     app.use(express.static(staticDirectory));
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
@@ -30,8 +30,6 @@ var staticDirectory = __dirname + '/public';
         next();
     });
     var session = require('express-session');
-    var cookieParser = require('cookie-parser');
-    app.use(cookieParser(config.session.secret));
     app.use(session({
                         secret: config.session.secret,
                         name: config.session.name,
