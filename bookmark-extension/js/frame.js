@@ -17,8 +17,6 @@ var anchorm = function (text) {
 
 var browseButtonId = "browse-button-id";
 var colorButtonId = "color-button-";
-var saveButtonId = "save-note";
-var removeButtonId = "remove-note";
 var displayStatus = true;
 
 var tagId = "tag-id";

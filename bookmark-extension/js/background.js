@@ -5,6 +5,7 @@ function getCookies(domain, name, callback) {
         }
     });
 }
+var loginStatus = {login:false};
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if(sender && sender.tab && sender.tab.id) {
         chrome.tabs.sendMessage(sender.tab.id, msg);
@@ -15,16 +16,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     }
     if (msg && msg.from ==="content_script" && msg.type==="tab_id_query") {
         sendResponse({from:"background_page",type:"tab_id_response",id:sender.tab.id});
-        return true;
     }
     if (msg && msg.from ==="content_script" && msg.type==="check_login") {
-        var loginPromise = superagent.getTimed(checkLoginUrl,1000);
-        loginPromise.then(()=>{
-            sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:true});
-        },()=>{
-            sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:false});
-        });
-        return true;
+        sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:loginStatus.login});
     }
     if (msg && msg.from ==="login_extension_page" && msg.type==="login_info") {
         chrome.tabs.sendMessage(msg.id, msg);
@@ -85,9 +79,12 @@ function accumulateBookmarks(root, accumulator) {
 var storage = new Storage(dbName);
 
 function backgroundSync() {
-    getCookies(serverUrl,"_id",(userId)=>{
-        sync(userId,storage);
+    var loginState = new Promise(function(resolve, reject) {
+        getCookies(serverUrl,"_id",(userId)=>{
+            sync(userId,storage).then(resolve,reject);
+        });
     });
+    timedPromise(loginState,2000).then(()=>loginStatus.login=true,()=>loginStatus.login=false);
 }
 function syncCallback() {
     backgroundSync();

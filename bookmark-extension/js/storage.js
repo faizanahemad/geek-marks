@@ -1,4 +1,13 @@
 var superagent = Promise.promisifyAll(superagent);
+function timedPromise(promise,time) {
+    var timedPromise = new Promise(function (resolve, reject) {
+        setTimeout(()=>{
+            reject();
+        },time);
+        promise.then(resolve)
+    });
+    return timedPromise;
+}
 superagent.getTimed = function (url, time) {
     var loginPromise = new Promise(function (resolve, reject) {
         var timer = setTimeout(()=>reject(),time);
@@ -58,7 +67,7 @@ function reconcile(userId, storage, total) {
 }
 function sync(userId,storage) {
     if(userId) {
-        storage.getDbVersion(userId)
+        return storage.getDbVersion(userId)
             .then(version=>{
                 return superagent.postAsync(syncUrl,{version:version})
             }).then(res=>res.body)
@@ -75,6 +84,7 @@ function sync(userId,storage) {
                 return Promise.reject("No body in response");
             },console.error)
     }
+    return Promise.reject();
 }
 var Storage = class Storage {
     constructor(dbName) {
