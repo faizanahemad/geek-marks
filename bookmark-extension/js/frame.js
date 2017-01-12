@@ -285,7 +285,7 @@ function render() {
             singleLineBreaks: true,
             codeSyntaxHighlighting: true,
         },
-        toolbar: ["bold", "heading",
+        toolbar: ["bold",
                   "code","unordered-list","ordered-list","|", "link","image","horizontal-rule","|","preview","clean-block"],
         spellChecker: false,
         status: false,

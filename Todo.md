@@ -3,6 +3,7 @@
 - search should have option to not show useless
 - Unable to save, you are offline modal/tooltip/popup when any post API fails
 - If save fails due to logged out then open login page, after user logs in, resave.
+- exponential decay sync if extension not in use
 - Color preferences save
 - Default styles not picked up on selected sites
 - Resize and reposition by drag drop

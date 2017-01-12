@@ -1,6 +1,6 @@
 function getCookies(domain, name, callback) {
     chrome.cookies.get({"url": domain, "name": name}, function(cookie) {
-        if(callback) {
+        if(callback && cookie) {
             callback(cookie.value);
         }
     });
