@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if(msg && msg.type==="domain_path_query") {
         if(msg.url) {
             sendResponse(getLocation(msg.url))
-        } else if(sender && sender.url) {
+        } else if(sender && sender.url && sender.url.indexOf("chrome-extension://")===-1) {
             sendResponse(getLocation(sender.url))
         } else {
             chrome.tabs.query({active:true,currentWindow: true,windowType:"normal"}, function(tabs){
