@@ -54,7 +54,7 @@
         "js/bookmarks-render.js",
         "js/init.js",
         "js/loader.js"],
-      "run_at" : "document_end"
+      "run_at" : "document_idle"
     }
   ],
   "background": {

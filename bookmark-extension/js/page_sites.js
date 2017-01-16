@@ -95,7 +95,7 @@ function youtubeTimeCapture() {
         var addTimerTemplate = `<div class="row">
     <div class="col-md-5 time-capture-description-area">
           <div class="form-group">
-            <input type="text" class="form-control" id="time-capture-description-input" placeholder="description...">
+            <input type="text" class="form-control time-capture-description-input" id="time-capture-description-input" placeholder="description...">
             <span><b>:</b></span>
           </div>
     </div>
@@ -145,6 +145,17 @@ function youtubeTimeCapture() {
         }
         var addTimerRow = htmlToElement(addTimerTemplate);
         addTimerRow.getElementsByClassName("time-capture-add-button")[0].onclick = addCallBack;
+
+        // On pressing Enter Add the time with the description.
+        addTimerRow.getElementsByClassName("time-capture-description-input")[0].onkeypress = function(e){
+            if (!e) e = window.event;
+            var keyCode = e.keyCode || e.which;
+            if (keyCode == '13'){
+                addCallBack();
+                return false;
+            }
+        }
+
         var htmlContainer = htmlToElement(template);
         var innerContent = htmlToElement(innerTemplate);
         for(var i=0;i<data.length;i++) {
