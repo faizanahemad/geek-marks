@@ -12,7 +12,9 @@
 - dev mode, forgot password on login page
 - Migrate to PouchDB
 - Active conditions - match path
-- enable disable sync/online storage, default link color
+- fuzzy search based on text distance, show similar pages to this that you have bookmarked. Group similar pages together in browse view.
+- Tag autofill, tag pages automatically.
+- default link color, online sync as a limited buffered Api. Keep ids to be synced, api call to online server in 1 min with those.
 - Handle runtime.lastError where possible in chrome.* apis
 - Resync if Client version > DB version
 - Unify login/sign_up for all layers

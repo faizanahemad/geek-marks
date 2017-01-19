@@ -132,6 +132,7 @@ function markAsUseless() {
 
 function renderTags() {
     var tags = displayData.tags || [];
+    var pageTagWords = generateAutoComplete(displayData.title||"");
     var taggle = new Taggle(tagId, {
         tags: tags,
         duplicateTagClass: 'bounce',
@@ -146,7 +147,7 @@ function renderTags() {
     });
     storage.getAllTags().then(tags=> {
             $(taggle.getInput()).autocomplete({
-                                                  source: tags, // See jQuery UI documentaton for
+                                                  source: tags.concat(pageTagWords), // See jQuery UI documentaton for
                                                                 // options
                                                   appendTo: taggle.getContainer(),
                                                   position: {
