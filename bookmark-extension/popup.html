@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="lib/css/font-awesome.min.css">
     <link rel="stylesheet" href="lib/css/bootstrap.css">
     <link rel="stylesheet" href="lib/css/bootstrap-toggle.min.css">
+    <link rel="stylesheet" href="css/popup.css">
 
 
     <script src="js/config.js"></script>
@@ -56,25 +57,25 @@
                             <div class="col-xs-6"><input id="{{area}}-enabled" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.enabled}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row {{#if isGlobal}}  row-hidden {{/if}}">
                         <div>
-                            <div class="col-xs-6"><label>Notes Enabled</label></div>
-                            <div class="col-xs-6"><input id="{{area}}-notes" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.notesDisable}} disabled {{/if}} {{#if settings.notes}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                            <div class="col-xs-6"><label>Link Coloring</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-bookmarks" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.bookmarks}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row {{#if isGlobal}}  row-hidden {{/if}}">
+                        <div>
+                            <div class="col-xs-6"><label>Notes Enabled</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-notes" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.notes}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                        </div>
+                    </div>
+                    <div class="row {{#if isGlobal}}  row-hidden {{/if}}">
                         <div>
                             <div class="col-xs-6"><label>Show Notes On Load</label></div>
                             <div class="col-xs-6"><input id="{{area}}-show-on-load" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.show_on_loadDisable}} disabled {{/if}} {{#if settings.show_on_load}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div>
-                            <div class="col-xs-6"><label>Link Coloring</label></div>
-                            <div class="col-xs-6"><input id="{{area}}-bookmarks" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.bookmarksDisable}} disabled {{/if}} {{#if settings.bookmarks}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
-                        </div>
-                    </div>
-                    <div class="row">
+                    <div class="row {{#if isGlobal}}  row-hidden {{/if}}">
                         <div>
                             <div class="col-xs-3"><label>If Path</label></div>
                             <div class="col-xs-4">
@@ -94,26 +95,96 @@
                 <span class="lead">Style</span>
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="{{area}}-top" class="col-sm-2 control-label">Top</label>
-                        <div class="col-sm-10">
+                        <label class="col-sm-4 control-label">Link Color</label>
+                        <div class="col-sm-8" style="margin-top: 3px;">
+                            {{#each colors}}
+                            {{#if active}}
+                            <button id="{{@root.area}}-color-button-{{@index}}" class="btn btn-sm" style="border: 3px solid rgba(255, 255, 255, 0.63);border-radius: 2px;background-color:{{this.color}};"></button>
+                            {{else}}
+                            <button id="{{@root.area}}-color-button-{{@index}}" class="btn btn-sm"
+                                    style="background-color:{{this.color}}"></button>
+                            {{/if}}
+                            {{/each}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-top" class="col-sm-4 control-label">Top</label>
+                        <div class="col-sm-8">
                             <input type="number" value="{{style.top}}" class="form-control" id="{{area}}-top" placeholder="top...">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="{{area}}-right" class="col-sm-2 control-label">Right</label>
-                        <div class="col-sm-10">
+                        <label for="{{area}}-right" class="col-sm-4 control-label">Right</label>
+                        <div class="col-sm-8">
                             <input type="number" value="{{style.right}}" class="form-control" id="{{area}}-right" placeholder="right...">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="{{area}}-height" class="col-sm-2 control-label">Height</label>
-                        <div class="col-sm-10">
+                        <label for="{{area}}-height" class="col-sm-4 control-label">Height</label>
+                        <div class="col-sm-8">
                             <input type="number" value="{{style.height}}" class="form-control" id="{{area}}-height" placeholder="height...">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="{{area}}-width" class="col-sm-2 control-label">Width</label>
-                        <div class="col-sm-10">
+                        <label for="{{area}}-width" class="col-sm-4 control-label">Width</label>
+                        <div class="col-sm-8">
+                            <input type="number" value="{{style.width}}" class="form-control" id="{{area}}-width" placeholder="width...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script id="global-settings-area-template" type="text/x-template">
+        <div class="settings-area">
+            <div>
+                <span class="lead">Settings</span>
+                <div class="container-fluid" style="height: 134px;">
+                    <div class="row">
+                        <div>
+                            <div class="col-xs-6"><label>Enabled</label></div>
+                            <div class="col-xs-6"><input id="{{area}}-enabled" {{#if settings.enabledDisable}} disabled {{/if}} {{#if settings.enabled}}  checked {{/if}} type="checkbox" data-toggle="toggle" data-size="mini" data-onstyle="success" data-style="pull-right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <span class="lead">Style</span>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Link Color</label>
+                        <div class="col-sm-8" style="margin-top: 3px;">
+                            {{#each colors}}
+                            {{#if active}}
+                            <button id="{{@root.area}}-color-button-{{@index}}" class="btn btn-sm" style="border: 3px solid rgba(255, 255, 255, 0.63);border-radius: 2px;background-color:{{this.color}};"></button>
+                            {{else}}
+                            <button id="{{@root.area}}-color-button-{{@index}}" class="btn btn-sm"
+                                    style="background-color:{{this.color}}"></button>
+                            {{/if}}
+                            {{/each}}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-top" class="col-sm-4 control-label">Top</label>
+                        <div class="col-sm-8">
+                            <input type="number" value="{{style.top}}" class="form-control" id="{{area}}-top" placeholder="top...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-right" class="col-sm-4 control-label">Right</label>
+                        <div class="col-sm-8">
+                            <input type="number" value="{{style.right}}" class="form-control" id="{{area}}-right" placeholder="right...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-height" class="col-sm-4 control-label">Height</label>
+                        <div class="col-sm-8">
+                            <input type="number" value="{{style.height}}" class="form-control" id="{{area}}-height" placeholder="height...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{area}}-width" class="col-sm-4 control-label">Width</label>
+                        <div class="col-sm-8">
                             <input type="number" value="{{style.width}}" class="form-control" id="{{area}}-width" placeholder="width...">
                         </div>
                     </div>

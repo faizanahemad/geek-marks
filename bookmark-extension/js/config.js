@@ -20,40 +20,32 @@ var dbName = "history.db";
 
 var globalSettings = {
     "style":{
+        "color":3,
         "top":21,
         "right":21,
         "height":570,
         "width":360
     },
     "settings":{
-        "enabled":true,
-        "show_on_load":false,
-        "path":{
-            "startsWith":false,
-            "endsWith":false,
-            "equals":false,
-            "contains":false,
-            "value":""
-        },
-        "bookmarks":false,
-        "notes":false
+        "enabled":true
     }
 };
 
 var frameHiddenStyleDefault = {
     height:35,
     width:35
-}
+};
 var defaultSettingsMap = {
-    "www.youtube.com":{
+    "youtube.com":{
         "style":{
+            "color":1,
             "top":90,
             "right":2,
             "height":570,
             "width":400
         },
         "settings":{
-            "enabled":false,
+            "enabled":true,
             "show_on_load":false,
             "path":{
                 "startsWith":true,
@@ -61,6 +53,28 @@ var defaultSettingsMap = {
                 "equals":false,
                 "contains":false,
                 "value":"/watch"
+            },
+            "bookmarks":true,
+            "notes":true
+        }
+    },
+    "google.co.in":{
+        "style":{
+            "color":4,
+            "top":21,
+            "right":21,
+            "height":570,
+            "width":360
+        },
+        "settings":{
+            "enabled":true,
+            "show_on_load":false,
+            "path":{
+                "startsWith":false,
+                "endsWith":false,
+                "equals":false,
+                "contains":false,
+                "value":""
             },
             "bookmarks":true,
             "notes":false
@@ -116,8 +130,8 @@ var defaultSettingsMap = {
             "width":400
         },
         "settings":{
-            "enabled":false,
-            "show_on_load":true,
+            "enabled":true,
+            "show_on_load":false,
             "path":{
                 "startsWith":false,
                 "endsWith":false,
@@ -137,8 +151,8 @@ var defaultSettingsMap = {
             "width":400
         },
         "settings":{
-            "enabled":false,
-            "show_on_load":true,
+            "enabled":true,
+            "show_on_load":false,
             "path":{
                 "startsWith":false,
                 "endsWith":false,

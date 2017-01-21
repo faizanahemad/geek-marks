@@ -10,6 +10,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if(sender && sender.tab && sender.tab.id) {
         chrome.tabs.sendMessage(sender.tab.id, msg);
     }
+    if(msg && msg.type==="settings_change") {
+        chrome.tabs.query({active:true,currentWindow: true,windowType:"normal"}, function(tabs){
+            tabs.forEach((tab)=>{
+                console.log("Sending Settings change message to tab id:"+tab.id)
+                chrome.tabs.sendMessage(tab.id,msg)
+            })
+        });
+    }
     if (msg && msg.from ==="content_script" && msg.type==="bookmarks_query") {
         sendBookmarks(sendResponse);
         return true;
@@ -130,25 +138,23 @@ function addStorageListeners() {
 addStorageListeners();
 
 function storeDefaultGlobalsIfnotPresent() {
-    chromeStorage.getGlobalSettings().then(settings=>{
-        if(!settings) {
-            return chromeStorage.setGlobalSettings(globalSettings);
-        } else {
-            return settings;
-        }
-    })
+    chromeStorage.setGlobalSettings(globalSettings);
 }
-storeDefaultGlobalsIfnotPresent();
 
-var defaultSites = ["youtube.com","geeksforgeeks.org","quiz.geeksforgeeks.org","stackoverflow.com","stackexchange.com"];
+
 function storeDefaultSiteSpecificSettings() {
-    defaultSites.forEach(ds=>{
-        chromeStorage.getSpecificSiteSettings(ds).then(item=>{
-            if(!item.present) {
-                var newItem = defaultSettingsMap[ds];
-                chromeStorage.setSpecificSiteSettings(ds,newItem)
-            }
-        })
-    })
+    Object.keys(defaultSettingsMap).forEach(ds=>{
+        var newItem = defaultSettingsMap[ds];
+        chromeStorage.setSpecificSiteSettings(ds,newItem)
+    });
 }
-storeDefaultSiteSpecificSettings();
+
+chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+        console.log("Installed Extension - Storing Defaults");
+        storeDefaultGlobalsIfnotPresent();
+        storeDefaultSiteSpecificSettings();
+    }else if(details.reason == "update"){
+
+    }
+});

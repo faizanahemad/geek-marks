@@ -7,7 +7,6 @@ var titleMap = new Map();
 var iframeId = "bookmark-iframe";
 var timeCaptureAreaId = "youtube-time-cature-area";
 var uselessIndicatorSpan = `<span class="useless-indicator" style="color: mediumvioletred;">&nbsp;[X]</span>`;
-var bookmarkIndicatorSpan = `<span style="color: Violet;">&nbsp;[B]</span>`;
 
 
 
@@ -50,6 +49,7 @@ function createIframe(data) {
 }
 
 function renderLinks() {
+    atags = Array.from(document.getElementsByTagName("a"));
     atags.filter((e)=> hrefMap.has(e.href) || pathMap.has(e.pathname) || titleMap.has(e.innerText.toLowerCase().trim()))
         .forEach((e)=> {
         var linkConfig = {};
@@ -176,9 +176,7 @@ function updateStorage(data) {
 }
 function addListeners() {
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
-        if (msg.from === 'frame' && msg.type == 'color_change') {
-            levelStyleMap = styleMaps[msg.style];
-        } else if (msg.from === 'frame' && msg.type == 'frame_size_change' && msg.width && msg.height) {
+        if (msg.from === 'frame' && msg.type == 'frame_size_change' && msg.width && msg.height) {
             var frame=document.getElementById(iframeId);
             frame.style.width = msg.width+ "px";
             frame.style.height = msg.height+ "px";

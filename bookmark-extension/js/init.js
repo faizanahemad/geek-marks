@@ -7,7 +7,10 @@ function init() {
             createIframe(data);
         }
         prepareData(true);
-        if(data.settings.bookmarks) {
+        var continuousTimer;
+        if(data.settings.bookmarks)
+        {
+            setStyle(data.style.color);
             sendBookmarksRequest();
             var initialTimer = setInterval(function () {
                 if (document.readyState === "complete" || document.readyState==="interactive") {
@@ -15,16 +18,24 @@ function init() {
                     refreshDisplay(true);
                     clearInterval(initialTimer)
                 }
-            }, 100);
-            setInterval(function () {
-                isSelected().then((msg)=>{
-                    if(msg && msg.active) {
-                        return Promise.resolve();
-                    } else {
-                        return Promise.reject();
-                    }
-                }).then(()=>refreshDisplay(false), (err)=>{});
+            }, 150);
+            continuousTimer = setInterval(function () {
+                if(document.hasFocus()) {
+                    refreshDisplay(false)
+                }
             },5000);
         }
+        return continuousTimer;
+    }).then(timer=>{
+        function settingsChangeListener(msg, sender, sendResponse) {
+            if (msg.from === 'popup' && msg.type == 'settings_change') {
+                chrome.runtime.onMessage.removeListener(settingsChangeListener);
+                if(timer) {
+                    clearInterval(timer)
+                }
+                init();
+            }
+        }
+        chrome.runtime.onMessage.addListener(settingsChangeListener);
     })
 }

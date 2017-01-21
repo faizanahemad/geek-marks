@@ -1,11 +1,6 @@
 var displayData = {
     useless:false
 };
-var colors = [{color: "Magenta", active: false},
-    {color: "LimeGreen", active: false},
-    {color: "Silver", active: false},
-    {color: "DodgerBlue", active: true},
-    {color: "SandyBrown", active: false}];
 var body = document.getElementsByTagName("body")[0];
 var anchorm = function (text) {
     return anchorme(text,{
@@ -16,7 +11,6 @@ var anchorm = function (text) {
 };
 
 var browseButtonId = "browse-button-id";
-var colorButtonId = "color-button-";
 var displayStatus = true;
 
 var tagId = "tag-id";
@@ -77,14 +71,6 @@ var toggleDisplayStatus = ()=>{
     setDisplayStatus(!displayStatus);
     chromeStorage.updateSiteSettings({settings:{show_on_load:displayStatus}})
 };
-function changeStyle(style) {
-    if (style >= 0 && style <= 4) {
-        sendColorChange(style)
-    }
-    displayData.colors.forEach(c=>c.active = false);
-    displayData.colors[style].active = true;
-    render();
-}
 
 function updateStorage() {
     storage.insertOrUpdateEntry(displayData).then(doc=>{
@@ -172,15 +158,11 @@ function sendIframeAreaChange(style) {
     $.extend(msg,style);
     chrome.runtime.sendMessage(msg);
 }
-function sendColorChange(styleId) {
-    chrome.runtime.sendMessage({from: 'frame', type: 'color_change', style: styleId});
-}
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         if (msg.from === 'content_script' && msg.type == 'page_content') {
             console.log(msg.sequence);
             displayData = msg;
-            displayData.colors = colors;
             displayData.note = displayData.note || "";
             displayData.useless = msg.useless;
 
@@ -191,7 +173,6 @@ function addListeners() {
             console.log(msg.sequence);
             $.extend(true,displayData,msg);
             displayData.note = displayData.note || "";
-            displayData.colors = colors;
             render();
 
         }
@@ -199,14 +180,6 @@ function addListeners() {
 }
 
 function addDomHandlers(simplemde) {
-    for (var i=0;i<=4;i++ ) {
-        var btn=document.getElementById(colorButtonId+i);
-        btn.onclick = (function (index) {
-            return function () {
-                changeStyle(index)
-            }
-        })(i);
-    }
     if (displayData.note && displayData.note.length>1 ) {
         if (!simplemde.isPreviewActive()) {
             simplemde.togglePreview();
@@ -309,7 +282,7 @@ var renderOnload = function renderOnLoad() {
     var renderAttemptCount = 0;
     var renderTimer = setInterval(function () {
         renderAttemptCount++;
-        if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.colors) {
+        if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.note!==undefined) {
             render();
             clearInterval(renderTimer);
         }
