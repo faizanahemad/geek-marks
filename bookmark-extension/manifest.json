@@ -64,6 +64,7 @@
       "lib/js/pouchdb.js",
       "lib/js/pouchdb.find.js",
       "js/config.js",
+      "js/common.js",
       "js/storage.js",
       "js/chrome_storage.js",
       "js/background.js"]

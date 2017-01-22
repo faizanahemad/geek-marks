@@ -13,7 +13,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if(msg && msg.type==="settings_change") {
         chrome.tabs.query({active:true,currentWindow: true,windowType:"normal"}, function(tabs){
             tabs.forEach((tab)=>{
-                console.log("Sending Settings change message to tab id:"+tab.id)
                 chrome.tabs.sendMessage(tab.id,msg)
             })
         });

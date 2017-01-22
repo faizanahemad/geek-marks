@@ -41,7 +41,7 @@ var defaultSettingsMap = {
             "color":1,
             "top":90,
             "right":2,
-            "height":570,
+            "height":580,
             "width":400
         },
         "settings":{

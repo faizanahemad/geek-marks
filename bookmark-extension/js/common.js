@@ -47,6 +47,13 @@ function timer(text) {
 }
 timer("common loaded @ " + location.href);
 
+function infoLogger(arg1, arg2, arg3, arg4) {
+    console.log(arg1);
+    console.log(arg2);
+    console.log(arg3);
+    console.log(arg4);
+}
+
 var convertSecondsToMinute = function (seconds) {
     var minutes = parseInt(seconds/60);
     seconds = parseInt(seconds - minutes*60);
@@ -75,4 +82,13 @@ function sendMessage(msg) {
             resolve(reply);
         });
     });
+}
+function timedPromise(promise,time) {
+    var timedPromise = new Promise(function (resolve, reject) {
+        setTimeout(()=>{
+            reject();
+        },time);
+        promise.then(resolve,reject)
+    });
+    return timedPromise;
 }

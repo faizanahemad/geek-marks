@@ -1,6 +1,7 @@
 var displayData = {
     useless:false
 };
+var combinedSetting = {};
 var body = document.getElementsByTagName("body")[0];
 var anchorm = function (text) {
     return anchorme(text,{
@@ -11,11 +12,10 @@ var anchorm = function (text) {
 };
 
 var browseButtonId = "browse-button-id";
-var displayStatus = true;
 
 var tagId = "tag-id";
 
-function setDisplayStatus(status) {
+function setDisplayStatus(status,data) {
     // show = true
     if (status) {
         var showHideBtn = document.getElementById("show-hide-bookmarks-button");
@@ -31,14 +31,7 @@ function setDisplayStatus(status) {
         innerSpan.classList.remove("glyphicon-menu-down");
         controllerArea.classList.add("hide-show-controller-area-show");
         controllerArea.classList.remove("hide-show-controller-area-hide");
-        chromeStorage.getCombinedSettings().then(data=>{
-            if(data.style)
-                return data.style;
-            else
-                return globalSettings.style;
-        },()=>Promise.resolve(globalSettings.style)).then(style=>{
-            sendIframeAreaChange(style)
-        })
+        sendIframeAreaChange(data.style)
     } else {
         var showHideBtn = document.getElementById("show-hide-bookmarks-button");
         var innerSpan = showHideBtn.getElementsByTagName("span")[0];
@@ -53,23 +46,17 @@ function setDisplayStatus(status) {
         innerSpan.classList.add("glyphicon-menu-down");
         controllerArea.classList.remove("hide-show-controller-area-show");
         controllerArea.classList.add("hide-show-controller-area-hide");
-        chromeStorage.getCombinedSettings().then(data=>{
-            if(data.style)
-                return data.style;
-            else
-                return globalSettings.style;
-        },()=>Promise.resolve(globalSettings.style)).then(style=>{
-            style.height = frameHiddenStyleDefault.height;
-            style.width = frameHiddenStyleDefault.width;
-            sendIframeAreaChange(style)
-        })
+        var style = $.extend(true,{},data.style);
+        style.height = frameHiddenStyleDefault.height;
+        style.width = frameHiddenStyleDefault.width;
+        sendIframeAreaChange(style)
     }
-    displayStatus = status
 }
 
 var toggleDisplayStatus = ()=>{
-    setDisplayStatus(!displayStatus);
-    chromeStorage.updateSiteSettings({settings:{show_on_load:displayStatus}})
+    combinedSetting.settings.show_on_load = !combinedSetting.settings.show_on_load;
+    setDisplayStatus(combinedSetting.settings.show_on_load,combinedSetting);
+    chromeStorage.updateSiteSettings({settings:{show_on_load:combinedSetting.settings.show_on_load}})
 };
 
 function updateStorage() {
@@ -77,6 +64,11 @@ function updateStorage() {
         $.extend(displayData,doc);
         initialiseDifficultyButton()
     });
+}
+function deleteFromStorage() {
+    if(displayData._id) {
+        storage.remove(displayData._id).then(()=>sendMessage({from:"frame",type:"delete_bookmark"}))
+    }
 }
 function initialiseDifficultyButton() {
     $("#difficulty-input").rating({
@@ -158,26 +150,6 @@ function sendIframeAreaChange(style) {
     $.extend(msg,style);
     chrome.runtime.sendMessage(msg);
 }
-function addListeners() {
-    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-        if (msg.from === 'content_script' && msg.type == 'page_content') {
-            console.log(msg.sequence);
-            displayData = msg;
-            displayData.note = displayData.note || "";
-            displayData.useless = msg.useless;
-
-        }
-    });
-    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-        if (msg.from === 'content_script' && msg.type == 'page_content_render') {
-            console.log(msg.sequence);
-            $.extend(true,displayData,msg);
-            displayData.note = displayData.note || "";
-            render();
-
-        }
-    });
-}
 
 function addDomHandlers(simplemde) {
     if (displayData.note && displayData.note.length>1 ) {
@@ -218,11 +190,10 @@ function addDomHandlers(simplemde) {
     showHideBtn.onclick = toggleDisplayStatus;
     var uselessBtn = document.getElementById("useless-input-id");
     uselessBtn.onclick = markAsUseless;
+    var deleteBtn = document.getElementById("delete-button-id");
+    deleteBtn.onclick = deleteFromStorage;
 }
 
-function setInitialDisplayStatus() {
-    chromeStorage.getCombinedSettings().then(data=>setDisplayStatus(data.settings.show_on_load))
-}
 function render() {
     body = document.getElementById("main");
     var htmlArea = document.getElementById("bookmark-view-container");
@@ -274,7 +245,27 @@ function render() {
 
     document.getElementById(browseButtonId).href = browsePageUrl;
     addDomHandlers(simplemde);
-    setInitialDisplayStatus();
+    chromeStorage.getCombinedSettings().then(data=>$.extend(true,combinedSetting,data)).then(()=>setDisplayStatus(combinedSetting.settings.show_on_load,combinedSetting));
+}
+function addListeners() {
+    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+        if (msg.from === 'content_script' && msg.type == 'page_content') {
+            timer("CLD sequence="+msg.sequence);
+            displayData = msg;
+            displayData.note = displayData.note || "";
+            displayData.useless = msg.useless;
+
+        }
+    });
+    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+        if (msg.from === 'content_script' && msg.type == 'page_content_render') {
+            timer("CLD sequence="+msg.sequence);
+            $.extend(true,displayData,msg);
+            displayData.note = displayData.note || "";
+            render();
+
+        }
+    });
 }
 addListeners();
 
@@ -286,7 +277,8 @@ var renderOnload = function renderOnLoad() {
             render();
             clearInterval(renderTimer);
         }
-        if (renderAttemptCount>20 && renderAttemptCount < 70) {
+        if (renderAttemptCount>20 && renderAttemptCount < 60) {
+            console.log("Cld request: "+renderAttemptCount);
             sendMessage({from:"frame",type:"request_cld"})
         }
         if (renderAttemptCount>120) {

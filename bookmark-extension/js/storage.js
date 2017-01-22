@@ -1,13 +1,4 @@
 var superagent = Promise.promisifyAll(superagent);
-function timedPromise(promise,time) {
-    var timedPromise = new Promise(function (resolve, reject) {
-        setTimeout(()=>{
-            reject();
-        },time);
-        promise.then(resolve)
-    });
-    return timedPromise;
-}
 superagent.getTimed = function (url, time) {
     var loginPromise = new Promise(function (resolve, reject) {
         var timer = setTimeout(()=>reject(),time);

@@ -11,13 +11,7 @@ var uselessIndicatorSpan = `<span class="useless-indicator" style="color: medium
 
 
 
-var cld = {
-    "href": location.href,
-    "protocol": location.protocol,
-    "hostname": location.hostname,
-    "pathname": location.pathname,
-    "title":getTitle()
-};
+var cld = {};
 
 function createIframe(data) {
     var style = data.style || {};
@@ -85,8 +79,17 @@ function recordVisit(id) {
         }
     },10000);
 }
-
+//TODO: prepareData(true) is called 2 times, optimise to call once
 function prepareData(firstRun) {
+    if(firstRun) {
+        cld = {
+            "href": location.href,
+            "protocol": location.protocol,
+            "hostname": location.hostname,
+            "pathname": location.pathname,
+            "title":getTitle()
+        };
+    }
     var allPromise = storage.getAll();
     allPromise.then(locationData=>{
         locationData.forEach((e)=> {
@@ -98,7 +101,9 @@ function prepareData(firstRun) {
             }
         });
         if (firstRun) {
+            infoLogger("CLD before Augment",cld);
             augmentCLD();
+            infoLogger("CLD after Augment",cld);
             sendCLD(1);
             if (hrefMap.has(location.href)) {
                 recordVisit(cld._id)
@@ -109,12 +114,15 @@ function prepareData(firstRun) {
     return allPromise
 }
 
-function refreshDisplay(firstRun) {
-    prepareData(false).then(renderLinks).then(()=>{
-        if (firstRun) {
-            youtubeTimeCapture();
-        }
+function firstRunDisplay() {
+    prepareData(true).then(()=>{
+        youtubeTimeCapture();
+        renderLinks();
     });
+}
+
+function refreshDisplay() {
+    prepareData(false).then(renderLinks)
 }
 
 function augmentCLD() {
@@ -158,6 +166,7 @@ function sendCLD(sequence) {
     cld.from = "content_script";
     cld.type = "page_content";
     cld.sequence = sequence || -1;
+    infoLogger("Sending CLD",cld);
     sendMessage(cld);
 }
 function sendCLDWithRender(sequence) {

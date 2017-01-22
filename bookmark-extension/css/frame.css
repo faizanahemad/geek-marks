@@ -196,3 +196,11 @@
 .editor-toolbar:hover {
     opacity: 1;
 }
+.youtube-timer-delete {
+
+}
+
+.youtube-timer-delete:hover {
+    color: darkred;
+    cursor: pointer;
+}

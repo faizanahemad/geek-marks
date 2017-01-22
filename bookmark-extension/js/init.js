@@ -3,6 +3,7 @@ function init() {
     enableComments();
     addListeners();
     chromeStorage.getCombinedSettings().then(data=>{
+        setStyle(data.style.color);
         if(data.settings.notes) {
             createIframe(data);
         }
@@ -10,25 +11,24 @@ function init() {
         var continuousTimer;
         if(data.settings.bookmarks)
         {
-            setStyle(data.style.color);
             sendBookmarksRequest();
             var initialTimer = setInterval(function () {
+                timer("Initial Links Render Attempt");
                 if (document.readyState === "complete" || document.readyState==="interactive") {
-                    timer("Initial Links Render Attempt");
-                    refreshDisplay(true);
+                    firstRunDisplay();
                     clearInterval(initialTimer)
                 }
-            }, 150);
+            }, 100);
             continuousTimer = setInterval(function () {
                 if(document.hasFocus()) {
-                    refreshDisplay(false)
+                    refreshDisplay()
                 }
             },5000);
         }
         return continuousTimer;
     }).then(timer=>{
         function settingsChangeListener(msg, sender, sendResponse) {
-            if (msg.from === 'popup' && msg.type == 'settings_change') {
+            if ((msg.from === 'popup' && msg.type == 'settings_change')||(msg.from === 'frame' && msg.type == 'delete_bookmark')) {
                 chrome.runtime.onMessage.removeListener(settingsChangeListener);
                 if(timer) {
                     clearInterval(timer)

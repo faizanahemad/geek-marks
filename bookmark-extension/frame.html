@@ -43,19 +43,12 @@
 </div>
 <script id="bookmark-bar-template" type="text/x-handlebars-template">
     <div class="container-fluid">
-        <div class="row">
+        <div class="row" style="margin-top: 6px;">
             <div class="col-md-12">
                 <a class="pull-left btn btn-success" id="browse-button-id" href="" target="_blank">Bookmarks</a>
-                <div class="pull-right">
-                    {{#each colors}}
-                    {{#if active}}
-                    <button id="color-button-{{@index}}" class="btn btn-sm" style="border: 3px solid #e9e9e9;border-radius: 2px;background-color:{{this.color}};"></button>
-                    {{else}}
-                    <button id="color-button-{{@index}}" class="btn btn-sm"
-                            style="background-color:{{this.color}}"></button>
-                    {{/if}}
-                    {{/each}}
-                </div>
+                <a id="delete-button-id" class="pull-right btn btn-link btn-lg youtube-timer-delete">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
             </div>
         </div>
         <div class="row">
