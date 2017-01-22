@@ -4,17 +4,18 @@
 - Unable to save, you are offline modal/tooltip/popup when any post API fails
 - If save fails due to logged out then open login page, after user logs in, resave.
 - exponential decay sync if extension not in use
-- Color preferences save
-- Default styles not picked up on selected sites
 - Resize and reposition by drag drop
 - Secure send password over http by hashing
 - Fix logout issues by migrating to a persist store for sessions
 - dev mode, forgot password on login page
+- Ability to create collections
+- Tag heirarchy creation
+- show similar titles from your current bookmarks by matching after stop-word filtering
 - Migrate to PouchDB
 - Active conditions - match path
 - fuzzy search based on text distance, show similar pages to this that you have bookmarked. Group similar pages together in browse view.
 - Tag autofill, tag pages automatically.
-- default link color, online sync as a limited buffered Api. Keep ids to be synced, api call to online server in 1 min with those.
+- online sync as a limited buffered Api. Keep ids to be synced, api call to online server in 1 min with those.
 - Handle runtime.lastError where possible in chrome.* apis
 - Resync if Client version > DB version
 - Unify login/sign_up for all layers
