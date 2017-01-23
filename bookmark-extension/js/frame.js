@@ -124,24 +124,28 @@ function renderTags() {
         }
     });
     storage.getAllTags().then(tags=> {
-            $(taggle.getInput()).autocomplete({
-                                                  source: tags.concat(pageTagWords), // See jQuery UI documentaton for
-                                                                // options
-                                                  appendTo: taggle.getContainer(),
-                                                  position: {
-                                                      at: "left bottom",
-                                                      of: taggle.getContainer()
-                                                  },
-                                                  select: function (event, data) {
-                                                      event.preventDefault();
-                                                      //Add the tag if user clicks
-                                                      if (event.which === 1) {
-                                                          taggle.add(data.item.value);
-                                                      }
+        var tagSet = new Set(tags);
+        pageTagWords.forEach(tw=>tagSet.add(tw));
+        $(taggle.getInput()).autocomplete({
+                                              source: Array.from(tagSet), // See jQuery UI
+                                                                                 // documentaton
+                                                                                 // for
+                                              // options
+                                              appendTo: taggle.getContainer(),
+                                              position: {
+                                                  at: "left bottom",
+                                                  of: taggle.getContainer()
+                                              },
+                                              select: function (event, data) {
+                                                  event.preventDefault();
+                                                  //Add the tag if user clicks
+                                                  if (event.which === 1) {
+                                                      taggle.add(data.item.value);
                                                   }
-                                              });
+                                              }
+                                          });
 
-        }, console.error);
+    }, console.error);
 }
 
 function sendIframeAreaChange(style) {

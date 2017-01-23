@@ -1,8 +1,8 @@
 ### TODO (Features)
-- Rename difficulty to rating
-- search should have option to not show useless
-- Unable to save, you are offline modal/tooltip/popup when any post API fails
 - If save fails due to logged out then open login page, after user logs in, resave.
+- search should have option to not show useless
+- Rename difficulty to rating
+- Unable to save, you are offline modal/tooltip/popup when any post API fails
 - exponential decay sync if extension not in use
 - Resize and reposition by drag drop
 - Secure send password over http by hashing
@@ -23,13 +23,10 @@
 - do payload validation at client end and only post to server if a valid payload is present.
 - Admin Login
 - Bucketing tags into topics to support wider use on other sites,
-- User preference to start the browse page with selected config, allow creation of custom browse pages
 - Add link to previous entry since the topic is same/similar
 - Shift to MongoDB
-- Migrate to linux
 - Auth Token + Https + Bookmarklet (color thousand or less)
 - Support Annotations
-- Have a blacklist option to not show on pages like fb/scoopwhoop
 - Offline save for reading, show online version if net available
 - Give a use only offline option
 - Per user metadata like used tags etc.
@@ -37,10 +34,13 @@
 - Tag Detection and suggestion
 - Make extension as your new tab page.
 - Show most rated/visited hosts in the new tab page
-- Edit tags to already added bookmark from browse page
  
 
-
+### Browse Page Improvements
+- Show notes as well
+- Decide whether to allow edit abilities
+- Compact View to be more compact and row borders among each entry more prominent.
+- User preference to start the browse page with selected config, allow creation of custom browse pages
 
 
 ### TODO (Refactoring/Code changes)
