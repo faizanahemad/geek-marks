@@ -6,6 +6,18 @@ function getCookies(domain, name, callback) {
     });
 }
 var loginStatus = {login:false};
+function broadcast(msg) {
+    msg = msg || {};
+    msg.from = "background_page";
+    chrome.tabs.query({windowType:"normal"},(tabs)=>{
+        tabs.forEach(tab=>{
+            chrome.tabs.sendMessage(tab.id,msg);
+        })
+    })
+}
+function broadcastStoreChange() {
+    broadcast({type:"storage_change"})
+}
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if(sender && sender.tab && sender.tab.id) {
         chrome.tabs.sendMessage(sender.tab.id, msg);
@@ -115,11 +127,15 @@ function addStorageListeners() {
                     break;
                 case "insert_or_update":
                     storage.insertOrUpdateEntry(msg.entry,msg.userId).then(docs=>{
-                        sendResponse(docs)
+                        sendResponse(docs);
+                        broadcastStoreChange();
                     });
                     break;
                 case "remove":
-                    storage.remove(msg.id,msg.userId).then(docs=>sendResponse(docs));
+                    storage.remove(msg.id,msg.userId).then(docs=>{
+                        sendResponse(docs);
+                        broadcastStoreChange();
+                    });
                     break;
                 case "visit":
                     storage.logVisit(msg.id,msg.userId).then(docs=>sendResponse(docs));

@@ -2,7 +2,7 @@ var displayData = {
     useless:false
 };
 var combinedSetting = {};
-var body = document.getElementsByTagName("body")[0];
+var body;
 var anchorm = function (text) {
     return anchorme(text,{
         attributes:{
@@ -205,7 +205,7 @@ function render() {
     var template = Handlebars.compile(templateString);
     var html = template(displayData);
     htmlArea.innerHTML = html;
-
+    chromeStorage.getCombinedSettings().then(data=>$.extend(true,combinedSetting,data)).then(()=>setDisplayStatus(combinedSetting.settings.show_on_load,combinedSetting));
     var simplemde = new SimpleMDE({
         element: document.getElementById("editable-note"),
         placeholder:"Enter Note Content...",
@@ -249,7 +249,6 @@ function render() {
 
     document.getElementById(browseButtonId).href = browsePageUrl;
     addDomHandlers(simplemde);
-    chromeStorage.getCombinedSettings().then(data=>$.extend(true,combinedSetting,data)).then(()=>setDisplayStatus(combinedSetting.settings.show_on_load,combinedSetting));
 }
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {

@@ -4,13 +4,6 @@ var ChromeStorage = class ChromeStorage {
         this.globalKey = "bookmarks_extension_global_settings"
     }
 
-    _processDomainName(domain) {
-        if(domain.startsWith("www.")) {
-            domain = domain.substring(4);
-        }
-        return domain;
-    }
-
     _transformForStorage(item){
         item = item || {};
         item.style = item.style || {};
@@ -130,7 +123,7 @@ var ChromeStorage = class ChromeStorage {
     }
 
     getSpecificSiteSettings(domain) {
-        domain = this._processDomainName(domain);
+        domain = processDomainName(domain);
         var self = this;
         return self.get(domain)
             .then(data=>{
@@ -184,7 +177,7 @@ var ChromeStorage = class ChromeStorage {
     }
 
     setSpecificSiteSettings(domain, settings) {
-        domain = this._processDomainName(domain);
+        domain = processDomainName(domain);
         var self = this;
         settings = this._transformForStorage(settings);
         var store = {};

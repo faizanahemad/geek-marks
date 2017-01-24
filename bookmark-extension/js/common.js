@@ -92,3 +92,13 @@ function timedPromise(promise,time) {
     });
     return timedPromise;
 }
+function processDomainName(domain) {
+    if(domain.startsWith("www.")) {
+        domain = domain.substring(4);
+    }
+    return domain;
+}
+function clearResources(resources) {
+    resources.timers.forEach(t=>clearInterval(t))
+    resources.listeners.forEach(r=>chrome.runtime.onMessage.removeListener(r))
+}

@@ -1,7 +1,7 @@
 function init() {
     cleanPage();
     enableComments();
-    addListeners();
+    var resources = addListeners();
     chromeStorage.getCombinedSettings().then(data=>{
         setStyle(data.style.color);
         if(data.settings.notes) {
@@ -19,23 +19,26 @@ function init() {
                     clearInterval(initialTimer)
                 }
             }, 100);
-            continuousTimer = setInterval(function () {
-                if(document.hasFocus()) {
-                    refreshDisplay()
-                }
-            },5000);
         }
-        return continuousTimer;
-    }).then(timer=>{
+        return resources;
+    }).then(resources=>{
+        var locationTimer;
         function settingsChangeListener(msg, sender, sendResponse) {
             if ((msg.from === 'popup' && msg.type == 'settings_change')||(msg.from === 'frame' && msg.type == 'delete_bookmark')) {
-                chrome.runtime.onMessage.removeListener(settingsChangeListener);
-                if(timer) {
-                    clearInterval(timer)
-                }
+                clearResources(resources);
                 init();
             }
         }
         chrome.runtime.onMessage.addListener(settingsChangeListener);
+        resources.listeners.push(settingsChangeListener);
+        var curHref = location.href;
+        locationTimer = setInterval(()=>{
+            if(location.href!==curHref) {
+                clearResources(resources);
+                init();
+            }
+        },500);
+        resources.timers.push(locationTimer);
+        return timer;
     })
 }

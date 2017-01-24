@@ -32,7 +32,7 @@ function createIframe(data) {
         iframe.style.right = style.right+ "px";
         iframe.style.width = style.width + "px";
 
-        iframe.style.right = style.right+ "px";
+        iframe.style.height = style.height+ "px";
         if(data.settings && data.settings.show_on_load) {
         } else {
             iframe.style.height = frameHiddenStyleDefault.height+ "px";
@@ -65,6 +65,7 @@ function renderLinks() {
             e.getElementsByClassName("useless-indicator")[0].remove();
         }
     });
+    redirectedLinkColoring();
 }
 
 function recordVisit(id) {
@@ -184,7 +185,14 @@ function updateStorage(data) {
     });
 }
 function addListeners() {
-    chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+    var refreshDisplayIndicator = false;
+    var refreshTimer = setInterval(()=>{
+        if (refreshDisplayIndicator && document.hasFocus()) {
+            refreshDisplay();
+            refreshDisplayIndicator = false;
+        }
+    },1000);
+    function eventListener(msg, sender, sendResponse) {
         if (msg.from === 'frame' && msg.type == 'frame_size_change' && msg.width && msg.height) {
             var frame=document.getElementById(iframeId);
             frame.style.width = msg.width+ "px";
@@ -193,6 +201,10 @@ function addListeners() {
             frame.style.right = msg.right+ "px";
         } else if (msg.from === 'frame' && msg.type == 'request_cld') {
             sendCLD(3);
+        } else if (msg.from === 'background_page' && msg.type == 'storage_change') {
+            refreshDisplayIndicator = true;
         }
-    });
+    }
+    chrome.runtime.onMessage.addListener(eventListener);
+    return {listeners:[eventListener],timers:[refreshTimer]}
 }

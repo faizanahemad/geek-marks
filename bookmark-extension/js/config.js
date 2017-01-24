@@ -18,12 +18,17 @@ var getDeleteUrl = function (id) {
 };
 var dbName = "history.db";
 
+var redirectsConfig = {
+    "geeksforgeeks.org":["archives"],
+    "quiz.geeksforgeeks.org":["archives"]
+}
+
 var globalSettings = {
     "style":{
         "color":3,
         "top":21,
         "right":21,
-        "height":570,
+        "height":580,
         "width":360
     },
     "settings":{

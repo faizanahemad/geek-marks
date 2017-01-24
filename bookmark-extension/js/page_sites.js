@@ -200,3 +200,42 @@ function enableComments() {
         a.click();
     }
 }
+function redirectedLinkColoring() {
+    atags.forEach(e=>{
+        var domain = processDomainName(e.hostname);
+        if(redirectsConfig[domain]) {
+            var pathname = e.pathname;
+            if(pathname.indexOf("/")===0)
+                pathname = pathname.substring(1);
+            if(pathname.lastIndexOf("/")===(pathname.length-1))
+                pathname = pathname.substring(0,pathname.length-1);
+
+            console.log(pathname);
+            var followCondition = redirectsConfig[domain].reduce((prev,rc)=>{
+                if(prev)
+                    return prev;
+                else {
+                   return pathname.indexOf(rc)===0
+                }
+            },false);
+            if(followCondition) {
+                fetch(e.href,{method:'head',redirect:'follow'})
+                    .then(res=>res.url,console.error).then(href=>{
+                    if (hrefMap.has(href)) {
+                        var linkConfig = hrefMap.get(href);
+                        var df = linkConfig.difficulty || -1;
+                        if (df>-1) {
+                            e.style = levelStyleMap.get(df);
+                        }
+                        if (linkConfig.useless && e.getElementsByClassName("useless-indicator").length==0) {
+                            e.append(htmlToElement(uselessIndicatorSpan))
+                        } else if (!linkConfig.useless && e.getElementsByClassName("useless-indicator").length>0) {
+                            e.getElementsByClassName("useless-indicator")[0].remove();
+                        }
+                    }
+                })
+            }
+        }
+        return false;
+    })
+}
