@@ -177,7 +177,7 @@ var NedbStore = class NedbStore {
                     userId) {
         var query = {useless:false};
         if (userId) {
-            query = query.userId = userId;
+            query.userId = userId;
         } else {
             return Promise.reject("User Id not specified");
         }
