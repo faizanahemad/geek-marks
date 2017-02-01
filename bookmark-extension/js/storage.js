@@ -12,7 +12,7 @@ superagent.getTimed = function (url, time) {
         },(err)=>reject(err));
     });
     return loginPromise;
-}
+};
 var postInput = function postInput(data) {
     var storageData = $.extend(true, {}, data);
 
@@ -33,13 +33,25 @@ var postInput = function postInput(data) {
     return superagent.postAsync(entryUrl, postData).then(res=>res.body,console.error);
 };
 
+superagent.postTimed = function (url, data) {
+    return timedPromise(superagent.postAsync(url,data),apiTimeout)
+}
+var postInputTimed = function (data) {
+    return timedPromise(postInput(data),apiTimeout)
+}
+
 var deleteEntry = function deleteEntry(id) {
     return superagent.deleteAsync(getDeleteUrl(id)).then(undefined,console.error);
 };
+var deleteEntryTimed = function (id) {
+    return timedPromise(deleteEntry(id),apiTimeout)
+}
 var putVisit = function putVisit(id) {
     return superagent.putAsync(getVisitUrl(id))
 };
-
+var putVisitTimed = function (id) {
+    return timedPromise(putVisit(id),apiTimeout)
+}
 function reconcile(userId, storage, total) {
     return storage.getAllCount(userId).then(count=>{
         if(count==total)
@@ -60,7 +72,7 @@ function sync(userId,storage) {
     if(userId) {
         return storage.getDbVersion(userId)
             .then(version=>{
-                return superagent.postAsync(syncUrl,{version:version})
+                return superagent.postTimed(syncUrl,{version:version})
             }).then(res=>res.body)
             .then(body=>{
                 if(body) {
@@ -176,14 +188,14 @@ var Storage = class Storage {
 
     insertOrUpdateEntry(entry, userId) {
         var self = this;
-        return postInput(entry).then(doc=>{
+        return postInputTimed(entry).then(doc=>{
             return self._insertOrUpdateEntry(doc);
         },console.error)
     }
 
     remove(id, userId) {
         var self = this;
-        return deleteEntry(id).then(()=>{
+        return deleteEntryTimed(id).then(()=>{
             return self.db.get(id).then(doc=>self.db.remove(doc),console.error)
         },console.error)
     }
@@ -195,7 +207,7 @@ var Storage = class Storage {
 
     logVisit(id, userId) {
         var self = this;
-        return putVisit(id).then((doc)=>{
+        return putVisitTimed(id).then((doc)=>{
             self.db.get(id).then(localDoc=>{
                 if (localDoc) {
                     localDoc.visits = doc.visits;

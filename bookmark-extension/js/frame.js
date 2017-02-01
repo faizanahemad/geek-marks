@@ -1,6 +1,7 @@
 var displayData = {
     useless:false
 };
+var cld = {useless:false};
 var combinedSetting = {};
 var body;
 var anchorm = function (text) {
@@ -59,18 +60,25 @@ var toggleDisplayStatus = ()=>{
     chromeStorage.updateSiteSettings({settings:{show_on_load:combinedSetting.settings.show_on_load}})
 };
 
+function storageFailureHandler() {
+    displayData = {};
+    $.extend(true,displayData,cld);
+    render();
+}
+
 function updateStorage() {
     storage.insertOrUpdateEntry(displayData).then(doc=>{
         $.extend(displayData,doc);
         initialiseDifficultyButton()
-    });
+    },storageFailureHandler);
 }
 function deleteFromStorage() {
     if(displayData._id) {
-        storage.remove(displayData._id).then(()=>sendMessage({from:"frame",type:"delete_bookmark"}))
+        storage.remove(displayData._id).then(()=>sendMessage({from:"frame",type:"delete_bookmark"}),storageFailureHandler)
     }
 }
 function initialiseDifficultyButton() {
+    $("#difficulty-input").rating('destroy');
     $("#difficulty-input").rating({
                                       min: 0,
                                       max: 5,
@@ -257,6 +265,7 @@ function addListeners() {
             displayData = msg;
             displayData.note = displayData.note || "";
             displayData.useless = msg.useless;
+            $.extend(true,cld,msg);
 
         }
     });
@@ -264,6 +273,7 @@ function addListeners() {
         if (msg.from === 'content_script' && msg.type == 'page_content_render') {
             timer("CLD sequence="+msg.sequence);
             $.extend(true,displayData,msg);
+            $.extend(true,cld,msg);
             displayData.note = displayData.note || "";
             render();
 

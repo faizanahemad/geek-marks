@@ -8,7 +8,6 @@ function init() {
             createIframe(data);
         }
         prepareData(true);
-        var continuousTimer;
         if(data.settings.bookmarks)
         {
             sendBookmarksRequest();

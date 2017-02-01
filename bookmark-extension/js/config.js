@@ -1,5 +1,7 @@
 var serverUrl = "http://139.162.25.64:8443";
 var serverUrlHttps = "https://139.162.25.64:8444";
+var loginApi = serverUrl + "/login_api";
+var loginUrl = serverUrl + "/login";
 var healthUrl = "%server%/health".replace("%server%",serverUrlHttps);
 var checkLoginUrl = "%server%/check_login".replace("%server%",serverUrl);
 var externalLogin = "%server%/extension-login.html".replace("%server%",serverUrl);
@@ -170,3 +172,5 @@ var defaultSettingsMap = {
         }
     }
 };
+var apiTimeout = 10000;
+var SEND_RESPONSE_AS_FAILURE = "SEND_RESPONSE_AS_FAILURE";

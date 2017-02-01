@@ -6,7 +6,9 @@ function sendUserIdRequest() {
 }
 var Storage = class Storage {
     constructor() {
-        this.userIdPromise = sendUserIdRequest();
+        this.userId = "";
+        var self = this;
+        sendUserIdRequest().then(userId=>self.userId = userId)
     }
 
     _proxy(data,type) {
@@ -14,10 +16,8 @@ var Storage = class Storage {
         msg.from = "storage_proxy";
         msg.type = type;
         msg = $.extend(msg,data);
-        return this.userIdPromise.then((userId)=>{
-            msg.userId = userId;
-            return sendMessage(msg);
-        },console.error)
+        msg.userId = this.userId;
+        return sendMessage(msg);
     }
 
     getAll() {

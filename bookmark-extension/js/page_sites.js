@@ -210,7 +210,6 @@ function redirectedLinkColoring() {
             if(pathname.lastIndexOf("/")===(pathname.length-1))
                 pathname = pathname.substring(0,pathname.length-1);
 
-            console.log(pathname);
             var followCondition = redirectsConfig[domain].reduce((prev,rc)=>{
                 if(prev)
                     return prev;

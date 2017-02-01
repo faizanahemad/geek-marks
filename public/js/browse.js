@@ -49,7 +49,8 @@ var TagManager = class TagManager {
     }
 
     fetchAll() {
-        this.tags = superagent.getAsync("/bookmarks/tags").then(req=>req.body, console.error);
+        this.tags = superagent.getAsync("/bookmarks/tags")
+            .then(req=>req.body, console.error).then(tags=>tags.sort());
         return this;
     }
 
@@ -124,6 +125,7 @@ var visitedWithinElem = document.getElementById("visitedWithinInput");
 var visitedBeforeElem = document.getElementById("visitedBeforeInput");
 var visitsGreaterThanElem = document.getElementById("visitCountInput");
 var searchElem = document.getElementById("searchInput");
+var uselessElem = document.getElementById("useless-select-input");
 var difficultyElem = Array.from(document.getElementsByName("difficultyOrder"));
 var lastVisitedElem = Array.from(document.getElementsByName("lastSeenOrder"));
 var visitsElem = Array.from(document.getElementsByName("visitsOrder"));
@@ -135,6 +137,7 @@ visitedWithinElem.onchange = onFilterChange;
 visitedBeforeElem.onchange = onFilterChange;
 visitsGreaterThanElem.onchange = onFilterChange;
 searchElem.onchange = onFilterChange;
+uselessElem.onchange = onFilterChange;
 difficultyElem.forEach(d=>d.onchange=onFilterChange);
 lastVisitedElem.forEach(d=>d.onchange=onFilterChange);
 visitsElem.forEach(d=>d.onchange=onFilterChange);
@@ -153,6 +156,7 @@ function getAllFilters() {
     var visitedBefore = parseInt(visitedBeforeElem.value);
     var visitsGreaterThan = parseInt(visitsGreaterThanElem.value);
     var search = searchElem.value;
+    var useless = uselessElem.checked;
 
     var sort = {
         difficulty: difficultyElem[0].checked ? -1 : 1,
@@ -166,6 +170,7 @@ function getAllFilters() {
         i=>i.checked).map(v=>v.value).join(",");
     var qp = {
         tags: tags,
+        useless:useless,
         difficulty: difficulty,
         search: search,
         days_within: visitedWithin,

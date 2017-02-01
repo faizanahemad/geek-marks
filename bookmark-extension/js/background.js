@@ -1,11 +1,15 @@
-function getCookies(domain, name, callback) {
-    chrome.cookies.get({"url": domain, "name": name}, function(cookie) {
-        if(callback && cookie) {
-            callback(cookie.value);
-        }
-    });
+function getCookies(domain, name) {
+    return new Promise(function (resolve, reject) {
+        chrome.cookies.get({"url": domain, "name": name}, function(cookie) {
+            if(cookie) {
+                resolve(cookie.value);
+            } else {
+                reject();
+            }
+        });
+    })
 }
-var loginStatus = {login:false};
+var loginStatus = new Promise((resolve,reject)=>resolve(false))
 function broadcast(msg) {
     msg = msg || {};
     msg.from = "background_page";
@@ -37,7 +41,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         sendResponse({from:"background_page",type:"tab_id_response",id:sender.tab.id});
     }
     if (msg && msg.from ==="content_script" && msg.type==="check_login") {
-        sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:loginStatus.login});
+        loginStatus.then((login)=>sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:login}));
+        return true;
     }
     if (msg && msg.from ==="login_extension_page" && msg.type==="login_info") {
         chrome.tabs.sendMessage(msg.id, msg);
@@ -101,11 +106,11 @@ var storage = new Storage(dbName);
 
 function backgroundSync() {
     var loginState = new Promise(function(resolve, reject) {
-        getCookies(serverUrl,"_id",(userId)=>{
+        getCookies(serverUrl,"_id").then((userId)=>{
             sync(userId,storage).then(resolve,reject);
         });
     });
-    timedPromise(loginState,2000).then(()=>loginStatus.login=true,()=>loginStatus.login=false);
+    loginStatus = timedPromise(loginState,2000).then(()=>true,()=>false);
 }
 function syncCallback() {
     backgroundSync();
@@ -120,30 +125,30 @@ function addStorageListeners() {
         if(msg.from==="storage_proxy") {
             switch (msg.type) {
                 case "get_all":
-                    storage.getAll(msg.userId).then(docs=>sendResponse(docs));
+                    storage.getAll(msg.userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
                     break;
                 case "get_all_tags":
-                    storage.getAllTags(msg.userId).then(docs=>sendResponse(docs));
+                    storage.getAllTags(msg.userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
                     break;
                 case "insert_or_update":
                     storage.insertOrUpdateEntry(msg.entry,msg.userId).then(docs=>{
                         sendResponse(docs);
                         broadcastStoreChange();
-                    });
+                    },()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
                     break;
                 case "remove":
                     storage.remove(msg.id,msg.userId).then(docs=>{
                         sendResponse(docs);
                         broadcastStoreChange();
-                    });
+                    },()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
                     break;
                 case "visit":
-                    storage.logVisit(msg.id,msg.userId).then(docs=>sendResponse(docs));
+                    storage.logVisit(msg.id,msg.userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
                     break;
                 case "user_id_query":
-                    getCookies(serverUrl,"_id",(userId)=>{
+                    getCookies(serverUrl,"_id").then((userId)=>{
                         sendResponse({from:"background_page",type:"user_id",userId:userId});
-                    });
+                    },()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
                     break;
             }
         }

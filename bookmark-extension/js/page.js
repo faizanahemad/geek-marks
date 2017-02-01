@@ -90,6 +90,9 @@ function prepareData(firstRun) {
             "pathname": location.pathname,
             "title":getTitle()
         };
+        hrefMap.clear();
+        pathMap.clear();
+        titleMap.clear();
     }
     var allPromise = storage.getAll();
     allPromise.then(locationData=>{

@@ -33,6 +33,14 @@
                     </label>
                 </div>
             </div>
+            <div id="useless-selector-area">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="useless-select-input">
+                        Show Useless
+                    </label>
+                </div>
+            </div>
             <div id="difficulty-selector-area">
                 <span class="lead">Difficulty</span>
                 <div class="checkbox">
@@ -154,17 +162,21 @@
 
         <div class="container-fluid">
             <div class="row">
-                <h4 class="text-center text-capitalize" onclick="window.open('{{href}}','mywindow');"
-                    style="cursor: pointer;">
-                    {{#if title}}
-                    {{title}}
-                    {{else if pathname}}
-                    {{pathname}}
-                    {{else}}
-                    {{href}}
-                    {{/if}}
-                </h4>
-                <a onclick="deleteBookmark('single-bookmark-area-{{_id}}','{{_id}}')" class="pull-right" style="cursor: pointer;"><span class="pull-right glyphicon glyphicon-trash"></span></a>
+                <div class="col-md-11">
+                    <h4 class="text-center text-capitalize" onclick="window.open('{{href}}','mywindow');"
+                        style="cursor: pointer;">
+                        {{#if title}}
+                        {{title}}
+                        {{else if pathname}}
+                        {{pathname}}
+                        {{else}}
+                        {{href}}
+                        {{/if}}
+                    </h4>
+                </div>
+                <div class="col-md-1">
+                    <a onclick="deleteBookmark('single-bookmark-area-{{_id}}','{{_id}}')" class="pull-right" style="cursor: pointer; margin-top: 8px;"><span class="pull-right glyphicon glyphicon-trash"></span></a>
+                </div>
             </div>
             {{#if options.compact}}
             <div class="row">

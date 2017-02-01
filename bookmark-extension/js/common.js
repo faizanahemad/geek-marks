@@ -79,7 +79,11 @@ var convertStringToSeconds = function (input) {
 function sendMessage(msg) {
     return new Promise(function (resolve, reject) {
         chrome.runtime.sendMessage(msg,(reply)=>{
-            resolve(reply);
+            if(reply===SEND_RESPONSE_AS_FAILURE) {
+                reject()
+            } else {
+                resolve(reply);
+            }
         });
     });
 }

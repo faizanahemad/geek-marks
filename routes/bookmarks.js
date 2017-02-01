@@ -23,6 +23,7 @@ module.exports = function(app) {
         var difficulties = utils.csvToArrayNumber(query.difficulty);
         var hostnames = utils.csvToArrayString(query.hostnames);
         var tags = utils.csvToArrayString(query.tags);
+        var useless = query.useless;
         var visitsGreaterThan = parseInt(query.visits_gte);
         var lastVisitedDaysWithin = parseInt(query.days_within);
         var lastVisitedDaysBeyond = parseInt(query.days_beyond);
@@ -35,6 +36,7 @@ module.exports = function(app) {
             sort[sortBy[i]] = orderBy[i];
         }
         var result = store.getAllByFilters(difficulties,
+                                           useless,
                                            hostnames,
                                            tags,
                                            visitsGreaterThan,

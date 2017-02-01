@@ -1,4 +1,7 @@
 ### TODO (Features)
+- Login issues
+- File attachments / images
+- comma separated redirects list per domain?
 - If save fails due to logged out then open login page, after user logs in, resave.
 - search should have option to not show useless
 - Rename difficulty to rating

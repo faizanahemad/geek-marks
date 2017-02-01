@@ -45,7 +45,7 @@ function login() {
         return false;
     }
 
-    superagent.post(getQueryParam("loginApi")).send(creds).set('Accept', 'application/json').endAsync()
+    superagent.post(loginApi).send(creds).set('Accept', 'application/json').endAsync()
         .then(function (response) {
             if(response.status < 210 && response.body.created) {
                 alert("User created\nemail: %email% \npassword: %password%\n\nEnable the extension on your previous page by clicking on its icon and changing its options".replace("%email%",creds.email).replace("%password%",creds.password));

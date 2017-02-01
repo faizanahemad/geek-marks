@@ -166,6 +166,7 @@ var NedbStore = class NedbStore {
     }
 
     getAllByFilters(difficulties,
+                    useless,
                     hostnames,
                     tags,
                     visitsGreaterThan,
@@ -176,9 +177,12 @@ var NedbStore = class NedbStore {
                     userId) {
         var query = {useless:false};
         if (userId) {
-            query = {userId: userId}
+            query = query.userId = userId;
         } else {
             return Promise.reject("User Id not specified");
+        }
+        if(useless) {
+            query.useless = useless;
         }
         sort = sort || {};
         var thenFunc = (v)=>v;
