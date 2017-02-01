@@ -182,7 +182,7 @@ var NedbStore = class NedbStore {
             return Promise.reject("User Id not specified");
         }
         if(useless) {
-            query.useless = useless;
+            delete query.useless
         }
         sort = sort || {};
         var thenFunc = (v)=>v;
