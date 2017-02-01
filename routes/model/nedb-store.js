@@ -32,7 +32,7 @@ var NedbStore = class NedbStore {
         var query = {};
         sort = sort || {};
         if (userId) {
-            query = {userId: userId}
+            query = {userId: userId,useless:false}
         } else {
             return Promise.reject("User Id not specified");
         }
