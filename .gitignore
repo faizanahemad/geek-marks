@@ -756,6 +756,5 @@ jspm_packages
 
 # Debug files
 
-data/history.db
-data/users.db
-data/sync.db
+
+**/.idea
