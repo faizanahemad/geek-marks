@@ -74,7 +74,7 @@ function updateStorage() {
 }
 function deleteFromStorage() {
     if(displayData._id) {
-        storage.remove(displayData._id).then(()=>sendMessage({from:"frame",type:"delete_bookmark"}),storageFailureHandler)
+        storage.remove(displayData._id).then(()=>sendMessage({from:"frame",type:"delete_bookmark"},"deleteFromStorage"),storageFailureHandler)
     }
 }
 function initialiseDifficultyButton() {
@@ -86,8 +86,23 @@ function initialiseDifficultyButton() {
                                       size: 'xs',
                                       stars: 5,
                                       showClear: false,
-                                      showCaption: false,
-                                      hoverEnabled: false
+                                      showCaption: true,
+                                      hoverEnabled: true,
+                                      clearCaptionClass: "width60 label label-default",
+                                      starCaptionClasses: {
+                                          1: 'width60 label label-ok',
+                                          2: 'width60 label label-warning',
+                                          3: 'width60 label label-info',
+                                          4: 'width60 label label-primary',
+                                          5: 'width60 label label-success'
+                                      },
+                                      starCaptions: {
+                                          1: 'Ok',
+                                          2: 'Good',
+                                          3: 'Very Good',
+                                          4: 'Awesome',
+                                          5: 'Greatest'
+                                      }
                                   });
     $('#difficulty-input').rating('update', displayData.difficulty);
     $('#difficulty-input').on('rating.change', function (event, value, caption) {
@@ -105,6 +120,7 @@ function saveNoteText(simplemde) {
 function triggerSaveIfChanged(simplemde) {
     var newNoteText = simplemde.value();
     if(newNoteText!==displayData.note) {
+        infoLogger("Current Text = "+newNoteText + " Old Text = "+displayData.note,newNoteText,displayData.note);
         saveNoteText(simplemde)
     }
 }
@@ -160,7 +176,7 @@ function sendIframeAreaChange(style) {
     style = style || {};
     var msg = {from: 'frame', type: 'frame_size_change'};
     $.extend(msg,style);
-    chrome.runtime.sendMessage(msg);
+    sendMessage(msg,"sendIframeAreaChange");
 }
 
 function addDomHandlers(simplemde) {
@@ -171,16 +187,20 @@ function addDomHandlers(simplemde) {
 
     }
 
-    setInterval(()=>{
-        triggerSaveIfChanged(simplemde)
-    },1000);
+    window.onbeforeunload = function () {
+        triggerSaveIfChanged(simplemde);
+    }
     simplemde.codemirror.on("blur", function(){
         triggerSaveIfChanged(simplemde);
     });
+    simplemde.codemirror.on("cut", function(instance , event){
+        triggerSaveIfChanged(simplemde);
+    });
+    simplemde.codemirror.on("changes", function(instance , event){
+        triggerSaveIfChanged(simplemde);
+    });
     simplemde.codemirror.on("beforeChange", function(instance , event){
-        console.log("beforeChange");
-        console.log(instance);
-        console.log(event);
+        infoLogger("beforeChange CodeMirror Event",instance,event);
         var from = event.from;
         var to = event.to;
         if (event.origin === "paste") {
@@ -261,20 +281,22 @@ function render() {
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         if (msg.from === 'content_script' && msg.type == 'page_content') {
-            timer("CLD sequence="+msg.sequence);
             displayData = msg;
+            $.extend(true,displayData,msg);
             displayData.note = displayData.note || "";
             displayData.useless = msg.useless;
-            $.extend(true,cld,msg);
+            infoLogger("Iframe Displaydata init",displayData,msg);
+            $.extend(true,cld,displayData);
 
         }
     });
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         if (msg.from === 'content_script' && msg.type == 'page_content_render') {
-            timer("CLD sequence="+msg.sequence);
             $.extend(true,displayData,msg);
-            $.extend(true,cld,msg);
             displayData.note = displayData.note || "";
+            $.extend(true,cld,displayData);
+            infoLogger("Iframe Displaydata init with Render",displayData,msg);
+        
             render();
 
         }
@@ -291,8 +313,7 @@ var renderOnload = function renderOnLoad() {
             clearInterval(renderTimer);
         }
         if (renderAttemptCount>20 && renderAttemptCount < 60) {
-            console.log("Cld request: "+renderAttemptCount);
-            sendMessage({from:"frame",type:"request_cld"})
+            sendMessage({from:"frame",type:"request_cld"},"renderOnload")
         }
         if (renderAttemptCount>120) {
             clearInterval(renderTimer);

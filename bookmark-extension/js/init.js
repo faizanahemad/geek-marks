@@ -12,7 +12,6 @@ function init() {
         {
             sendBookmarksRequest();
             var initialTimer = setInterval(function () {
-                timer("Initial Links Render Attempt");
                 if (document.readyState === "complete" || document.readyState==="interactive") {
                     firstRunDisplay();
                     clearInterval(initialTimer)

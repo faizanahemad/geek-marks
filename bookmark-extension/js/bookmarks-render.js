@@ -3,7 +3,7 @@ function sendBookmarksRequest() {
     var msg={};
     msg.from = "content_script";
     msg.type = "bookmarks_query";
-    sendMessage(msg).then(doc=>{
+    sendMessage(msg,"sendBookmarksRequest").then(doc=>{
         renderBookmarkLinks(doc.bookmarks)
     });
 }

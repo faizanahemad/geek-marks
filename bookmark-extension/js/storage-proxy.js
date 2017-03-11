@@ -2,7 +2,7 @@ function sendUserIdRequest() {
     var msg={};
     msg.from = "storage_proxy";
     msg.type = "user_id_query";
-    return sendMessage(msg).then(msg=>msg.userId);
+    return sendMessage(msg,"sendUserIdRequest").then(msg=>msg.userId);
 }
 var Storage = class Storage {
     constructor() {
@@ -17,7 +17,7 @@ var Storage = class Storage {
         msg.type = type;
         msg = $.extend(msg,data);
         msg.userId = this.userId;
-        return sendMessage(msg);
+        return sendMessage(msg,"_proxy");
     }
 
     getAll() {
@@ -36,8 +36,16 @@ var Storage = class Storage {
 
 
     insertOrUpdateEntry(entry) {
+        var stack = "";
+        try {
+            throw new Error;
+        } catch(err) {
+            stack = err.stack
+        }
+        infoLogger("Insert/Update",entry,stack);
         var msg={};
         msg.entry = entry;
+        msg.stack = stack;
         return this._proxy(msg,"insert_or_update");
     }
 

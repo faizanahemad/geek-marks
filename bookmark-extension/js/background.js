@@ -24,6 +24,7 @@ function broadcastStoreChange() {
 }
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if(sender && sender.tab && sender.tab.id) {
+        msg.tab_id = sender.tab.id;
         chrome.tabs.sendMessage(sender.tab.id, msg);
     }
     if(msg && msg.type==="settings_change") {
@@ -55,9 +56,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
             sendResponse(getLocation(msg.url))
         } else if(sender && sender.url && sender.url.indexOf("chrome-extension://")===-1) {
             sendResponse(getLocation(sender.url))
-        } else {
+        } else if(sender && sender.tab && sender.tab.url && sender.tab.url.indexOf("chrome-extension://")===-1) {
+            sendResponse(getLocation(sender.tab.url))
+        } {
             chrome.tabs.query({active:true,currentWindow: true,windowType:"normal"}, function(tabs){
-                sendResponse(getLocation(tabs[0].url));
+                if(tabs.length>0) {
+                    sendResponse(getLocation(tabs[0].url));
+                }
+            
             });
             return true;
         }
@@ -116,7 +122,7 @@ function syncCallback() {
     backgroundSync();
     setInterval(()=>{
         backgroundSync();
-    },60000);
+    },600000);
 }
 syncCallback();
 
@@ -131,10 +137,12 @@ function addStorageListeners() {
                     storage.getAllTags(msg.userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
                     break;
                 case "insert_or_update":
-                    storage.insertOrUpdateEntry(msg.entry,msg.userId).then(docs=>{
-                        sendResponse(docs);
-                        broadcastStoreChange();
-                    },()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+                    if(msg.stack && msg.from==="storage_proxy") {
+                        storage.insertOrUpdateEntry(msg.entry,msg.userId).then(docs=>{
+                            sendResponse(docs);
+                            broadcastStoreChange();
+                        },()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+                    }
                     break;
                 case "remove":
                     storage.remove(msg.id,msg.userId).then(docs=>{

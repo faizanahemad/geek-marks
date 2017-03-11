@@ -1,5 +1,5 @@
-var serverUrl = "http://139.162.25.64:8443";
-var serverUrlHttps = "https://139.162.25.64:8444";
+var serverUrl = "http://localhost:8443";
+var serverUrlHttps = "https://localhost:8444";
 var loginApi = serverUrl + "/login_api";
 var loginUrl = serverUrl + "/login";
 var healthUrl = "%server%/health".replace("%server%",serverUrlHttps);

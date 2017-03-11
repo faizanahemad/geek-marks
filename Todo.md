@@ -1,12 +1,14 @@
 ### TODO (Features)
 - Login issues
+- CSS Fix on Flipkart, prefix css with some custom stuff for content script
 - File attachments / images
+- Download data file api for downloading all content in data/ folder
 - comma separated redirects list per domain?
 - If save fails due to logged out then open login page, after user logs in, resave.
-- search should have option to not show useless
 - Rename difficulty to rating
 - Unable to save, you are offline modal/tooltip/popup when any post API fails
 - exponential decay sync if extension not in use
+- In browse page, have a Tags included and Tags excluded as separate check boxes
 - Resize and reposition by drag drop
 - Secure send password over http by hashing
 - Fix logout issues by migrating to a persist store for sessions
@@ -68,6 +70,11 @@
 - http://codepen.io/tommywang/pen/rVLBbq
 
 ### Annotations
-- http://www.annotationstudio.org/
-- https://hypothes.is/about/
+- http://aroc.github.io/side-comments-demo/
+- https://hypothes.is/contribute/
+- http://h.readthedocs.io/en/latest/
+- http://docs.annotatorjs.org/en/v1.2.x
 - https://github.com/openannotation/annotator
+- https://github.com/auth0/node-jsonwebtoken
+- http://www.annotationstudio.org/project/technology/
+- https://github.com/openannotation/annotator-store

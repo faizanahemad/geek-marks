@@ -77,7 +77,7 @@ var ChromeStorage = class ChromeStorage {
     }
 
     _currentDomainPath() {
-        return sendMessage({type:"domain_path_query"})
+        return sendMessage({type:"domain_path_query"},"_currentDomainPath")
     }
 
     get(key) {
@@ -87,8 +87,7 @@ var ChromeStorage = class ChromeStorage {
                 return self.db.get(key,function (result) {
                     if(chrome.runtime.lastError || chrome.extension.lastError) {
                         var error = chrome.runtime.lastError || chrome.extension.lastError;
-                        console.log("Error in Chrome Storage get");
-                        console.log(error);
+                        infoLogger("Error in Chrome Storage get",error);
                         resolve(false);
                     }
                     resolve(result)
@@ -130,8 +129,6 @@ var ChromeStorage = class ChromeStorage {
                 data = data||{};
                 return data[domain]
             }).then((data)=>{
-                console.log("Getting specific settings for: "+domain);
-                console.log(data);
                 return self._transformForView(data)
             })
     }

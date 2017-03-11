@@ -105,9 +105,7 @@ function prepareData(firstRun) {
             }
         });
         if (firstRun) {
-            infoLogger("CLD before Augment",cld);
             augmentCLD();
-            infoLogger("CLD after Augment",cld);
             sendCLD(1);
             if (hrefMap.has(location.href)) {
                 recordVisit(cld._id)
@@ -170,17 +168,17 @@ function sendCLD(sequence) {
     cld.from = "content_script";
     cld.type = "page_content";
     cld.sequence = sequence || -1;
-    infoLogger("Sending CLD",cld);
-    sendMessage(cld);
+    sendMessage(cld,"sendCLD");
 }
 function sendCLDWithRender(sequence) {
     cld.from = "content_script";
     cld.type = "page_content_render";
     cld.sequence = sequence || -1;
-    sendMessage(cld);
+    sendMessage(cld,"sendCLDWithRender");
 }
 
 function updateStorage(data) {
+    infoLogger("From Page Insert/Update",data);
     storage.insertOrUpdateEntry(data).then((entry)=>{
         augmentCldWithData(entry);
         sendCLDWithRender();

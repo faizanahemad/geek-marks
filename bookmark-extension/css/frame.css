@@ -204,3 +204,16 @@
     color: darkred;
     cursor: pointer;
 }
+.rating-container .caption {
+    width: 60px;
+}
+.width60 {
+    width: 60px;
+    display: block;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-top: 4px;
+}
+.label-ok {
+    background-color: #ca7700;
+}

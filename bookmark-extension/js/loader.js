@@ -29,7 +29,7 @@ function popOpen(tabid) {
 }
 var superagent = Promise.promisifyAll(superagent);
 function bookmark() {
-    sendMessage({from:"content_script",type:"check_login"}).then(msg=>{
+    sendMessage({from:"content_script",type:"check_login"},"bookmark").then(msg=>{
         var id = msg.id;
         if(msg.login) {
             init();

@@ -45,13 +45,18 @@ String.prototype.replaceAll = function (search, replacement) {
 function timer(text) {
     console.log(text+":"+Date.now()+", relative time:"+(Date.now()%10000))
 }
-timer("common loaded @ " + location.href);
 
 function infoLogger(arg1, arg2, arg3, arg4) {
     console.log(arg1);
-    console.log(arg2);
-    console.log(arg3);
-    console.log(arg4);
+    if(arg2!=null && arg2!=undefined) {
+        console.log(arg2);
+    }
+    if(arg3!=null && arg3!=undefined) {
+        console.log(arg3);
+    }
+    if(arg4!=null && arg4!=undefined) {
+        console.log(arg4);
+    }
 }
 
 var convertSecondsToMinute = function (seconds) {
@@ -76,7 +81,19 @@ var convertStringToSeconds = function (input) {
         return parseInt(splittedInput[0])
     }
 }
-function sendMessage(msg) {
+function sendMessage(msg,uid) {
+    var stack = "";
+    try {
+        throw new Error;
+    } catch(err) {
+        stack = err.stack;
+    }
+    var messageString = "Sending message from:"+msg.from;
+    if(uid) {
+        messageString = uid+" : "+messageString;
+    }
+    msg.uid = uid;
+    infoLogger(messageString,msg,stack);
     return new Promise(function (resolve, reject) {
         chrome.runtime.sendMessage(msg,(reply)=>{
             if(reply===SEND_RESPONSE_AS_FAILURE) {
@@ -103,6 +120,7 @@ function processDomainName(domain) {
     return domain;
 }
 function clearResources(resources) {
+    cld = {};
     resources.timers.forEach(t=>clearInterval(t))
     resources.listeners.forEach(r=>chrome.runtime.onMessage.removeListener(r))
 }
