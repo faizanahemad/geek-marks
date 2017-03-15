@@ -181,7 +181,7 @@ function youtubeTimeCapture() {
     }
 }
 
-function cleanPage() {
+function g4gSpecific() {
     var discusPrompt = document.getElementById("onboard");
     var practiceText = document.getElementById("practice");
     var removables = [];
@@ -192,15 +192,12 @@ function cleanPage() {
             e.remove();
         }
     });
-}
-
-function enableComments() {
     var a=document.getElementById("comment");
     if(a) {
         a.click();
     }
 }
-function redirectedLinkColoring() {
+function redirectedLinkColoring(atags) {
     atags.forEach(e=>{
         var domain = processDomainName(e.hostname);
         if(redirectsConfig[domain]) {

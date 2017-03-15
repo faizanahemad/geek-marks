@@ -1,6 +1,5 @@
 function init() {
-    cleanPage();
-    enableComments();
+    g4gSpecific();
     var resources = addListeners();
     chromeStorage.getCombinedSettings().then(data=>{
         setStyle(data.style.color);
@@ -37,6 +36,6 @@ function init() {
             }
         },500);
         resources.timers.push(locationTimer);
-        return timer;
+        return resources;
     })
 }

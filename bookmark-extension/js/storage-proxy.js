@@ -1,14 +1,5 @@
-function sendUserIdRequest() {
-    var msg={};
-    msg.from = "storage_proxy";
-    msg.type = "user_id_query";
-    return sendMessage(msg,"sendUserIdRequest").then(msg=>msg.userId);
-}
 var Storage = class Storage {
     constructor() {
-        this.userId = "";
-        var self = this;
-        sendUserIdRequest().then(userId=>self.userId = userId)
     }
 
     _proxy(data,type) {
@@ -16,7 +7,6 @@ var Storage = class Storage {
         msg.from = "storage_proxy";
         msg.type = type;
         msg = $.extend(msg,data);
-        msg.userId = this.userId;
         return sendMessage(msg,"_proxy");
     }
 
@@ -36,16 +26,9 @@ var Storage = class Storage {
 
 
     insertOrUpdateEntry(entry) {
-        var stack = "";
-        try {
-            throw new Error;
-        } catch(err) {
-            stack = err.stack
-        }
-        infoLogger("Insert/Update",entry,stack);
+        stackLogger("Insert/Update",entry);
         var msg={};
         msg.entry = entry;
-        msg.stack = stack;
         return this._proxy(msg,"insert_or_update");
     }
 

@@ -996,9 +996,8 @@ var list = ["4sq",
             "z",
             "zero"];
 
-var stopWordSet = new Set();
 list = list.map(w=>w.toLowerCase());
-list.forEach(w=>stopWordSet.add(w));
+var stopWordSet = new Set(list);
 
 
 function removeStopWords(input) {
@@ -1013,10 +1012,10 @@ function removeStopWords(input) {
             }
         }
     }
+    // inputWords = [ ...new Set(inputWords) ];
     return {inputWords:inputWords,inputArray:inpArray}
 }
 function generateAutoComplete(input) {
-    var tagAutoCompleteSet = new Set();
     var input = removeStopWords(input);
     var inputArray = input.inputArray;
     var inputWords = input.inputWords;
@@ -1029,7 +1028,6 @@ function generateAutoComplete(input) {
         inputWordsTakenTwo.push(w1+" "+w2)
     }
     var words = inputWords.concat(inputWordsTakenTwo);
-    words.forEach(w=>tagAutoCompleteSet.add(w));
-    return Array.from(tagAutoCompleteSet);
+    return new Set(words);
 }
 // Use all elements of a tag for word gen: Array.from(document.getElementsByTagName("p")).map(e=>e.innerText).map(generateAutoComplete).filter(arr=>arr.length>0)

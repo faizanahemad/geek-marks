@@ -148,8 +148,8 @@ function renderTags() {
         }
     });
     storage.getAllTags().then(tags=> {
-        var tagSet = new Set(tags);
-        pageTagWords.forEach(tw=>tagSet.add(tw));
+        var tagSet = pageTagWords;
+        tags.forEach(tw=>tagSet.add(tw));
         $(taggle.getInput()).autocomplete({
                                               source: Array.from(tagSet), // See jQuery UI
                                                                                  // documentaton
@@ -189,15 +189,23 @@ function addDomHandlers(simplemde) {
 
     window.onbeforeunload = function () {
         triggerSaveIfChanged(simplemde);
-    }
+    };
     simplemde.codemirror.on("blur", function(){
         triggerSaveIfChanged(simplemde);
     });
     simplemde.codemirror.on("cut", function(instance , event){
         triggerSaveIfChanged(simplemde);
     });
+    var timing = false;
     simplemde.codemirror.on("changes", function(instance , event){
-        triggerSaveIfChanged(simplemde);
+        if(!timing) {
+            timing = true;
+            var to = setTimeout(()=>{
+                triggerSaveIfChanged(simplemde);
+                timing = false;
+                clearTimeout(to);
+            },2000)
+        }
     });
     simplemde.codemirror.on("beforeChange", function(instance , event){
         infoLogger("beforeChange CodeMirror Event",instance,event);
@@ -278,28 +286,40 @@ function render() {
     document.getElementById(browseButtonId).href = browsePageUrl;
     addDomHandlers(simplemde);
 }
+
+function getTabId() {
+    return new Promise(function (resolve, reject) {
+        chrome.tabs.getCurrent(function(tab){
+            if(tab && tab.id) {
+                resolve(tab.id)
+            } else {
+                reject("Unable to get current tab id")
+            }
+        })
+    });
+}
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-        if (msg.from === 'content_script' && msg.type == 'page_content') {
-            displayData = msg;
-            $.extend(true,displayData,msg);
-            displayData.note = displayData.note || "";
-            displayData.useless = msg.useless;
-            infoLogger("Iframe Displaydata init",displayData,msg);
-            $.extend(true,cld,displayData);
+        getTabId().then((tab)=>{
+            if(sender.tab && sender.tab.id===tab) {
+                if (msg.from === 'content_script' && msg.type == 'page_content') {
+                    displayData = {};
+                    $.extend(true,displayData,msg);
+                    displayData.note = displayData.note || "";
+                    displayData.useless = msg.useless;
+                    infoLogger("Iframe Displaydata init with href:"+msg.href,displayData,msg);
+                    $.extend(true,cld,displayData);
 
-        }
-    });
-    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-        if (msg.from === 'content_script' && msg.type == 'page_content_render') {
-            $.extend(true,displayData,msg);
-            displayData.note = displayData.note || "";
-            $.extend(true,cld,displayData);
-            infoLogger("Iframe Displaydata init with Render",displayData,msg);
-        
-            render();
-
-        }
+                } else if (msg.from === 'content_script' && msg.type == 'page_content_render') {
+                    displayData = {};
+                    $.extend(true,displayData,msg);
+                    displayData.note = displayData.note || "";
+                    $.extend(true,cld,displayData);
+                    infoLogger("Iframe Displaydata init with Render with href:"+msg.href,displayData,msg);
+                    render();
+                }
+            }
+        },console.error);
     });
 }
 addListeners();
@@ -311,11 +331,9 @@ var renderOnload = function renderOnLoad() {
         if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.note!==undefined) {
             render();
             clearInterval(renderTimer);
-        }
-        if (renderAttemptCount>20 && renderAttemptCount < 60) {
+        } else if (renderAttemptCount>20 && renderAttemptCount < 60) {
             sendMessage({from:"frame",type:"request_cld"},"renderOnload")
-        }
-        if (renderAttemptCount>120) {
+        } else if (renderAttemptCount>120) {
             clearInterval(renderTimer);
         }
     },50);

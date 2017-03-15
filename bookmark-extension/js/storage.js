@@ -73,7 +73,8 @@ function sync(userId,storage) {
         return storage.getDbVersion(userId)
             .then(version=>{
                 return superagent.postTimed(syncUrl,{version:version})
-            }).then(res=>res.body)
+            })
+            .then(res=>res.body)
             .then(body=>{
                 if(body) {
                     var allPromises = body.deleted.map(d=>storage.remove(d,userId));
@@ -153,12 +154,12 @@ var Storage = class Storage {
                          selector: {userId: userId},
                      })
             .then(result=>{
-                return result.docs.filter(d=>d._id.indexOf("_metainfo_")<0)
+                return result.docs
             },console.error)
     }
 
     getAllCount(userId) {
-        return this.getAll(userId).then(doc=>doc.length)
+        return this.getAll(userId).then(doc=>doc.length-1)
     }
 
     getAllTags(userId) {

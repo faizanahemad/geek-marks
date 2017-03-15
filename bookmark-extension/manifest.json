@@ -18,12 +18,6 @@
     "cookies",
     "history",
     "storage",
-    "https://ajax.googleapis.com/",
-    "https://localhost:8444/*",
-    "https://localhost:8443/*",
-    "https://localhost:8444/",
-    "https://localhost:8443/",
-    "https://localhost:8444/check_login",
     "*://*/*"
   ],
   "web_accessible_resources": [

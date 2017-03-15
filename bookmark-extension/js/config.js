@@ -10,8 +10,10 @@ var entryUrl = "%server%/bookmarks/entry".replace("%server%", serverUrl);
 var tagsUrl = "%server%/bookmarks/tags".replace("%server%", serverUrl);
 var browsePageUrl = "%server%/browse.html".replace("%server%", serverUrl);
 var syncUrl = "%server%/bookmarks/sync".replace("%server%", serverUrl);
-var signUpApi = "%server%/create".replace("%server%", serverUrl);
-var signUpUrl = "%server%/signup.html".replace("%server%", serverUrl);
+
+var logEnabled = true;
+var stackTraceLogging = true;
+var nonRelayedTypesAndFroms = new Set(["page_content","storage_proxy", "bookmarks_query", "check_login", "login_info", "sync_request", "domain_path_query", "is_selected"]);
 var getVisitUrl = function (id) {
     return "%server%/bookmarks/visit/%id%".replace("%server%", serverUrl).replace("%id%",id);
 };

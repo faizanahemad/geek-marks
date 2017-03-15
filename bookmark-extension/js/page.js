@@ -1,6 +1,4 @@
 var body = document.getElementsByTagName("body")[0];
-var atags = Array.from(document.getElementsByTagName("a"));
-
 var hrefMap = new Map();
 var pathMap = new Map();
 var titleMap = new Map();
@@ -43,14 +41,14 @@ function createIframe(data) {
 }
 
 function renderLinks() {
-    atags = Array.from(document.getElementsByTagName("a"));
+    var atags = Array.from(document.getElementsByTagName("a"));
     atags.filter((e)=> hrefMap.has(e.href) || pathMap.has(e.pathname) || titleMap.has(e.innerText.toLowerCase().trim()))
         .forEach((e)=> {
         var linkConfig = {};
 
         if (hrefMap.has(e.href)) {
             linkConfig = hrefMap.get(e.href);
-        } else if(pathMap.has(e.pathname) && location.hostname!=="www.youtube.com") {
+        } else if(pathMap.has(e.pathname) && location.hostname!=="www.youtube.com" && e.hostname!=="www.youtube.com") {
             linkConfig = pathMap.get(e.pathname);
         } else if (titleMap.has(e.innerText.toLowerCase().trim())) {
             linkConfig = titleMap.get(e.innerText.toLowerCase().trim())
@@ -65,7 +63,7 @@ function renderLinks() {
             e.getElementsByClassName("useless-indicator")[0].remove();
         }
     });
-    redirectedLinkColoring();
+    redirectedLinkColoring(atags);
 }
 
 function recordVisit(id) {
@@ -99,11 +97,14 @@ function prepareData(firstRun) {
         locationData.forEach((e)=> {
             hrefMap.set(e["href"], e);
             pathMap.set(e["pathname"],e);
-
-            if (e.title) {
-                titleMap.set(e.title, e)
-            }
+            titleMap.set(e.title, e);
         });
+        hrefMap.delete(undefined);
+        pathMap.delete(undefined);
+        titleMap.delete(undefined);
+        hrefMap.delete(null);
+        pathMap.delete(null);
+        titleMap.delete(null);
         if (firstRun) {
             augmentCLD();
             sendCLD(1);
@@ -133,6 +134,7 @@ function augmentCLD() {
         if (location.hostname!=="www.youtube.com") {
             thisLocationData = pathMap.get(location.pathname) || {};
         } else {
+            // TODO: reconsider this logic
             var entries = Array.from(hrefMap.entries());
             var entry = entries.filter(e=>e[0].startsWith(location.href))[0];
             if(Array.isArray(entry) && entry.length==1) {
