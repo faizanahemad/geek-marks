@@ -115,7 +115,6 @@ function sendMessage(msg,uid) {
         messageString = uid+" : "+messageString;
     }
     msg.uid = uid;
-    stackLogger(messageString,msg);
     return new Promise(function (resolve, reject) {
         chrome.runtime.sendMessage(msg,(reply)=>{
             if(reply===SEND_RESPONSE_AS_FAILURE) {

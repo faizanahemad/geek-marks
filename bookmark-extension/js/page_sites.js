@@ -44,7 +44,9 @@ function getTitle() {
     if (curStrategy) {
         title = curStrategy();
     }
-    if (title.length==0) {
+    var invalidTitles=["this video is unavailable."];
+    if (title.length==0 || invalidTitles.indexOf(title.trim())!==-1) {
+        title = "";
         title = strategyArray.reduce((prev,cur)=>{
             if (prev && prev.length>0) {
                 return prev;

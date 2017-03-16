@@ -32,9 +32,9 @@ function init() {
         locationTimer = setInterval(()=>{
             if(location.href!==curHref) {
                 clearResources(resources);
-                init();
+                setTimeout(()=>init(),1000);
             }
-        },500);
+        },100);
         resources.timers.push(locationTimer);
         return resources;
     })

@@ -26,7 +26,6 @@ var Storage = class Storage {
 
 
     insertOrUpdateEntry(entry) {
-        stackLogger("Insert/Update",entry);
         var msg={};
         msg.entry = entry;
         return this._proxy(msg,"insert_or_update");
