@@ -10,7 +10,7 @@ module.exports = function(app) {
 
     app.get('/', function(req, res, next) {
         var userId = req.session.user_id;
-        var sort = {"difficulty":-1,"lastVisited":-1,"visits":-1};
+        var sort = {"lastVisited":-1,"difficulty":-1,"visits":-1};
         res.promise(store.getAll(userId,sort));
     });
     app.get('/tags', function(req, res, next) {

@@ -22,6 +22,7 @@ var DisplayBookmarks = class DisplayBookmarks {
         options = options || {};
         this.docs.then(docs=>docs.map(d=> {
             d.options = options;
+            d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM, hh:mm a")
             return d;
         })).then(docs=> {
             var html = self.template(docs);
@@ -59,6 +60,19 @@ var TagManager = class TagManager {
         this.tags.then(tags=> {
             var html = self.template(tags);
             self.elem.innerHTML = html;
+            var hiderButton = document.getElementById("tag-area-show-hide");
+            var hider = document.getElementById("tag-area-show-hide-control");
+            hiderButton.onclick = function (event) {
+                if(this.classList.contains("glyphicon-chevron-down")) {
+                    this.classList.add("glyphicon-chevron-up");
+                    this.classList.remove("glyphicon-chevron-down");
+                    hider.classList.remove("hide");
+                } else {
+                    this.classList.remove("glyphicon-chevron-up");
+                    this.classList.add("glyphicon-chevron-down");
+                    hider.classList.add("hide");
+                }
+            }
             var tagElems = Array.from(document.getElementsByName(self.tagElemsName));
             tagElems.forEach(t=>t.onchange=self.onChangeCallback)
             self.tagElems = Promise.resolve(tagElems);
@@ -126,9 +140,14 @@ var visitedBeforeElem = document.getElementById("visitedBeforeInput");
 var visitsGreaterThanElem = document.getElementById("visitCountInput");
 var searchElem = document.getElementById("searchInput");
 var uselessElem = document.getElementById("useless-select-input");
-var difficultyElem = Array.from(document.getElementsByName("difficultyOrder"));
-var lastVisitedElem = Array.from(document.getElementsByName("lastSeenOrder"));
-var visitsElem = Array.from(document.getElementsByName("visitsOrder"));
+
+var difficultyElemAsc = document.getElementById("difficultyOrderAsc");
+var difficultyElemDesc = document.getElementById("difficultyOrderDesc");
+var lastVisitedElemAsc = document.getElementById("lastSeenOrderAsc");
+var lastVisitedElemDesc = document.getElementById("lastSeenOrderDesc");
+var visitsElemAsc = document.getElementById("visitsOrderAsc");
+var visitsElemDesc = document.getElementById("visitsOrderDesc");
+
 var difficultiesElem = Array.from(document.getElementsByName("difficultyCheckBox"));
 
 
@@ -138,9 +157,14 @@ visitedBeforeElem.onchange = onFilterChange;
 visitsGreaterThanElem.onchange = onFilterChange;
 searchElem.onchange = onFilterChange;
 uselessElem.onchange = onFilterChange;
-difficultyElem.forEach(d=>d.onchange=onFilterChange);
-lastVisitedElem.forEach(d=>d.onchange=onFilterChange);
-visitsElem.forEach(d=>d.onchange=onFilterChange);
+
+difficultyElemAsc.onchange=onFilterChange;
+difficultyElemDesc.onchange=onFilterChange;
+lastVisitedElemAsc.onchange=onFilterChange;
+lastVisitedElemDesc.onchange=onFilterChange;
+visitsElemAsc.onchange=onFilterChange;
+visitsElemDesc.onchange=onFilterChange;
+
 difficultiesElem.forEach(d=>d.onchange=onFilterChange);
 
 function deleteBookmark(elemId,bookmarkId) {
@@ -148,6 +172,16 @@ function deleteBookmark(elemId,bookmarkId) {
     superagent.deleteAsync("bookmarks/entry/"+bookmarkId).then((res)=>{
         bookmarkElem.remove();
     },console.error)
+}
+
+function getSortOrder(elemAsc,elemDesc) {
+    if(elemAsc.checked) {
+        return 1
+    } else if(elemDesc.checked) {
+        return -1
+    } else {
+        return 0
+    }
 }
 
 
@@ -159,10 +193,17 @@ function getAllFilters() {
     var useless = uselessElem.checked;
 
     var sort = {
-        difficulty: difficultyElem[0].checked ? -1 : 1,
-        lastVisited: lastVisitedElem[0].checked ? -1 : 1,
-        visits: visitsElem[0].checked ? -1 : 1
+        difficulty: getSortOrder(difficultyElemAsc,difficultyElemDesc),
+        lastVisited: getSortOrder(lastVisitedElemAsc,lastVisitedElemDesc),
+        visits: getSortOrder(visitsElemAsc,visitsElemDesc)
     };
+    if(sort.difficulty==0 && sort.lastVisited==0 && sort.visits==0) {
+        sort = {
+            lastVisited: -1,
+            difficulty: -1,
+            visits: -1
+        };
+    }
     var sort_by = Object.entries(sort).map(pair=>pair[0]).join(",");
     var order_by = Object.entries(sort).map(pair=>pair[1]).join(",");
     var tags = taggle.getTagValues().join(",");

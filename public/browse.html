@@ -9,6 +9,7 @@
     <script src="lib/js/superagent.min.js"></script>
     <script src="lib/js/handlebars.min.js"></script>
     <script src="lib/js/bluebird.min.js"></script>
+    <script src="lib/js/date_fns.min.js"></script>
     <link rel="stylesheet" href="lib/css/jquery-ui.min.css">
     <link rel="stylesheet" href="lib/css/bootstrap.css">
     <link rel="stylesheet" href="css/browse.css">
@@ -33,14 +34,7 @@
                     </label>
                 </div>
             </div>
-            <div id="useless-selector-area">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" id="useless-select-input">
-                        Show Useless
-                    </label>
-                </div>
-            </div>
+
             <div id="difficulty-selector-area">
                 <span class="lead">Difficulty</span>
                 <div class="checkbox">
@@ -75,10 +69,39 @@
                 </div>
             </div>
             <div id="tag-selector-area"></div>
+
+            <div id="order-selector-area">
+                <span class="lead">Order By</span>
+                <form>
+                    <label>Difficulty</label>
+                    <div class="checkbox">
+                        <label class="checkbox-inline"><input type="checkbox" id="difficultyOrderAsc" value="asc"> Ascending</label>
+                        <label class="checkbox-inline"><input type="checkbox" id="difficultyOrderDesc" value="desc"> Descending</label>
+                    </div>
+                </form>
+                <form>
+                    <label>Last Seen</label>
+                    <div class="checkbox">
+                        <label class="checkbox-inline"><input type="checkbox" id="lastSeenOrderAsc" value="asc"> Ascending</label>
+                        <label class="checkbox-inline"><input type="checkbox" id="lastSeenOrderDesc" value="desc"> Descending</label>
+                    </div>
+                </form>
+                <form>
+                    <label>Visits</label>
+                    <div class="checkbox">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="visitsOrderAsc" value="asc"> Ascending
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="visitsOrderDesc" value="desc"> Descending
+                        </label>
+                    </div>
+                </form>
+            </div>
             <div id="date-range-selector-area">
                 <label for="visitedWithinInput">Visited within:</label>
-                <input type="number" class="form-control" id="visitedWithinInput" placeholder="365"
-                       value="365" min="0">
+                <input type="number" class="form-control" id="visitedWithinInput" placeholder="1000"
+                       value="1000" min="0">
                 <label for="visitedBeforeInput">Visited before:</label>
                 <input type="number" class="form-control" id="visitedBeforeInput" placeholder="0"
                        value="0">
@@ -88,50 +111,14 @@
                 <input type="number" class="form-control" id="visitCountInput" placeholder="0"
                        value="0" min="0">
             </div>
-            <div id="order-selector-area">
-                <span class="lead">Order By</span>
-                <form>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="difficultyOrder" value="true" checked>
-                            Difficulty Descending
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="difficultyOrder" value="false">
-                            Difficulty Ascending
-                        </label>
-                    </div>
-                </form>
-                <form>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="lastSeenOrder" value="true" checked>
-                            Last Seen Descending
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="lastSeenOrder" value="false">
-                            Last Seen Ascending
-                        </label>
-                    </div>
-                </form>
-                <form>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="visitsOrder" value="true" checked>
-                            # Visits Descending
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="visitsOrder" value="false">
-                            # Visits Ascending
-                        </label>
-                    </div>
-                </form>
+
+            <div id="useless-selector-area">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="useless-select-input">
+                        Show Useless
+                    </label>
+                </div>
             </div>
 
         </div>
@@ -162,7 +149,7 @@
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-11">
+                <div class="col-md-11 text-center">
                     <h4 class="text-center text-capitalize" onclick="window.open('{{href}}','mywindow');"
                         style="cursor: pointer;">
                         {{#if title}}
@@ -173,17 +160,16 @@
                         {{href}}
                         {{/if}}
                     </h4>
+                    <a href="{{href}}" target="_blank">{{href}}</a>
                 </div>
                 <div class="col-md-1">
-                    <a onclick="deleteBookmark('single-bookmark-area-{{_id}}','{{_id}}')" class="pull-right" style="cursor: pointer; margin-top: 8px;"><span class="pull-right glyphicon glyphicon-trash"></span></a>
+                    <a onclick="deleteBookmark('single-bookmark-area-{{_id}}','{{_id}}')" class="pull-right" style="cursor: pointer; margin-top: 16px;"><span class="pull-right glyphicon glyphicon-trash"></span></a>
                 </div>
             </div>
             {{#if options.compact}}
             <div class="row">
                 <div class="col-md-12">
-                    <div class="pull-left"><b>Host: </b><a href="{{protocol}}//{{hostname}}">{{hostname}}</a>
-                    </div>
-                    <div class="text-center"><b>Visits: </b><span>{{visits}}</span></div>
+                    <div class="pull-left"><b>Visits: </b><span>{{visits}}</span></div>
                     <div class="pull-right"><b>Difficulty: </b><span>{{difficulty}}</span></div>
                 </div>
             </div>
@@ -193,7 +179,7 @@
                         <b>Tags: </b>{{#each tags}}<span class="label label-primary">{{this}}</span>{{/each}}
                     </div>
                     <div class="pull-right">
-                        <b>Last Seen: </b> <span>{{lastVisited}}</span>
+                        <b>Last Seen: </b> <span>{{dateString}}</span>
                     </div>
                 </div>
             </div>
@@ -204,15 +190,17 @@
     {{/each}}
 </script>
 <script id="tag-area" type="text/x-handlebars-template">
-    <span class="lead">Tags</span>
-    {{#each this}}
-    <div class="checkbox">
-        <label>
-            <input id="tagCheckBox-{{this}}" name="tagCheckBox" type="checkbox" value="{{this}}">
-            {{this}}
-        </label>
+    <span class="lead">Tags&nbsp;<span id="tag-area-show-hide" class="glyphicon glyphicon-chevron-down"></span></span>
+    <div class="hide" id="tag-area-show-hide-control">
+        {{#each this}}
+        <div class="checkbox">
+            <label>
+                <input id="tagCheckBox-{{this}}" name="tagCheckBox" type="checkbox" value="{{this}}">
+                {{this}}
+            </label>
+        </div>
+        {{/each}}
     </div>
-    {{/each}}
 </script>
 <script src="js/browse.js"></script>
 </body>
