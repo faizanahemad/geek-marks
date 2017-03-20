@@ -9,6 +9,10 @@ var Storage = class Storage {
         msg = $.extend(msg,data);
         return sendMessage(msg,"_proxy");
     }
+    _proxyWithFailure(data,type) {
+        return this._proxy(data,type)
+            .then(undefined, ()=>sendMessage({from:"storage_proxy_failure",type:"storage_failure"},"_proxyWithFailure"))
+    }
 
     getAll() {
         var msg={};
@@ -28,19 +32,19 @@ var Storage = class Storage {
     insertOrUpdateEntry(entry) {
         var msg={};
         msg.entry = entry;
-        return this._proxy(msg,"insert_or_update");
+        return this._proxyWithFailure(msg,"insert_or_update");
     }
 
     remove(id) {
         var msg={};
         msg.id = id;
-        return this._proxy(msg,"remove");
+        return this._proxyWithFailure(msg,"remove");
     }
 
     logVisit(id) {
         var msg={};
         msg.id = id;
-        return this._proxy(msg,"visit");
+        return this._proxyWithFailure(msg,"visit");
     }
 };
 var storage = new Storage();

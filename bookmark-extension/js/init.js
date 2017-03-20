@@ -21,7 +21,9 @@ function init() {
     }).then(resources=>{
         var locationTimer;
         function settingsChangeListener(msg, sender, sendResponse) {
-            if ((msg.from === 'popup' && msg.type == 'settings_change')||(msg.from === 'frame' && msg.type == 'delete_bookmark')) {
+            if ((msg.from === 'popup' && msg.type == 'settings_change')||
+                (msg.from === 'frame' && msg.type == 'delete_bookmark')||
+                (msg.from==="storage_proxy_failure" && msg.type==="storage_failure")) {
                 clearResources(resources);
                 init();
             }

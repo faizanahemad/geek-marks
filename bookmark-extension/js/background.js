@@ -31,7 +31,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         chrome.tabs.sendMessage(sender.tab.id, msg);
         infoLogger("Relayed msg with href:"+msg.href+" to tabid: "+sender.tab.id,msg)
     }
-    if(msg && msg.from === 'popup' && msg.type==="settings_change") {
+    if(msg.from==="storage_proxy_failure" && msg.type==="storage_failure") {
+        loginStatus = new Promise((resolve,reject)=>resolve({login:false}));
+        userId="";
+    } else if(msg && msg.from === 'popup' && msg.type==="settings_change") {
         chrome.tabs.query({active:true,currentWindow: true,windowType:"normal"}, function(tabs){
             tabs.forEach((tab)=>{
                 chrome.tabs.sendMessage(tab.id,msg)

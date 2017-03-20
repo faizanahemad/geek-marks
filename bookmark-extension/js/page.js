@@ -5,6 +5,23 @@ var titleMap = new Map();
 var iframeId = "bookmark-iframe";
 var timeCaptureAreaId = "youtube-time-cature-area";
 var uselessIndicatorSpan = `<span class="useless-indicator" style="color: mediumvioletred;">&nbsp;[X]</span>`;
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": true,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
 
 
 
@@ -206,6 +223,8 @@ function addListeners() {
             sendCLD(3);
         } else if (msg.from === 'background_page' && msg.type == 'storage_change') {
             refreshDisplayIndicator = true;
+        } else if(msg.from==="storage_proxy_failure" && msg.type==="storage_failure") {
+            toastr["error"]("Content not saved, unable to reach servers.", "Save Error")
         }
     }
     chrome.runtime.onMessage.addListener(eventListener);

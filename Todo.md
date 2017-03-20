@@ -1,13 +1,12 @@
 ### TODO (Features)
+- Make checkLogin as Cookie check + API call , call per min from Bg page and save in promise, separate from sync
+- If save fails show you are offline modal and reset the iframe and page (init())
+- If save fails due to logged out then open login page, after user logs in, resave.
 - Login issues
 - CSS Fix on Flipkart, prefix css with some custom stuff for content script
 - File attachments / images
-- Download data file api for downloading all content in data/ folder
-- comma separated redirects list per domain?
-- If save fails due to logged out then open login page, after user logs in, resave.
 - Rename difficulty to rating
 - Unable to save, you are offline modal/tooltip/popup when any post API fails
-- exponential decay sync if extension not in use
 - In browse page, have a Tags included and Tags excluded as separate check boxes
 - Resize and reposition by drag drop
 - Secure send password over http by hashing
@@ -15,30 +14,22 @@
 - dev mode, forgot password on login page
 - Ability to create collections
 - Tag heirarchy creation
-- show similar titles from your current bookmarks by matching after stop-word filtering
 - Migrate to PouchDB
 - Active conditions - match path
 - fuzzy search based on text distance, show similar pages to this that you have bookmarked. Group similar pages together in browse view.
-- Tag autofill, tag pages automatically.
-- online sync as a limited buffered Api. Keep ids to be synced, api call to online server in 1 min with those.
 - Handle runtime.lastError where possible in chrome.* apis
 - Resync if Client version > DB version
 - Unify login/sign_up for all layers
-- Provide configurable options to store programs for various extraction logic like title/href-match
 - do payload validation at client end and only post to server if a valid payload is present.
 - Admin Login
-- Bucketing tags into topics to support wider use on other sites,
 - Add link to previous entry since the topic is same/similar
 - Shift to MongoDB
 - Auth Token + Https + Bookmarklet (color thousand or less)
 - Support Annotations
 - Offline save for reading, show online version if net available
 - Give a use only offline option
-- Per user metadata like used tags etc.
-- pagination/Infinite scroll - browse page
-- Tag Detection and suggestion
+- Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
 - Make extension as your new tab page.
-- Show most rated/visited hosts in the new tab page
  
 
 ### Browse Page Improvements
@@ -46,6 +37,7 @@
 - Decide whether to allow edit abilities
 - Compact View to be more compact and row borders among each entry more prominent.
 - User preference to start the browse page with selected config, allow creation of custom browse pages
+- pagination/Infinite scroll - browse page
 
 
 ### TODO (Refactoring/Code changes)
