@@ -32,7 +32,7 @@ var NedbStore = class NedbStore {
         var query = {};
         sort = sort || {};
         if (userId) {
-            query = {userId: userId,useless:false}
+            query = {userId: userId}
         } else {
             return Promise.reject("User Id not specified");
         }
@@ -51,31 +51,6 @@ var NedbStore = class NedbStore {
                 });
                 return Array.from(tagSet)
             }, console.error)
-    }
-
-    getAllHostnames(userId) {
-        this.getAll(userId).then((allDocs)=> {
-            var hostSet = new CSet();
-            allDocs.forEach(d=> {
-                hostSet.add(d.hostname)
-            });
-            return Array.from(hostSet)
-        }, console.error)
-    }
-
-    getByHostnames(hostnames, userId) {
-        var query = {};
-        if (userId) {
-            query = {userId: userId}
-        } else {
-            return Promise.reject("User Id not specified");
-        }
-        if (Array.isArray(hostnames)) {
-            query.hostname = {$in: hostnames};
-            return this.db.findAsync(query, console.error);
-        } else {
-            return Promise.resolve([]);
-        }
     }
 
     logVisit(id,userId) {

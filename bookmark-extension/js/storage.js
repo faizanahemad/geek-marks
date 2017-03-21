@@ -184,7 +184,7 @@ var Storage = class Storage {
             } else {
                 return self.db.put(entry).then((data)=>self.db.get(data.id));
             }
-        },()=>self.db.put(entry).then((data)=>self.db.get(data.id)))
+        },(err)=>self.db.put(entry).then((data)=>self.db.get(data.id)))
     }
 
     insertOrUpdateEntry(entry, userId) {

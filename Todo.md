@@ -7,6 +7,7 @@
 - File attachments / images
 - Rename difficulty to rating
 - Unable to save, you are offline modal/tooltip/popup when any post API fails
+- detect content type - audio/video/article etc.
 - In browse page, have a Tags included and Tags excluded as separate check boxes
 - Resize and reposition by drag drop
 - Secure send password over http by hashing

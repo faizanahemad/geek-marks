@@ -225,10 +225,8 @@ function redirectedLinkColoring(atags) {
                         if (df>-1) {
                             e.style = levelStyleMap.get(df);
                         }
-                        if (linkConfig.useless && e.getElementsByClassName("useless-indicator").length==0) {
-                            e.append(htmlToElement(uselessIndicatorSpan))
-                        } else if (!linkConfig.useless && e.getElementsByClassName("useless-indicator").length>0) {
-                            e.getElementsByClassName("useless-indicator")[0].remove();
+                        if (linkConfig.useless) {
+                            e.style = levelStyleMap.get(0);
                         }
                     }
                 })

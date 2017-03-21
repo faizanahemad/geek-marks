@@ -20,7 +20,7 @@ var DisplayBookmarks = class DisplayBookmarks {
     render(options) {
         var self = this;
         options = options || {};
-        this.docs.then(docs=>docs.map(d=> {
+        this.docs.then(docs=>docs.filter(d=>!d.useless).map(d=> {
             d.options = options;
             d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM, hh:mm a")
             return d;

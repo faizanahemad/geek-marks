@@ -117,19 +117,25 @@ function accumulateBookmarks(root, accumulator) {
 var storage = new Storage(dbName);
 
 function backgroundSync() {
+    infoLogger("Background sync started at:"+Date.now());
     var loginState = new Promise(function(resolve, reject) {
         getCookies(serverUrl,"_id").then((userId)=>{
             sync(userId,storage).then(()=>resolve(userId),reject);
         });
     });
-    loginStatus = timedPromise(loginState,2000).then((userId)=>{return {userId:userId,login:true}},()=>{return {login:false}});
+    loginStatus = timedPromise(loginState,2000).then((userId)=>{
+        infoLogger("Setting userId and login=true at:"+Date.now())
+        return {userId:userId,login:true}
+    },()=>{
+        return {login:false}
+    });
     loginStatus.then(u=>{
         if(u.login) {
             userId = u.userId
         } else {
             userId = "";
         }
-    })
+    }).then(()=>infoLogger("Sync completed successfully at:"+Date.now()))
 }
 function syncCallback() {
     backgroundSync();
