@@ -44,7 +44,9 @@ function getTitle() {
     if (curStrategy) {
         title = curStrategy();
     }
-    if (title.length==0) {
+    var invalidTitles=["this video is unavailable."];
+    if (title.length==0 || invalidTitles.indexOf(title.trim())!==-1) {
+        title = "";
         title = strategyArray.reduce((prev,cur)=>{
             if (prev && prev.length>0) {
                 return prev;
@@ -181,7 +183,7 @@ function youtubeTimeCapture() {
     }
 }
 
-function cleanPage() {
+function g4gSpecific() {
     var discusPrompt = document.getElementById("onboard");
     var practiceText = document.getElementById("practice");
     var removables = [];
@@ -192,15 +194,12 @@ function cleanPage() {
             e.remove();
         }
     });
-}
-
-function enableComments() {
     var a=document.getElementById("comment");
     if(a) {
         a.click();
     }
 }
-function redirectedLinkColoring() {
+function redirectedLinkColoring(atags) {
     atags.forEach(e=>{
         var domain = processDomainName(e.hostname);
         if(redirectsConfig[domain]) {
@@ -226,10 +225,8 @@ function redirectedLinkColoring() {
                         if (df>-1) {
                             e.style = levelStyleMap.get(df);
                         }
-                        if (linkConfig.useless && e.getElementsByClassName("useless-indicator").length==0) {
-                            e.append(htmlToElement(uselessIndicatorSpan))
-                        } else if (!linkConfig.useless && e.getElementsByClassName("useless-indicator").length>0) {
-                            e.getElementsByClassName("useless-indicator")[0].remove();
+                        if (linkConfig.useless) {
+                            e.style = levelStyleMap.get(0);
                         }
                     }
                 })

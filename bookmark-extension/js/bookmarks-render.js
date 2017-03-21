@@ -10,15 +10,12 @@ function sendBookmarksRequest() {
 
 function renderBookmarkLinks(bookmarks) {
     var hrefBookmarkSet = new Set();
-    var titleBookmarkSet = new Set();
     bookmarks.forEach(b=>{
         hrefBookmarkSet.add(b.url);
-        titleBookmarkSet.add(b.title);
     });
     var atags = Array.from(document.getElementsByTagName("a"));
-    atags.filter((e)=>hrefBookmarkSet.has(e.href) || titleBookmarkSet.has(e.innerText.toLowerCase().trim()))
-        .forEach((e)=>{
-            if(e.getElementsByClassName("bookmarks-indicator").length==0) {
+    atags.forEach((e)=>{
+            if(hrefBookmarkSet.has(e.href) && e.getElementsByClassName("bookmarks-indicator").length==0) {
                 e.append(htmlToElement(bookmarkIndicatorSpan))
             }
         });

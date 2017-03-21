@@ -1,6 +1,5 @@
 function init() {
-    cleanPage();
-    enableComments();
+    g4gSpecific();
     var resources = addListeners();
     chromeStorage.getCombinedSettings().then(data=>{
         setStyle(data.style.color);
@@ -22,7 +21,9 @@ function init() {
     }).then(resources=>{
         var locationTimer;
         function settingsChangeListener(msg, sender, sendResponse) {
-            if ((msg.from === 'popup' && msg.type == 'settings_change')||(msg.from === 'frame' && msg.type == 'delete_bookmark')) {
+            if ((msg.from === 'popup' && msg.type == 'settings_change')||
+                (msg.from === 'frame' && msg.type == 'delete_bookmark')||
+                (msg.from==="storage_proxy_failure" && msg.type==="storage_failure")) {
                 clearResources(resources);
                 init();
             }
@@ -33,10 +34,10 @@ function init() {
         locationTimer = setInterval(()=>{
             if(location.href!==curHref) {
                 clearResources(resources);
-                init();
+                setTimeout(()=>init(),1000);
             }
-        },500);
+        },100);
         resources.timers.push(locationTimer);
-        return timer;
+        return resources;
     })
 }

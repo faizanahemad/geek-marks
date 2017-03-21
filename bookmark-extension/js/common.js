@@ -46,19 +46,47 @@ function timer(text) {
     console.log(text+":"+Date.now()+", relative time:"+(Date.now()%10000))
 }
 
-function infoLogger(arg1, arg2, arg3, arg4) {
-    console.log(arg1);
-    if(arg2!=null && arg2!=undefined) {
-        console.log(arg2);
+var doNothingFunc = ()=>{};
+
+function getLogger() {
+
+    var infoLogger = function(arg1, arg2, arg3, arg4) {
+        console.log(arg1);
+        if(arg2!=null && arg2!=undefined) {
+            console.log(arg2);
+        }
+        if(arg3!=null && arg3!=undefined) {
+            console.log(arg3);
+        }
+        if(arg4!=null && arg4!=undefined) {
+            console.log(arg4);
+        }
     }
-    if(arg3!=null && arg3!=undefined) {
-        console.log(arg3);
-    }
-    if(arg4!=null && arg4!=undefined) {
-        console.log(arg4);
+    if(logEnabled) {
+        return infoLogger;
+    } else {
+        return doNothingFunc;
     }
 }
 
+var infoLogger = getLogger();
+function getStackLogger() {
+    var stackLogger = function(arg1, arg2, arg3) {
+        var stack = "";
+        try {
+            throw new Error;
+        } catch(err) {
+            stack = err.stack;
+        }
+        infoLogger(arg1,arg2,arg3,stack);
+    };
+    if(stackTraceLogging) {
+        return stackLogger;
+    } else {
+        return doNothingFunc;
+    }
+}
+var stackLogger = getStackLogger();
 var convertSecondsToMinute = function (seconds) {
     var minutes = parseInt(seconds/60);
     seconds = parseInt(seconds - minutes*60);
@@ -82,18 +110,11 @@ var convertStringToSeconds = function (input) {
     }
 }
 function sendMessage(msg,uid) {
-    var stack = "";
-    try {
-        throw new Error;
-    } catch(err) {
-        stack = err.stack;
-    }
     var messageString = "Sending message from:"+msg.from;
     if(uid) {
         messageString = uid+" : "+messageString;
     }
     msg.uid = uid;
-    infoLogger(messageString,msg,stack);
     return new Promise(function (resolve, reject) {
         chrome.runtime.sendMessage(msg,(reply)=>{
             if(reply===SEND_RESPONSE_AS_FAILURE) {

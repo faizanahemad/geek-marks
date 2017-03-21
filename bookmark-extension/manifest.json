@@ -18,12 +18,6 @@
     "cookies",
     "history",
     "storage",
-    "https://ajax.googleapis.com/",
-    "https://localhost:8444/*",
-    "https://localhost:8443/*",
-    "https://localhost:8444/",
-    "https://localhost:8443/",
-    "https://localhost:8444/check_login",
     "*://*/*"
   ],
   "web_accessible_resources": [
@@ -40,10 +34,11 @@
       "matches": [
         "*://*/*"
       ],
-      "css": ["lib/css/bootstrap-content-script.css","css/page.css"],
+      "css": ["lib/css/bootstrap-content-script.css","lib/css/toastr.min.css","css/page.css"],
       "js": ["lib/js/bluebird.min.js",
         "lib/js/jquery-3.1.1.min.js",
         "lib/js/superagent.min.js",
+        "lib/js/toastr.min.js",
         "js/config.js",
         "js/common.js",
         "js/chrome_storage.js",
