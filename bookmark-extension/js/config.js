@@ -13,7 +13,7 @@ var syncUrl = "%server%/bookmarks/sync".replace("%server%", serverUrl);
 
 var logEnabled = true;
 var stackTraceLogging = true;
-var nonRelayedTypesAndFroms = new Set(["page_content","storage_proxy", "bookmarks_query", "check_login", "login_info", "sync_request", "domain_path_query", "is_selected"]);
+var nonRelayedTypesAndFroms = new Set(["frame_size_change","page_content","storage_proxy", "bookmarks_query", "check_login", "login_info", "sync_request", "domain_path_query", "is_selected"]);
 var getVisitUrl = function (id) {
     return "%server%/bookmarks/visit/%id%".replace("%server%", serverUrl).replace("%id%",id);
 };

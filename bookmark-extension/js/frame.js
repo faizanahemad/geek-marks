@@ -176,7 +176,7 @@ function sendIframeAreaChange(style) {
     style = style || {};
     var msg = {from: 'frame', type: 'frame_size_change'};
     $.extend(msg,style);
-    sendMessage(msg,"sendIframeAreaChange");
+    getTabId().then((tabid)=>sendMessageToTab(msg,tabid,"sendIframeAreaChange"));
 }
 
 function addDomHandlers(simplemde) {
@@ -332,7 +332,7 @@ var renderOnload = function renderOnLoad() {
             render();
             clearInterval(renderTimer);
         } else if (renderAttemptCount>20 && renderAttemptCount < 60) {
-            sendMessage({from:"frame",type:"request_cld"},"renderOnload")
+            getTabId().then(tabid=>sendMessageToTab({from:"frame",type:"request_cld"},tabid,"renderOnload"));
         } else if (renderAttemptCount>120) {
             clearInterval(renderTimer);
         }

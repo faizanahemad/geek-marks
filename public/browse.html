@@ -150,7 +150,8 @@
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-11 text-center">
+                <div class="col-md-1"><span class="numberCircle pull-left difficulty-color-{{difficulty}}" style="cursor: pointer; margin-top: 16px;">{{difficulty}}</span></div>
+                <div class="col-md-10 text-center">
                     <h4 class="text-center text-capitalize" onclick="window.open('{{href}}','mywindow');"
                         style="cursor: pointer;">
                         {{#if title}}
@@ -170,8 +171,7 @@
             {{#if options.compact}}
             <div class="row">
                 <div class="col-md-12">
-                    <div class="pull-left"><b>Visits: </b><span>{{visits}}</span></div>
-                    <div class="pull-right"><b>Difficulty: </b><span>{{difficulty}}</span></div>
+                    <div class="pull-right"><b>Visits: </b><span>{{visits}}</span></div>
                 </div>
             </div>
             <div class="row">

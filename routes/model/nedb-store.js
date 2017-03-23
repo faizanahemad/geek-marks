@@ -13,7 +13,7 @@ var NedbStore = class NedbStore {
         Promise.promisifyAll(this.db);
         this.db.persistence.compactDatafile();
         this.db.persistence.setAutocompactionInterval(utils.minsToMilliseconds(5));
-        this.db.ensureIndex({fieldName: 'href', unique: true});
+        this.db.ensureIndex({fieldName: 'href'});
         this.db.ensureIndex({fieldName: 'difficulty'});
     }
 
@@ -174,7 +174,10 @@ var NedbStore = class NedbStore {
             query.lastVisited = {$gte: utils.subtractDaysFromNow(lastVisitedDaysWithin)}
         }
         if (lastVisitedDaysBeyond && typeof lastVisitedDaysBeyond == "number") {
-            query.lastVisited = {$lte: utils.subtractDaysFromNow(lastVisitedDaysBeyond)}
+            if(query.lastVisited)
+                query.lastVisited.$lte = utils.subtractDaysFromNow(lastVisitedDaysBeyond)
+            else
+                query.lastVisited = {$lte: utils.subtractDaysFromNow(lastVisitedDaysBeyond)}
         }
         if (Array.isArray(tags) && tags.length > 0) {
             query.tags = tags[0];

@@ -1,6 +1,6 @@
 ### TODO (Features)
+- make /api for api calls and if check-login fails then return unauthenticated/unauthorized error codes, handle on client side by saying save failed and open login page
 - Make checkLogin as Cookie check + API call , call per min from Bg page and save in promise, separate from sync
-- If save fails show you are offline modal and reset the iframe and page (init())
 - If save fails due to logged out then open login page, after user logs in, resave.
 - Login issues
 - CSS Fix on Flipkart, prefix css with some custom stuff for content script
@@ -30,13 +30,11 @@
 - Offline save for reading, show online version if net available
 - Give a use only offline option
 - Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
-- Make extension as your new tab page.
  
 
 ### Browse Page Improvements
 - Show notes as well
 - Decide whether to allow edit abilities
-- Compact View to be more compact and row borders among each entry more prominent.
 - User preference to start the browse page with selected config, allow creation of custom browse pages
 - pagination/Infinite scroll - browse page
 

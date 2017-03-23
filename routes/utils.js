@@ -1,4 +1,6 @@
 var path = require('path');
+var addDays = require('date-fns/add_days');
+var subDays = require('date-fns/sub_days')
 const resolve = path.resolve;
 
 const workingDir = process.cwd();
@@ -11,7 +13,11 @@ function minsToMilliseconds(mins) {
     }
 }
 function subtractDaysFromNow(days) {
-    return Date.now() - days*86400*1000
+    var dt = new Date(new Date().toDateString());
+    days = days - 1;
+    if(days<0)
+        days=0;
+    return subDays(dt,days).getTime();
 }
 function csvToArrayNumber(values) {
     return csvToArrayString(values)

@@ -44,6 +44,32 @@
     color: Wheat;
 }
 
+.difficulty-color-5 {
+    color: DarkRed;
+}
+.difficulty-color-4 {
+    color: IndianRed;
+}
+.difficulty-color-3 {
+    color: DarkGoldenrod;
+}
+.difficulty-color-2 {
+    color: BurlyWood;
+}
+.difficulty-color-1 {
+    color: Wheat;
+}
+.numberCircle {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+    background: #fff;
+    border: 1px solid;
+    text-align: center;
+    display: inline-block;
+}
+
 
 .vertical-center {
     min-height: 100%;  /* Fallback for browsers do NOT support vh unit */

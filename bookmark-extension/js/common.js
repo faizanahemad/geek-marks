@@ -125,6 +125,22 @@ function sendMessage(msg,uid) {
         });
     });
 }
+function sendMessageToTab(msg, tabId, uid) {
+    var messageString = "Sending message from:"+msg.from;
+    if(uid) {
+        messageString = uid+" : "+messageString;
+    }
+    msg.uid = uid;
+    return new Promise(function (resolve, reject) {
+        chrome.tabs.sendMessage(tabId,msg,(reply)=>{
+            if(reply===SEND_RESPONSE_AS_FAILURE) {
+                reject()
+            } else {
+                resolve(reply);
+            }
+        });
+    });
+}
 function timedPromise(promise,time) {
     var timedPromise = new Promise(function (resolve, reject) {
         setTimeout(()=>{
