@@ -1,5 +1,6 @@
 ### TODO (Features)
 - make /api for api calls and if check-login fails then return unauthenticated/unauthorized error codes, handle on client side by saying save failed and open login page
+- If check-login is false then try sync and determine actual logout before returning
 - Make checkLogin as Cookie check + API call , call per min from Bg page and save in promise, separate from sync
 - If save fails due to logged out then open login page, after user logs in, resave.
 - Login issues

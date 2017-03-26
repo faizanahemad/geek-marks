@@ -27,6 +27,7 @@ toastr.options = {
 
 
 var cld = {};
+var cldAugmented = false;
 
 function createIframe(data) {
     var style = data.style || {};
@@ -120,8 +121,8 @@ function prepareData(firstRun) {
         hrefMap.delete(null);
         pathMap.delete(null);
         titleMap.delete(null);
+        augmentCLD();
         if (firstRun) {
-            augmentCLD();
             sendCLD(1);
             if (hrefMap.has(location.href)) {
                 recordVisit(cld._id)
@@ -160,6 +161,7 @@ function augmentCLD() {
         }
     }
     augmentCldWithData(thisLocationData);
+    cldAugmented = true;
 }
 
 function augmentCldWithData(thisLocationData) {
@@ -209,7 +211,7 @@ function addListeners() {
             refreshDisplay();
             refreshDisplayIndicator = false;
         }
-    },1000);
+    },500);
     function eventListener(msg, sender, sendResponse) {
         if (msg.from === 'frame' && msg.type == 'frame_size_change' && msg.width && msg.height) {
             var frame=document.getElementById(iframeId);
@@ -217,9 +219,10 @@ function addListeners() {
             frame.style.height = msg.height+ "px";
             frame.style.top = msg.top+ "px";
             frame.style.right = msg.right+ "px";
-        } else if (msg.from === 'frame' && msg.type == 'request_cld') {
+        } else if (msg.from === 'frame' && msg.type == 'request_cld' && cldAugmented) {
             sendCLD(3);
         } else if (msg.from === 'background_page' && msg.type == 'storage_change') {
+            infoLogger("Storage change msg from background page:",msg);
             refreshDisplayIndicator = true;
         } else if(msg.from==="storage_proxy_failure" && msg.type==="storage_failure") {
             toastr["error"]("Content not saved, unable to reach servers.", "Save Error")

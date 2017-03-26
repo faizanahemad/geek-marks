@@ -329,6 +329,7 @@ var renderOnload = function renderOnLoad() {
     var renderTimer = setInterval(function () {
         renderAttemptCount++;
         if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.note!==undefined) {
+            infoLogger("Rendering frame after attempts:"+renderAttemptCount,displayData);
             render();
             clearInterval(renderTimer);
         } else if (renderAttemptCount>20 && renderAttemptCount < 60) {
