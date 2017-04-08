@@ -8,6 +8,12 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
         }
     }
 };
+Array.prototype.remove = function (element) {
+    var index = this.indexOf(element);
+    if(index!=-1) {
+        this.splice(index, 1);
+    }
+}
 /**
  * @param {String} HTML representing a single element
  * @return {Element}

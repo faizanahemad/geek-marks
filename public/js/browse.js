@@ -22,7 +22,7 @@ var DisplayBookmarks = class DisplayBookmarks {
         options = options || {};
         this.docs.then(docs=>docs.filter(d=>!d.useless).map(d=> {
             d.options = options;
-            d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM, hh:mm a")
+            d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM, hh:mm a");
             return d;
         })).then(docs=> {
             var html = self.template(docs);
@@ -135,6 +135,8 @@ superagent.getAsync("/bookmarks/tags")
 
     },console.error);
 
+var visitedForm=document.getElementById("date-range-selector-area-form");
+var customVisitedSelectorArea = document.getElementById("custom-visited-range-area");
 var visitedWithinElem = document.getElementById("visitedWithinInput");
 var visitedBeforeElem = document.getElementById("visitedBeforeInput");
 var visitsGreaterThanElem = document.getElementById("visitCountInput");
@@ -166,12 +168,62 @@ visitsElemAsc.onchange=onFilterChange;
 visitsElemDesc.onchange=onFilterChange;
 
 difficultiesElem.forEach(d=>d.onchange=onFilterChange);
+visitedForm.onchange = visitedFormChangeHandler;
 
 function deleteBookmark(elemId,bookmarkId) {
     var bookmarkElem = document.getElementById(elemId);
     superagent.deleteAsync("bookmarks/entry/"+bookmarkId).then((res)=>{
         bookmarkElem.remove();
     },console.error)
+}
+
+function hideCustomVisitedArea() {
+    customVisitedSelectorArea.classList.add("hide");
+}
+function showCustomVistedArea() {
+    customVisitedSelectorArea.classList.remove("hide");
+}
+function visitedFormChangeHandler() {
+    console.log("Visited Form change handler called");
+    var datePref = parseInt(visitedForm.elements["visitedRadios"].value);
+    var visitedWithin = 2;
+    var visitedBefore = 1;
+    switch(datePref) {
+        case 1:
+            visitedWithin = 2;
+            visitedBefore = 1;
+            break;
+        case 2:
+            visitedWithin = 3;
+            visitedBefore = 2;
+            break;
+        case 3:
+            visitedWithin = 14;
+            visitedBefore = 7;
+            break;
+        case 4:
+            visitedWithin = 60;
+            visitedBefore = 30;
+            break;
+        case 5:
+            var weekday = (new Date()).getDay();
+            visitedWithin = weekday+8;
+            visitedBefore = weekday+1;
+            break;
+        case 6:
+            var monthDay = (new Date()).getDate();
+            visitedWithin = monthDay+dateFns.getDaysInMonth(dateFns.subMonths(new Date(),1));
+            visitedBefore = monthDay;
+            break;
+    }
+    if(datePref!=7) {
+        hideCustomVisitedArea();
+        visitedBeforeElem.value = visitedBefore;
+        visitedWithinElem.value = visitedWithin;
+        onFilterChange();
+    } else {
+        showCustomVistedArea();
+    }
 }
 
 function getSortOrder(elemAsc,elemDesc) {

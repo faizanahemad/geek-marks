@@ -98,7 +98,6 @@ function recordVisit(id) {
 function prepareData(firstRun) {
     if(firstRun) {
         cld = {
-            "href": location.href,
             "protocol": location.protocol,
             "hostname": location.hostname,
             "pathname": location.pathname,
@@ -174,7 +173,6 @@ function augmentCldWithData(thisLocationData) {
     cld._id = thisLocationData._id;
     cld.videoTime = thisLocationData.videoTime || cld.videoTime|| [];
     cld.userId = thisLocationData.userId || cld.userId;
-    cld.href= cld.href||thisLocationData.href;
     cld.protocol= cld.protocol||thisLocationData.protocol;
     cld.hostname= cld.hostname||thisLocationData.hostname;
     cld.pathname= cld.pathname||thisLocationData.pathname;

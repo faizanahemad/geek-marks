@@ -18,7 +18,6 @@ var postInput = function postInput(data) {
 
     var postData = {
         "href": storageData.href,
-        "protocol": storageData.protocol,
         "hostname": storageData.hostname,
         "pathname": storageData.pathname,
         "title": storageData.title,

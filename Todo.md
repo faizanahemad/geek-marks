@@ -1,44 +1,45 @@
 ### TODO (Features)
 - make /api for api calls and if check-login fails then return unauthenticated/unauthorized error codes, handle on client side by saying save failed and open login page
+- Prevent multiple login pages opening initially when startup, post a chrome exit.
 - If check-login is false then try sync and determine actual logout before returning
 - Make checkLogin as Cookie check + API call , call per min from Bg page and save in promise, separate from sync
 - If save fails due to logged out then open login page, after user logs in, resave.
 - Login issues
-- CSS Fix on Flipkart, prefix css with some custom stuff for content script
-- File attachments / images
-- Rename difficulty to rating
-- Unable to save, you are offline modal/tooltip/popup when any post API fails
+- Improve main bookmark widget by making it a round closeable draggable 
 - detect content type - audio/video/article etc.
-- In browse page, have a Tags included and Tags excluded as separate check boxes
 - Resize and reposition by drag drop
 - Secure send password over http by hashing
 - Fix logout issues by migrating to a persist store for sessions
-- dev mode, forgot password on login page
-- Ability to create collections
+- Ability to create collections/topics (When you browse a topic you will see only contents of that topic even if a mentioned tag is in another topic as well). Allow only 10 topics per user, so users know topic is a big thing. 
 - Tag heirarchy creation
 - Migrate to PouchDB
-- Active conditions - match path
 - fuzzy search based on text distance, show similar pages to this that you have bookmarked. Group similar pages together in browse view.
 - Handle runtime.lastError where possible in chrome.* apis
-- Resync if Client version > DB version
 - Unify login/sign_up for all layers
 - do payload validation at client end and only post to server if a valid payload is present.
 - Admin Login
-- Add link to previous entry since the topic is same/similar
-- Shift to MongoDB
 - Auth Token + Https + Bookmarklet (color thousand or less)
-- Support Annotations
 - Offline save for reading, show online version if net available
-- Give a use only offline option
 - Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
- 
+- CSS Fix on Flipkart, prefix css with some custom stuff for content script
+- Support Annotations
+- dev mode, forgot password on login page
 
 ### Browse Page Improvements
+- In browse page, have a Tags included and Tags excluded as separate check boxes
 - Show notes as well
+- Improve sidebar by making it closeable with hamburger / Webengage menu.
+- Improve search by having word auto-complete + having auto results after 4 letters
+- Provide list and tile view in browse page
+- Provide sorting in the way e-commerce sites do
 - Decide whether to allow edit abilities
 - User preference to start the browse page with selected config, allow creation of custom browse pages
 - pagination/Infinite scroll - browse page
 
+### Won't do
+- File attachments / images
+- Add link to previous entry since the topic is same/similar
+- Active conditions - match path
 
 ### TODO (Refactoring/Code changes)
 - Return proper error http codes for non-permitted actions

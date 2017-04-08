@@ -38,7 +38,6 @@ function merge(oldRecord, newRecord) {
             "_id":oldRecord._id,
             "userId":newRecord.userId||oldRecord.userId,
             "href": newRecord.href || oldRecord.href,
-            "protocol": newRecord.protocol || oldRecord.protocol,
             "hostname": newRecord.hostname || oldRecord.hostname,
             "pathname": newRecord.pathname || oldRecord.pathname,
             "lastVisited": lastVisited,
@@ -68,7 +67,6 @@ function merge(oldRecord, newRecord) {
         record = {
             "userId":newRecord.userId,
             "href": newRecord.href,
-            "protocol": newRecord.protocol,
             "hostname": newRecord.hostname,
             "pathname": newRecord.pathname,
             "lastVisited": lastVisited,
