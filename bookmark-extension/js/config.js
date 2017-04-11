@@ -13,6 +13,7 @@ var syncUrl = "%server%/bookmarks/sync".replace("%server%", serverUrl);
 
 var logEnabled = true;
 var stackTraceLogging = true;
+var errorLogEnabled = true;
 var nonRelayedTypesAndFroms = new Set(["frame_size_change","page_content","storage_proxy", "bookmarks_query", "check_login", "login_info", "sync_request", "domain_path_query", "is_selected"]);
 var getVisitUrl = function (id) {
     return "%server%/bookmarks/visit/%id%".replace("%server%", serverUrl).replace("%id%",id);
@@ -176,3 +177,20 @@ var defaultSettingsMap = {
 };
 var apiTimeout = 10000;
 var SEND_RESPONSE_AS_FAILURE = "SEND_RESPONSE_AS_FAILURE";
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": true,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}

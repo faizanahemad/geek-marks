@@ -29,7 +29,7 @@ var postInput = function postInput(data) {
         "useless":storageData.useless
     };
     postData["lastVisited"] = Date.now();
-    return superagent.postAsync(entryUrl, postData).then(res=>res.body,console.error);
+    return superagent.postAsync(entryUrl, postData).then(res=>res.body,promiseRejectionHandler);
 };
 
 superagent.postTimed = function (url, data) {
@@ -40,7 +40,7 @@ var postInputTimed = function (data) {
 }
 
 var deleteEntry = function deleteEntry(id) {
-    return superagent.deleteAsync(getDeleteUrl(id)).then(undefined,console.error);
+    return superagent.deleteAsync(getDeleteUrl(id)).then(undefined,promiseRejectionHandler);
 };
 var deleteEntryTimed = function (id) {
     return timedPromise(deleteEntry(id),apiTimeout)
@@ -67,25 +67,40 @@ function reconcile(userId, storage, total) {
         return Promise.join(storage.setDbVersion(0,userId),removerPromise)
     })
 }
+
+function getSyncBody(userId,storage) {
+    return storage.getDbVersion(userId)
+        .then(version=>{
+            return superagent.postTimed(syncUrl,{version:version}).then(res=>res.body)
+        })
+}
 function sync(userId,storage) {
     if(userId) {
-        return storage.getDbVersion(userId)
-            .then(version=>{
-                return superagent.postTimed(syncUrl,{version:version})
-            })
-            .then(res=>res.body)
-            .then(body=>{
+        var syncBodyPromise = getSyncBody(userId,storage);
+        return syncBodyPromise.then(body=>{
                 if(body) {
                     var allPromises = body.deleted.map(d=>storage.remove(d,userId));
                     allPromises = allPromises.concat(body.modified.map(m=>storage._insertOrUpdateEntry(m)));
                     allPromises = allPromises.concat([storage.setDbVersion(body.version,userId)]);
-                    if(body.hasNext) {
-                        allPromises = allPromises.concat([sync()]);
-                    }
-                    return Promise.all(allPromises).then(()=>reconcile(userId,storage,body.total))
+                    return Promise.all(allPromises).then(()=>{
+                        if(body.hasNext) {
+                            return sync(userId,storage).then(()=>body.total)
+                        } else
+                            return Promise.resolve(body.total);
+                    })
                 }
                 return Promise.reject("No body in response");
-            },console.error)
+            },promiseRejectionHandler)
+    } else {
+        return Promise.reject("UserID not provided");
+    }
+}
+
+function sync_nonRecursive(userId, storage) {
+    if(userId) {
+        return sync(userId,storage).then((total)=>{
+            return reconcile(userId,storage,total)
+        },promiseRejectionHandler)
     }
     return Promise.reject();
 }
@@ -154,7 +169,7 @@ var Storage = class Storage {
                      })
             .then(result=>{
                 return result.docs
-            },console.error)
+            },promiseRejectionHandler)
     }
 
     getAllCount(userId) {
@@ -170,7 +185,7 @@ var Storage = class Storage {
                 }
             });
             return Array.from(tagSet)
-        }, console.error)
+        }, promiseRejectionHandler)
     }
 
     _insertOrUpdateEntry(entry) {
@@ -190,19 +205,19 @@ var Storage = class Storage {
         var self = this;
         return postInputTimed(entry).then(doc=>{
             return self._insertOrUpdateEntry(doc);
-        },console.error)
+        },promiseRejectionHandler)
     }
 
     remove(id, userId) {
         var self = this;
         return deleteEntryTimed(id).then(()=>{
-            return self.db.get(id).then(doc=>self.db.remove(doc),console.error)
-        },console.error)
+            return self.db.get(id).then(doc=>self.db.remove(doc),promiseRejectionHandler)
+        },promiseRejectionHandler)
     }
 
     removeLocal(id, userId) {
         var self = this;
-        return this.db.get(id).then(doc=>self.db.remove(doc),console.error)
+        return this.db.get(id).then(doc=>self.db.remove(doc),promiseRejectionHandler)
     }
 
     logVisit(id, userId) {
@@ -215,8 +230,8 @@ var Storage = class Storage {
                 } else {
                     return self.db.put(doc);
                 }
-            },console.error)
-        },console.error)
+            },promiseRejectionHandler)
+        },promiseRejectionHandler)
     }
 };
 var storage = new Storage(dbName);

@@ -1,8 +1,4 @@
 function createLoginPage(tabid) {
-    var iframeId = "extension-login-iframe";
-    if (document.getElementById(iframeId)) {
-        document.getElementById(iframeId).remove();
-    }
 
     var extensionOrigin = 'chrome-extension://' + chrome.runtime.id;
     if (!location.ancestorOrigins.contains(extensionOrigin)) {
@@ -17,6 +13,7 @@ function openRemoteLoginPage(tabid,loginApi,signUpUrl,signUpApi) {
 }
 
 function popOpen(tabid) {
+    infoLogger("Opening Login Page in new tab for tabId: "+tabid);
     var popup_window = createLoginPage(tabid);
     try {
         popup_window.focus();
@@ -33,8 +30,21 @@ function bookmark() {
         var id = msg.id;
         if(msg.login) {
             init();
-        } else {
-            popOpen(id);
+        } else if(!msg.inProgress) {
+            var toastrString = `
+                <div id="toast-container" class="toast-top-right">
+                    <div class="toast toast-error" aria-live="assertive">
+                        <button type="button" class="toast-close-button" role="button">×</button>
+                        <div class="toast-title">Login Error</div>
+                        <div class="toast-message">
+                            <a><u>Click here to Login to Geek-marks</u></a></div>
+                    </div>
+                </div>`
+            var toastrHtml = htmlToElement(toastrString);
+            toastrHtml.getElementsByClassName("toast-message")[0].onclick = ()=>popOpen(id)
+            document.body.appendChild(toastrHtml);
+            setTimeout(()=>toastrHtml.remove(),10000)
+
         }
     });
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {

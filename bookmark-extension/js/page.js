@@ -5,23 +5,6 @@ var titleMap = new Map();
 var iframeId = "bookmark-iframe";
 var timeCaptureAreaId = "youtube-time-cature-area";
 var uselessIndicatorSpan = `<span class="useless-indicator" style="color: mediumvioletred;">&nbsp;[X]</span>`;
-toastr.options = {
-    "closeButton": true,
-    "debug": false,
-    "newestOnTop": false,
-    "progressBar": false,
-    "positionClass": "toast-top-right",
-    "preventDuplicates": true,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "3000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-}
 
 
 
@@ -98,7 +81,7 @@ function recordVisit(id) {
 function prepareData(firstRun) {
     if(firstRun) {
         cld = {
-            "protocol": location.protocol,
+            "href": location.href,
             "hostname": location.hostname,
             "pathname": location.pathname,
             "title":getTitle()
@@ -128,7 +111,7 @@ function prepareData(firstRun) {
             }
         }
     });
-    allPromise.then(undefined,console.error);
+    allPromise.then(undefined,promiseRejectionHandler);
     return allPromise
 }
 
@@ -173,7 +156,7 @@ function augmentCldWithData(thisLocationData) {
     cld._id = thisLocationData._id;
     cld.videoTime = thisLocationData.videoTime || cld.videoTime|| [];
     cld.userId = thisLocationData.userId || cld.userId;
-    cld.protocol= cld.protocol||thisLocationData.protocol;
+    cld.href= cld.href||thisLocationData.href;
     cld.hostname= cld.hostname||thisLocationData.hostname;
     cld.pathname= cld.pathname||thisLocationData.pathname;
     cld.title=cld.title||getTitle();

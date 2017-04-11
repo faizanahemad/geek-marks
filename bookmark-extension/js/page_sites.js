@@ -218,7 +218,7 @@ function redirectedLinkColoring(atags) {
             },false);
             if(followCondition) {
                 fetch(e.href,{method:'head',redirect:'follow'})
-                    .then(res=>res.url,console.error).then(href=>{
+                    .then(res=>res.url,promiseRejectionHandler).then(href=>{
                     if (hrefMap.has(href)) {
                         var linkConfig = hrefMap.get(href);
                         var df = linkConfig.difficulty || -1;

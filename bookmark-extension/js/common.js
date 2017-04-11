@@ -14,6 +14,7 @@ var template = document.createElement('template');
  * @return {Element}
  */
 function htmlToElement(html) {
+    html = html.trim()
     template.innerHTML = html;
     return template.content.firstChild;
 }
@@ -23,6 +24,7 @@ function htmlToElement(html) {
  * @return {NodeList}
  */
 function htmlToElements(html) {
+    html = html.trim()
     template.innerHTML = html;
     return template.content.childNodes;
 }
@@ -87,6 +89,28 @@ function getStackLogger() {
     }
 }
 var stackLogger = getStackLogger();
+
+function getErrorLogger() {
+
+    var errorLogger = function(arg1, arg2, arg3, arg4) {
+        console.error(arg1);
+        if(arg2!=null && arg2!=undefined) {
+            console.error(arg2);
+        }
+        if(arg3!=null && arg3!=undefined) {
+            console.error(arg3);
+        }
+        if(arg4!=null && arg4!=undefined) {
+            console.error(arg4);
+        }
+    }
+    if(errorLogEnabled) {
+        return errorLogger;
+    } else {
+        return doNothingFunc;
+    }
+}
+var errorLogger = getErrorLogger();
 var convertSecondsToMinute = function (seconds) {
     var minutes = parseInt(seconds/60);
     seconds = parseInt(seconds - minutes*60);
@@ -141,12 +165,28 @@ function sendMessageToTab(msg, tabId, uid) {
         });
     });
 }
-function timedPromise(promise,time) {
+function promiseRejectionHandler(err) {
+    errorLogger(err)
+    return Promise.reject(err);
+}
+function randgen() {
+    return (Math.random()*1e16).toString(36)
+}
+function timedPromise(promise,time,uid) {
+    var rand = uid||randgen()
     var timedPromise = new Promise(function (resolve, reject) {
-        setTimeout(()=>{
+        var timer = setTimeout(()=>{
             reject();
         },time);
-        promise.then(resolve,reject)
+        promise.then((v)=>{
+            infoLogger("Resolving: "+rand);
+            resolve(v)
+            clearTimeout(timer)
+        }, (err)=>{
+            infoLogger("Rejecting: "+rand);
+            reject(err)
+            clearTimeout(timer)
+        })
     });
     return timedPromise;
 }

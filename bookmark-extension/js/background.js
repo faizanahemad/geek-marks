@@ -9,7 +9,7 @@ function getCookies(domain, name) {
         });
     })
 }
-var loginStatus = new Promise((resolve,reject)=>resolve({login:false}));
+var loginStatus = new Promise((resolve,reject)=>resolve({login:false,inProgress:true}));
 var userId = "";
 function broadcast(msg) {
     msg = msg || {};
@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         sendBookmarks(sendResponse);
         return true;
     } else if (msg && msg.from ==="content_script" && msg.type==="check_login") {
-        loginStatus.then((ls)=>sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:ls.login}));
+        loginStatus.then((ls)=>sendResponse({from:"background_page",type:"check_login_response",id:sender.tab.id,login:ls.login,inProgress:ls.inProgress}));
         return true;
     } else if (msg && msg.from ==="login_extension_page" && msg.type==="login_info") {
         chrome.tabs.sendMessage(msg.id, msg);
@@ -120,22 +120,27 @@ function backgroundSync() {
     infoLogger("Background sync started at:"+Date.now());
     var loginState = new Promise(function(resolve, reject) {
         getCookies(serverUrl,"_id").then((userId)=>{
-            sync(userId,storage).then(()=>resolve(userId),reject);
-        });
+            var syncPromise = sync_nonRecursive(userId,storage)
+            return syncPromise.then((params)=>{
+                resolve(userId)
+            },()=>reject());
+        },()=>reject());
     });
-    loginStatus = timedPromise(loginState,2000).then((userId)=>{
+    loginStatus = timedPromise(loginState,2000,"loginState-"+randgen()).then((userId)=>{
         infoLogger("Setting userId and login=true at:"+Date.now())
-        return {userId:userId,login:true}
+        return {userId:userId,login:true,inProgress:false}
     },()=>{
-        return {login:false}
+        return {login:false,inProgress:false}
     });
     loginStatus.then(u=>{
         if(u.login) {
             userId = u.userId
+            infoLogger("Sync completed successfully at: "+Date.now())
         } else {
             userId = "";
+            infoLogger("Sync Unsuccessful at: "+Date.now())
         }
-    }).then(()=>infoLogger("Sync completed successfully at:"+Date.now()))
+    })
 }
 function syncCallback() {
     backgroundSync();

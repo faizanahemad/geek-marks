@@ -56,6 +56,7 @@
     "scripts": ["lib/js/bluebird.min.js",
       "lib/js/superagent.min.js",
       "lib/js/jquery-3.1.1.min.js",
+      "lib/js/toastr.min.js",
       "lib/js/pouchdb.js",
       "lib/js/pouchdb.find.js",
       "js/config.js",

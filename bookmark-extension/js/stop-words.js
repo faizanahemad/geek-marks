@@ -1028,6 +1028,22 @@ function generateAutoComplete(input) {
         inputWordsTakenTwo.push(w1+" "+w2)
     }
     var words = inputWords.concat(inputWordsTakenTwo);
+    words = words.map(w=>singularize(w));
     return new Set(words);
 }
 // Use all elements of a tag for word gen: Array.from(document.getElementsByTagName("p")).map(e=>e.innerText).map(generateAutoComplete).filter(arr=>arr.length>0)
+
+var nounExceptionList = ["modulus"]
+
+function singularize(text) {
+    var words = text.split(/\W/g);
+    words = words.map(w=>{
+        var n = nlp(w).nouns()
+        if(n.list.length==0 || nounExceptionList.indexOf(w)>=0) {
+            return w;
+        } else {
+            return n.toSingular().out('text')
+        }
+    });
+    return words.join(" ");
+}

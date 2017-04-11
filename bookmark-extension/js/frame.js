@@ -149,7 +149,11 @@ function renderTags() {
     });
     storage.getAllTags().then(tags=> {
         var tagSet = pageTagWords;
-        tags.forEach(tw=>tagSet.add(tw));
+        tags.forEach(tw=>{
+            tw = singularize(tw);
+            tagSet.add(tw)
+        });
+        console.log(tagSet)
         $(taggle.getInput()).autocomplete({
                                               source: Array.from(tagSet), // See jQuery UI
                                                                                  // documentaton
@@ -169,7 +173,7 @@ function renderTags() {
                                               }
                                           });
 
-    }, console.error);
+    }, promiseRejectionHandler);
 }
 
 function sendIframeAreaChange(style) {
@@ -319,7 +323,7 @@ function addListeners() {
                     render();
                 }
             }
-        },console.error);
+        },promiseRejectionHandler);
     });
 }
 addListeners();

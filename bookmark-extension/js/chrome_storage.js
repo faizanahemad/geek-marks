@@ -95,7 +95,7 @@ var ChromeStorage = class ChromeStorage {
             } catch(e) {
                 return null;
             }
-        }).then((d)=>d,console.error);
+        }).then((d)=>d,promiseRejectionHandler);
     }
 
     set(persist) {
@@ -108,7 +108,7 @@ var ChromeStorage = class ChromeStorage {
                 }
                 resolve()
             })
-        }).then((d)=>d,console.error);
+        }).then((d)=>d,promiseRejectionHandler);
     }
 
     getGlobalSettings() {
