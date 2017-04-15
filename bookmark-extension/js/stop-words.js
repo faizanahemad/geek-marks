@@ -1033,13 +1033,26 @@ function generateAutoComplete(input) {
 }
 // Use all elements of a tag for word gen: Array.from(document.getElementsByTagName("p")).map(e=>e.innerText).map(generateAutoComplete).filter(arr=>arr.length>0)
 
-var nounExceptionList = ["modulus"]
+var nounExceptionList = [{word:"modulus",synonyms:["modulus"]},
+    {word:"list",synonyms:["lists"]},
+    {word:"numeric",synonyms:["numerical"]}];
+
+function findInSynonymList(word) {
+    var record = nounExceptionList.find((elem,i,arr)=>elem.word===word||elem.synonyms.indexOf(word)>-1)
+    if(record!=undefined) {
+        return record.word;
+    }
+    return undefined;
+}
 
 function singularize(text) {
     var words = text.split(/\W/g);
     words = words.map(w=>{
-        var n = nlp(w).nouns()
-        if(n.list.length==0 || nounExceptionList.indexOf(w)>=0) {
+        var n = nlp(w).nouns();
+        var expWord = findInSynonymList(w);
+        if(expWord!=undefined) {
+            return expWord;
+        }else if(n.list.length==0) {
             return w;
         } else {
             return n.toSingular().out('text')

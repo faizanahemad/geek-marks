@@ -189,6 +189,10 @@ function visitedFormChangeHandler() {
     var visitedWithin = 2;
     var visitedBefore = 1;
     switch(datePref) {
+        case 0:
+            visitedWithin = 1;
+            visitedBefore = 0;
+            break;
         case 1:
             visitedWithin = 2;
             visitedBefore = 1;
