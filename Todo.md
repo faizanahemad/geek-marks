@@ -23,8 +23,10 @@
 - CSS Fix on Flipkart, prefix css with some custom stuff for content script
 - Support Annotations
 - dev mode, forgot password on login page
+- dock to bottom like chrome debugger
 
 ### Browse Page Improvements
+- Add firstVisited Column to store the first time page was seen and add sort option for it
 - In browse page, have a Tags included and Tags excluded as separate check boxes
 - Show notes as well
 - Improve sidebar by making it closeable with hamburger / Webengage menu.

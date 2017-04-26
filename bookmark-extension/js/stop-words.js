@@ -1035,7 +1035,8 @@ function generateAutoComplete(input) {
 
 var nounExceptionList = [{word:"modulus",synonyms:["modulus"]},
     {word:"list",synonyms:["lists"]},
-    {word:"numeric",synonyms:["numerical"]}];
+    {word:"numeric",synonyms:["numerical"]},
+    {word:"stream",synonyms:["streams","streaming"]}];
 
 function findInSynonymList(word) {
     var record = nounExceptionList.find((elem,i,arr)=>elem.word===word||elem.synonyms.indexOf(word)>-1)
