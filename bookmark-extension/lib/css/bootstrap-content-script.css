@@ -1815,5 +1815,5 @@ fieldset[disabled] .btn-default.focus {
     border: 0;
 }
 .hidden {
-    display: none !important;
+    display: none;
 }
