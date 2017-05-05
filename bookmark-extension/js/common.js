@@ -45,7 +45,17 @@ String.prototype.replaceAll = function (search, replacement) {
 };
 
 function timer(text) {
-    console.log(text+":"+Date.now()+", relative time:"+(Date.now()%10000))
+    console.log(text+":"+Date.now()+", relative time:"+(Date.now()%100000))
+}
+
+function elapser(text) {
+    var tn = Date.now();
+    var showElapse = function showElapse(extra) {
+        var tnew = Date.now()
+        var tdiff = tnew - tn;
+        console.log("Elapsed time for: "+text+" "+extra+" = "+tdiff);
+    }
+    return showElapse;
 }
 
 var doNothingFunc = ()=>{};
@@ -174,18 +184,21 @@ function randgen() {
 }
 function timedPromise(promise,time,uid) {
     var rand = uid||randgen()
+    var el = elapser("Timed promise"+uid)
+    el("start")
     var timedPromise = new Promise(function (resolve, reject) {
-        var timer = setTimeout(()=>{
+        var timeCounter = setTimeout(()=>{
             reject();
+            el("rejected")
         },time);
         promise.then((v)=>{
             infoLogger("Resolving: "+rand);
             resolve(v)
-            clearTimeout(timer)
+            clearTimeout(timeCounter)
         }, (err)=>{
             infoLogger("Rejecting: "+rand);
             reject(err)
-            clearTimeout(timer)
+            clearTimeout(timeCounter)
         })
     });
     return timedPromise;

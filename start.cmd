@@ -1,0 +1,1 @@
+start /MIN /W node server.js --harmony
