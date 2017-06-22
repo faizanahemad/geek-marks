@@ -1,1 +1,1 @@
-nohup node server.js --harmony
+nohup node server.js --harmony &!
