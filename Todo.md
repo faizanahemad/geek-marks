@@ -17,6 +17,7 @@
 - dock to bottom like chrome debugger
 
 ### Browse Page Improvements
+- Make 3 tabs, browse with filters, search, chrome bookmarks
 - Improve search by having word auto-complete + having auto results after 4 letters
 - Add a chrome bookmarks browse page with fuzzy search, sortby date and other sortby. Ability to add to Geekmarks.
 - Add firstVisited Column to store the first time page was seen and add sort option for it
