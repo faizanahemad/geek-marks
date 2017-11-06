@@ -1,0 +1,17 @@
+{
+  "name": "bookmark-extension",
+  "version": "1.0.0",
+  "description": "chrome extension",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "faizanahemad",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint-config-google": "^0.9.1"
+  }
+}

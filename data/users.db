@@ -1,3 +1,0 @@
-{"username":"faizan","password":"3e2bab8156ef33a5d3b44d1bfb8034dc7b0400903cf46cda8ecc4aa8e52da91df769509b403bc1d9bb496f8e5b157608a75d94963104729ee16d9ec1970389ad","email":"fahemad3@gmail.com","_id":"y98CYqRq5LmZbSWP"}
-{"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}
-{"$$indexCreated":{"fieldName":"username","unique":true,"sparse":false}}
