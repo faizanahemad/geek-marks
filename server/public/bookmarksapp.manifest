@@ -5,7 +5,7 @@ lib/fonts/glyphicons-halflings-regular.ttf
 lib/fonts/glyphicons-halflings-regular.woff
 lib/fonts/glyphicons-halflings-regular.woff2
 lib/css/bootstrap.css
-lib/js/jquery-3.1.1.min.js
+lib/js/jquery-3.2.1.slim.min.js
 lib/js/jquery-ui.min.js
 lib/js/taggle.js
 lib/js/superagent.min.js
@@ -19,7 +19,7 @@ lib/css/jquery-ui.min.css
 /lib/fonts/glyphicons-halflings-regular.woff
 /lib/fonts/glyphicons-halflings-regular.woff2
 /lib/css/bootstrap.css
-/lib/js/jquery-3.1.1.min.js
+/lib/js/jquery-3.2.1.slim.min.js
 /lib/js/jquery-ui.min.js
 /lib/js/taggle.js
 /lib/js/superagent.min.js

@@ -68,6 +68,18 @@
 - http://stackoverflow.com/questions/12235806/can-html-iframes-inherit-css-and-javascript-data
 - http://stackoverflow.com/questions/13591983/onclick-within-chrome-extension-not-working
 - https://pouchdb.com/2015/04/05/filtered-replication.html
+- https://github.com/josdejong/jsoneditor
+
+### PouchDB Links
+- https://github.com/pouchdb-community/pouchdb-authentication
+- https://github.com/redgeoff/delta-pouch
+- https://github.com/hoodiehq/pouchdb-hoodie-api
+- https://www.npmjs.com/package/@hoodie/store-client
+- https://python-pouchdb.marten-de-vries.nl/plugins.html
+- https://github.com/jo/pouch-resolve-conflicts
+- https://github.com/pouchdb-community/pouchdb-quick-search
+- https://www.npmjs.com/package/superlogin
+- https://github.com/pouchdb/upsert
 
 ### Iframe chrome extensions
 - http://stackoverflow.com/questions/11325415/access-iframe-content-from-a-chromes-extension-content-script
