@@ -146,7 +146,7 @@ function syncCallback() {
     backgroundSync();
     setInterval(()=>{
         backgroundSync();
-    },600000);
+    },6000);
 }
 syncCallback();
 

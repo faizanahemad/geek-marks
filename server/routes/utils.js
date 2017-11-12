@@ -83,24 +83,6 @@ function merge(oldRecord, newRecord) {
     }
 }
 
-function mergeUserRecord(oldRecord, newRecord) {
-    var record = {};
-    if (oldRecord && newRecord) {
-        record = {
-            "password":newRecord.password||oldRecord.password,
-            "email":newRecord.email
-        };
-        return record;
-    } else if (oldRecord) {
-        return oldRecord
-    } else if (newRecord) {
-        record = {};
-        return record
-    } else {
-        return {}
-    }
-}
-
 function isSuperSet(superSet, subSet) {
     return subSet.every(elem => superSet.indexOf(elem) > -1);
 }
@@ -108,7 +90,6 @@ module.exports = {
     "convertRelativeToAbsolutePath": convertRelativeToAbsolutePath,
     "workingDir": workingDir,
     "merge": merge,
-    "mergeUserRecord":mergeUserRecord,
     "minsToMilliseconds":minsToMilliseconds,
     "isSuperSet":isSuperSet,
     "subtractDaysFromNow":subtractDaysFromNow,

@@ -1,3 +1,3 @@
-{"username":"faizan","password":"2417b7c9b9d95292b1caee402c40f460b309c5bb39db47b48c8e3ea892b44d7d8b81d728c1c2b8a1cc99d9c2212b76c4b1a88e5d810bfc3582e9899432450682","email":"fahemad3@gmail.com","_id":"y98CYqRq5LmZbSWP"}
+{"username":"faizan","password":"2417b7c9b9d95292b1caee402c40f460b309c5bb39db47b48c8e3ea892b44d7d8b81d728c1c2b8a1cc99d9c2212b76c4b1a88e5d810bfc3582e9899432450682","email":"fahemad3@gmail.com","_id":"b15e6248c56df60411560ad7f31de01e"}
 {"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}
 {"$$indexCreated":{"fieldName":"username","unique":true,"sparse":false}}

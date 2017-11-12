@@ -20,7 +20,6 @@ module.exports = function(app) {
             res.status(401).send({is_login:false})
         }
     });
-    app.post('/create', userSessionUtils.doCreate);
     app.get('/bookmark', function(req, res, next) {
         res.send({});
     });

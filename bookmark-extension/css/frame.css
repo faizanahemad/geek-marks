@@ -217,3 +217,11 @@
 .label-ok {
     background-color: #ca7700;
 }
+
+.dropdown-div {
+    display: inline-block;
+    width: 65%;
+    margin-left: 2px;
+    border-radius: 2px;
+    border: 1px solid black;
+}

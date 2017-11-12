@@ -15,6 +15,7 @@
     <script src="lib/js/simplemde.min.js"></script>
     <script src="lib/js/compromise.min.js"></script>
     <script src="lib/js/toastr.min.js"></script>
+    <script src="lib/js/jquery.dropdown.js"></script>
 
     <link rel="stylesheet" href="lib/css/jquery-ui.min.css">
     <link rel="stylesheet" href="lib/css/font-awesome.min.css">
@@ -22,6 +23,7 @@
     <link rel="stylesheet" href="lib/css/star-rating.min.css">
     <link rel="stylesheet" href="lib/css/simplemde.min.css">
     <link rel="stylesheet" href="lib/css/highlight.min.css">
+    <link rel="stylesheet" href="lib/css/jquery.dropdown.css">
     <link rel="stylesheet" href="css/frame.css">
 
     <script src="js/config.js"></script>
@@ -48,6 +50,10 @@
         <div class="row" style="margin-top: 6px;">
             <div class="col-md-12">
                 <a class="pull-left btn btn-success" id="browse-button-id" href="" target="_blank">Bookmarks</a>
+                <select id="collection-selector" data-dynamic-opts=true>
+                    <option value="Data Structures and Algorithms" selected="selected">Data Structures and Algorithms</option>
+                    <option value="Machine Learning">Machine Learning</option>
+                </select>
                 <a id="delete-button-id" class="pull-right btn btn-link btn-lg youtube-timer-delete">
                     <span class="glyphicon glyphicon-trash"></span>
                 </a>
@@ -57,7 +63,7 @@
             <div class="col-md-12">
                 <div class="pull-left">
                     <label style="color: #4d90fe;">
-                        <input id="useless-input-id" type="checkbox" {{#if useless}}  checked {{/if}}> Useless
+                        <input id="useless-input-id" type="checkbox" {{#if useless}}  checked {{/if}}> &nbsp;<span class="glyphicon glyphicon-ban-circle" style="color:red"></span>
                     </label>
                 </div>
                 <div class="pull-right">
