@@ -30,12 +30,14 @@ var staticDirectory = __dirname + '/public';
         next();
     });
     var session = require('express-session');
+    var NedbStore = require('connect-nedb-session')(session)
     app.use(session({
                         secret: config.session.secret,
                         name: config.session.name,
                         resave: false,
                         saveUninitialized: false,
-                        cookie: { secure: false,maxAge:config.session.sessionTimeOut}
+                        cookie: { secure: false,maxAge:config.session.sessionTimeOut},
+                        store: new NedbStore({ filename: __dirname+'/session.db' })
                     }));
     app.use(function promiseify(request, response, next) {
         response.promise = function(promise) {

@@ -758,3 +758,10 @@ jspm_packages
 
 
 **/.idea
+server/history/CURRENT
+server/history/LOCK
+server/history/LOG
+server/history/LOG.old
+server/history/MANIFEST-000004
+server/routes/model/test-store.js
+server/session.db

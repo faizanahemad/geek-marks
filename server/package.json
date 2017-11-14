@@ -19,6 +19,7 @@
     "compression": "^1.6.2",
     "config": "~1.24.0",
     "connect-cache-manifest": "^0.2.2",
+    "connect-nedb-session": "0.0.3",
     "couch-admin": "^1.2.0",
     "date-fns": "^1.28.1",
     "dustjs-linkedin": "^2.7.4",
