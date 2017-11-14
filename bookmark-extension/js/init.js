@@ -6,7 +6,7 @@ function init() {
         if(data.settings.notes) {
             createIframe(data);
         }
-        prepareData(true);
+        
         if(data.settings.bookmarks)
         {
             sendBookmarksRequest();
@@ -16,6 +16,8 @@ function init() {
                     clearInterval(initialTimer)
                 }
             }, 100);
+        } else {
+            prepareData(true);
         }
         return resources;
     }).then(resources=>{

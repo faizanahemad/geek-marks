@@ -153,12 +153,26 @@ function renderTags() {
             tw = singularize(tw);
             tagSet.add(tw)
         });
-        console.log(tagSet)
+        var tagArray = Array.from(tagSet);
+        tagSet = FuzzySet(tagArray);
         $(taggle.getInput()).autocomplete({
-                                              source: Array.from(tagSet), // See jQuery UI
-                                                                                 // documentaton
-                                                                                 // for
-                                              // options
+                                              source: function(req, responseFn) {
+                                                var findings = []
+                                                var term = req.term;
+                                                if(term.length>3) {
+                                                    var terms = tagSet.get(term,[],0.6)
+                                                    .map(r=>r[1])
+                                                    terms.forEach((m)=>findings.push(m))
+                                                    
+                                                }
+                                                if(term.length>=4) {
+                                                    var terms = tagArray.filter(t=>t.includes(term)||t.startsWith(term))
+                                                    terms.forEach((m)=>findings.push(m))
+                                                }
+                                                findings = Array.from(new Set(findings))
+                                                responseFn(findings);
+                                                
+                                            },
                                               appendTo: taggle.getContainer(),
                                               position: {
                                                   at: "left bottom",

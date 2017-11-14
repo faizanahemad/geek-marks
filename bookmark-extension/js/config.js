@@ -1,5 +1,6 @@
 var serverUrl = "http://localhost:8443";
 var serverUrlHttps = "https://localhost:8444";
+var couchStoreUrl = 'http://localhost:5984/history'
 var loginApi = serverUrl + "/login_api";
 var loginUrl = serverUrl + "/login";
 var healthUrl = "%server%/health".replace("%server%",serverUrlHttps);

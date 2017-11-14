@@ -1,166 +1,73 @@
 var superagent = Promise.promisifyAll(superagent);
-superagent.getTimed = function (url, time) {
-    var loginPromise = new Promise(function (resolve, reject) {
-        var timer = setTimeout(()=>reject(),time);
-        superagent.getAsync(url).then((res)=>{
-            clearTimeout(timer);
-            if (res.status >= 200 && res.status <= 210) {
-                resolve(res);
-            } else {
-                reject(res)
-            }
-        },(err)=>reject(err));
-    });
-    return loginPromise;
-};
-var postInput = function postInput(data) {
-    var storageData = $.extend(true, {}, data);
 
-    var postData = {
-        "href": storageData.href,
-        "hostname": storageData.hostname,
-        "pathname": storageData.pathname,
-        "title": storageData.title,
-        "note": storageData.note,
-        "tags": storageData.tags,
-        "difficulty":storageData.difficulty,
-        "userId": storageData.userId,
-        "videoTime" : storageData.videoTime,
-        "useless":storageData.useless
-    };
-    postData["lastVisited"] = Date.now();
-    return superagent.postAsync(entryUrl, postData).then(res=>res.body,promiseRejectionHandler);
-};
-
-superagent.postTimed = function (url, data) {
-    return timedPromise(superagent.postAsync(url,data),apiTimeout)
-}
-var postInputTimed = function (data) {
-    return timedPromise(postInput(data),apiTimeout)
-}
-
-var deleteEntry = function deleteEntry(id) {
-    return superagent.deleteAsync(getDeleteUrl(id)).then(undefined,promiseRejectionHandler);
-};
-var deleteEntryTimed = function (id) {
-    return timedPromise(deleteEntry(id),apiTimeout)
-}
-var putVisit = function putVisit(id) {
-    return superagent.putAsync(getVisitUrl(id))
-};
-var putVisitTimed = function (id) {
-    return timedPromise(putVisit(id),apiTimeout)
-}
-function reconcile(userId, storage, total) {
-    return storage.getAllCount(userId).then(count=>{
-        if(count==total)
-            return Promise.resolve(true);
-        else
-            return Promise.reject(false);
-    }).then(undefined,(err)=>{
-        console.error(err);
-        var removerPromise = storage.getAll(userId)
-            .then(docs=>{
-                return docs.map(d=>d._id)
-            })
-            .then(ids=>Promise.all(ids.map(id=>storage.removeLocal(id, userId))));
-        return Promise.join(storage.setDbVersion(0,userId),removerPromise)
-    })
-}
-
-function getSyncBody(userId,storage) {
-    return storage.getDbVersion(userId)
-        .then(version=>{
-            return superagent.postTimed(syncUrl,{version:version}).then(res=>res.body)
-        })
-}
-function sync(userId,storage) {
-    if(userId) {
-        var syncBodyPromise = getSyncBody(userId,storage);
-        return syncBodyPromise.then(body=>{
-                if(body) {
-                    var allPromises = body.deleted.map(d=>storage.remove(d,userId));
-                    allPromises = allPromises.concat(body.modified.map(m=>storage._insertOrUpdateEntry(m)));
-                    allPromises = allPromises.concat([storage.setDbVersion(body.version,userId)]);
-                    return Promise.all(allPromises).then(()=>{
-                        if(body.hasNext) {
-                            return sync(userId,storage).then(()=>body.total)
-                        } else
-                            return Promise.resolve(body.total);
-                    })
-                }
-                return Promise.reject("No body in response");
-            },promiseRejectionHandler)
+function merge(oldRecord, newRecord) {
+    var record = {};
+    var lastVisited = Date.now();
+    if (oldRecord && newRecord) {
+        record = {
+            "_id":oldRecord._id,
+            "userId":newRecord.userId||oldRecord.userId,
+            "href": newRecord.href || oldRecord.href,
+            "hostname": newRecord.hostname || oldRecord.hostname,
+            "pathname": newRecord.pathname || oldRecord.pathname,
+            "lastVisited": lastVisited,
+            "difficulty": newRecord.difficulty || oldRecord.difficulty,
+            "title":newRecord.title || oldRecord.title,
+            "videoTime": newRecord.videoTime || oldRecord.videoTime || [],
+            "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits:1,
+            "tags": newRecord.tags || oldRecord.tags || []
+        };
+        if(newRecord.note===undefined) {
+            record.note = oldRecord.note;
+        } else {
+            record.note = newRecord.note;
+        }
+        if (newRecord.useless!=undefined && newRecord.useless!=null) {
+            record.useless = newRecord.useless;
+        } else if (oldRecord.useless!=undefined && oldRecord.useless!=null) {
+            record.useless = oldRecord.useless;
+        } else {
+            record.useless = false;
+        }
+        return record;
+    } else if (oldRecord) {
+        oldRecord.lastVisited = lastVisited;
+        return oldRecord
+    } else if (newRecord) {
+        record = {
+            "userId":newRecord.userId,
+            "href": newRecord.href,
+            "hostname": newRecord.hostname,
+            "pathname": newRecord.pathname,
+            "lastVisited": lastVisited,
+            "difficulty": newRecord.difficulty,
+            "note": newRecord.note,
+            "visits": 1,
+            "tags": newRecord.tags || [],
+            "videoTime": newRecord.videoTime || [],
+            "useless":newRecord.useless || false
+        };
+        return record
     } else {
-        return Promise.reject("UserID not provided");
+        return {}
     }
-}
-
-function sync_nonRecursive(userId, storage) {
-    if(userId) {
-        return sync(userId,storage).then((total)=>{
-            return reconcile(userId,storage,total)
-        },promiseRejectionHandler)
-    }
-    return Promise.reject();
 }
 var Storage = class Storage {
-    constructor(dbName) {
-        this.db = new PouchDB(dbName, {revs_limit: 1});
+    constructor(dbName,remoteUrl,userId) {
+        this.db = new PouchDB(dbName, {revs_limit: 10});
+        this.remote = new PouchDB(remoteUrl)
+        this.userId = userId
+        this.db.sync(this.remote,{
+            live: true,
+            retry: true,
+            filter: 'app/by_user',
+            query_params: { "userId": userId }
+        })
         this.db.createIndex({
                            index: {
                                fields: ['userId']
                            }
                        })
-    }
-
-    getDbVersion(userId) {
-        var self = this;
-        return this.db.get(userId + '_metainfo_').then(doc=> {
-            if (doc) {
-                return doc.version;
-            } else {
-                return 0;
-            }
-        },(err)=>{
-            if(err.status === 404) {
-                self.db.put({
-                                       _id: userId + '_metainfo_',
-                                       userId:userId,
-                                       version: 0
-                                   });
-            }
-            return Promise.resolve(0);
-        })
-    }
-
-    setDbVersion(version, userId) {
-        var self = this;
-        return this.db.get(userId + '_metainfo_').then(doc=> {
-            if (doc) {
-                return self.db.put({
-                                       _id: doc._id,
-                                       _rev: doc._rev,
-                                       userId:userId,
-                                       version: version
-                                   });
-            } else {
-                return self.db.put({
-                                       _id: userId + '_metainfo_',
-                                       userId:userId,
-                                       version: version
-                                   });
-            }
-        },(err)=>{
-            if(err.status === 404) {
-                self.db.put({
-                                _id: userId + '_metainfo_',
-                                userId:userId,
-                                version: version
-                            });
-            }
-            return Promise.resolve(version);
-        })
     }
 
     getAll(userId) {
@@ -188,50 +95,98 @@ var Storage = class Storage {
         }, promiseRejectionHandler)
     }
 
+    _isPersistable(newEntry, oldEntry) {
+        var hasFields = (entry)=>((entry.tags && entry.tags.length>0) || (entry.videoTime && entry.videoTime.length>0) || (entry.note && entry.note.length>0))?true:false;
+        if (newEntry && newEntry.useless) {
+            return true
+        } else if (oldEntry && oldEntry.useless){
+            return true
+        }
+        if(typeof newEntry.userId==='undefined' || newEntry.userId===null) {
+            return false;
+        }
+        if(!oldEntry) {
+            if(newEntry) {
+                if(newEntry.difficulty) {
+                    return true;
+                } else if(hasFields(newEntry)) {
+                    newEntry.difficulty = newEntry.difficulty || 2;
+                    return true;
+                }
+            }
+        } else {
+            if(newEntry.difficulty || oldEntry.difficulty) {
+                return true;
+            } else if(hasFields(newEntry) || hasFields(oldEntry)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     _insertOrUpdateEntry(entry) {
         var self = this;
         return self.db.get(entry._id).then(localDoc=>{
-            if (localDoc) {
-                entry._rev = localDoc._rev;
-                // refetching the document after put since put only returns id
-                return self.db.put(entry).then((data)=>self.db.get(data.id));
-            } else {
-                return self.db.put(entry).then((data)=>self.db.get(data.id));
+            if(!this._isPersistable(entry,localDoc)) {
+                return Promise.reject("Not persistable")
             }
-        },(err)=>self.db.put(entry).then((data)=>self.db.get(data.id)))
+            entry = merge(localDoc,entry)
+            entry._rev = localDoc._rev;
+            // refetching the document after put since put only returns id
+            return self.db.put(entry).then((data)=>{
+                return self.db.get(data.id)
+            });
+        },(err)=>self.db.post(entry).then((data)=>{
+            console.log(data)
+            return self.db.get(data.id)
+        }))
     }
 
     insertOrUpdateEntry(entry, userId) {
         var self = this;
-        return postInputTimed(entry).then(doc=>{
-            return self._insertOrUpdateEntry(doc);
-        },promiseRejectionHandler)
+        if(typeof entry.userId==='undefined'||entry.userId===null) {
+            entry['userId'] = userId
+        }
+        return this._insertOrUpdateEntry(entry).then(undefined,promiseRejectionHandler)
+    }
+
+    bulkInsertOrUpdate(entries,userId) {
+        var self = this;
+        entries.forEach(entry=>{
+            if(typeof entry.userId==='undefined'||entry.userId===null) {
+                entry['userId'] = userId
+            }
+            this.db.get(entry._id).then(localDoc=>{
+                entry._rev = localDoc._rev;
+                return self.db.put(entry)
+            },(err)=>self.db.post(entry)).catch(console.error)
+
+        })
     }
 
     remove(id, userId) {
         var self = this;
-        return deleteEntryTimed(id).then(()=>{
-            return self.db.get(id).then(doc=>self.db.remove(doc),promiseRejectionHandler)
+        self.db.get(id).then(doc=>{
+            doc._deleted=true;
+            self.db.put(doc)
         },promiseRejectionHandler)
-    }
-
-    removeLocal(id, userId) {
-        var self = this;
-        return this.db.get(id).then(doc=>self.db.remove(doc),promiseRejectionHandler)
     }
 
     logVisit(id, userId) {
         var self = this;
-        return putVisitTimed(id).then((doc)=>{
-            self.db.get(id).then(localDoc=>{
-                if (localDoc) {
-                    localDoc.visits = doc.visits;
-                    return self.db.put(localDoc);
-                } else {
-                    return self.db.put(doc);
-                }
-            },promiseRejectionHandler)
+        return self.db.get(id).then(localDoc=>{
+            if (localDoc) {
+                localDoc.visits = (localDoc.visits||0) + 1;
+                return self.db.put(localDoc);
+            }
         },promiseRejectionHandler)
     }
 };
-var storage = new Storage(dbName);
+
+var storage = null;
+function initStorageOnce(dbName,couchStoreUrl,userId) {
+    if(storage===null) {
+        storage = new Storage(dbName,couchStoreUrl,userId);
+    }
+    
+}

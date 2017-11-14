@@ -114,20 +114,16 @@ function accumulateBookmarks(root, accumulator) {
     }
 }
 
-var storage = new Storage(dbName);
-
 function backgroundSync() {
-    infoLogger("Background sync started at:"+Date.now());
     var loginState = new Promise(function(resolve, reject) {
         getCookies(serverUrl,"_id").then((userId)=>{
-            var syncPromise = sync_nonRecursive(userId,storage)
-            return syncPromise.then((params)=>{
-                resolve(userId)
-            },()=>reject());
+            return superagent.get(checkLoginUrl)
+            .then((body)=>resolve(userId))
+            .catch(err=>reject())
         },()=>reject());
     });
     loginStatus = timedPromise(loginState,2000,"loginState-"+randgen()).then((userId)=>{
-        infoLogger("Setting userId and login=true at:"+Date.now())
+        initStorageOnce(dbName,couchStoreUrl,userId)
         return {userId:userId,login:true,inProgress:false}
     },()=>{
         return {login:false,inProgress:false}
@@ -135,10 +131,8 @@ function backgroundSync() {
     loginStatus.then(u=>{
         if(u.login) {
             userId = u.userId
-            infoLogger("Sync completed successfully at: "+Date.now())
         } else {
             userId = "";
-            infoLogger("Sync Unsuccessful at: "+Date.now())
         }
     })
 }

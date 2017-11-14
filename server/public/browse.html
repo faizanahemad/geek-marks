@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <title>Browse Bookmarks</title>
     <script src="lib/js/jquery-3.2.1.min.js" rel="script"></script>
-    <script src="lib/js/jquery-ui.min.js" rel="script"></script>
+    <script src="lib/js/jquery-ui.js" rel="script"></script>
     <script src="lib/js/taggle.js" rel="script"></script>
     <script src="lib/js/superagent.min.js"></script>
     <script src="lib/js/handlebars.min.js"></script>
     <script src="lib/js/bluebird.min.js"></script>
     <script src="lib/js/date_fns.min.js"></script>
+    <script src="lib/js/fuzzyset.js"></script>
     <link rel="stylesheet" href="lib/css/jquery-ui.min.css">
     <link rel="stylesheet" href="lib/css/bootstrap.css">
     <link rel="stylesheet" href="css/browse.css">
@@ -152,8 +153,8 @@
 
                     <div id="custom-visited-range-area" class="hide">
                         <label for="visitedWithinInput">Visited within:</label>
-                        <input type="number" class="form-control" id="visitedWithinInput" placeholder="1000"
-                               value="1000" min="0">
+                        <input type="number" class="form-control" id="visitedWithinInput" placeholder="1000000"
+                               value="1000000" min="0">
                         <label for="visitedBeforeInput">Visited before:</label>
                         <input type="number" class="form-control" id="visitedBeforeInput" placeholder="0"
                                value="0">

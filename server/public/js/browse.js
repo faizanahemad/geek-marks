@@ -6,11 +6,7 @@ var DisplayBookmarks = class DisplayBookmarks {
         this.source = document.getElementById(templateId).innerHTML;
         this.template = Handlebars.compile(this.source);
     }
-
-    fetchAll() {
-        this.docs = superagent.getAsync("/bookmarks").then(req=>req.body, console.error);
-        return this;
-    }
+    
 
     fetchWithFilters(filters) {
         this.docs = superagent.get("/bookmarks/search").query(filters).endAsync().then(req=>req.body, console.error);
@@ -20,7 +16,7 @@ var DisplayBookmarks = class DisplayBookmarks {
     render(options) {
         var self = this;
         options = options || {};
-        this.docs.then(docs=>docs.filter(d=>!d.useless).map(d=> {
+        this.docs.then(docs=>docs.map(d=> {
             d.options = options;
             d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM, hh:mm a");
             return d;
@@ -35,7 +31,7 @@ var DisplayBookmarks = class DisplayBookmarks {
 var display = new DisplayBookmarks("renderResultArea", "renderTemplate");
 var compact = document.getElementById("compact-select-input");
 compact.onchange = ()=>display.render({compact: !compact.checked});
-display.fetchAll().render({compact: !compact.checked});
+display.fetchWithFilters({}).render({compact: !compact.checked});
 
 
 var TagManager = class TagManager {

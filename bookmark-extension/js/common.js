@@ -184,19 +184,14 @@ function randgen() {
 }
 function timedPromise(promise,time,uid) {
     var rand = uid||randgen()
-    var el = elapser("Timed promise"+uid)
-    el("start")
     var timedPromise = new Promise(function (resolve, reject) {
         var timeCounter = setTimeout(()=>{
             reject();
-            el("rejected")
         },time);
         promise.then((v)=>{
-            infoLogger("Resolving: "+rand);
             resolve(v)
             clearTimeout(timeCounter)
         }, (err)=>{
-            infoLogger("Rejecting: "+rand);
             reject(err)
             clearTimeout(timeCounter)
         })
