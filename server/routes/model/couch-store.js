@@ -105,6 +105,23 @@ var CouchStore = class CouchStore {
             }, console.error)
     }
 
+    getAllCollections(userId) {
+        var defaultCollections = ["Data Structures and Algorithms","Machine Learning & AI",
+        "Software Engineering","Personal Development"]
+        return this.getAll(userId).then((allDocs)=> {
+            var collections = new Set();
+            allDocs.forEach(d=> {
+                if (typeof d.collection!=='undefined' && d.collection!==null) {
+                    collections.add(d.collection)
+                }
+            });
+            // add default collections
+            defaultCollections.forEach(c=>collections.add(c))
+            
+            return Array.from(collections)
+        }, console.error)
+    }
+
     remove(id,userId) {
         var query = {};
         if (userId && id) {
@@ -125,6 +142,8 @@ var CouchStore = class CouchStore {
                     useless,
                     hostnames,
                     tags,
+                    tags_or,
+                    collections,
                     visitsGreaterThan,
                     lastVisitedDaysWithin,
                     lastVisitedDaysBeyond,
@@ -147,6 +166,9 @@ var CouchStore = class CouchStore {
         if (Array.isArray(hostnames) && hostnames.length > 0) {
             query.hostname = {$in: hostnames}
         }
+        if (Array.isArray(collections) && collections.length > 0) {
+            query.collection = {$in: collections}
+        }
         if (visitsGreaterThan && typeof visitsGreaterThan == "number") {
             query.visits = {$gte: visitsGreaterThan}
         }
@@ -160,8 +182,12 @@ var CouchStore = class CouchStore {
                 query.lastVisited = {$lte: utils.subtractDaysFromNow(lastVisitedDaysBeyond)}
         }
         if (Array.isArray(tags) && tags.length > 0) {
-            query.tags = tags[0];
-            thenFunc = docs=>docs.filter(d=>utils.isSuperSet(d.tags, tags))
+            if(typeof tags_or==='undefined' || tags_or===null || !tags_or) {
+                thenFunc = docs=>docs.filter(d=>utils.isSuperSet(d.tags, tags))
+            } else {
+                thenFunc = docs=>docs.filter(d=>utils.isSetIntersect(d.tags, tags))                                
+            }
+            
         }
         if (search && typeof search == "string" && search.length > 0) {
             // var searchRegex = new RegExp(search, "i");
@@ -175,7 +201,7 @@ var CouchStore = class CouchStore {
         return this._find({
             selector:query,
             sort:sort
-        });
+        }).then(thenFunc);
     }
 };
 

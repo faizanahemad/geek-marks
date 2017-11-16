@@ -69,6 +69,7 @@
                     </label>
                 </div>
             </div>
+            <div id="collection-selector-area"></div>
             <div id="tag-selector-area"></div>
 
             <div id="order-selector-area">
@@ -248,12 +249,25 @@
     {{/each}}
 </script>
 <script id="tag-area" type="text/x-handlebars-template">
-    <span class="lead">Tags&nbsp;<span id="tag-area-show-hide" class="glyphicon glyphicon-chevron-down"></span></span>
+    <span class="lead">Tags&nbsp;<span id="tag-area-show-hide" class="glyphicon glyphicon-chevron-down"></span></span>&nbsp;&nbsp;<input id="tagCombinerOr" name="tagCombinerOr" type="checkbox" value="true"> OR
     <div class="hide" id="tag-area-show-hide-control">
         {{#each this}}
         <div class="checkbox">
             <label>
                 <input id="tagCheckBox-{{this}}" name="tagCheckBox" type="checkbox" value="{{this}}">
+                {{this}}
+            </label>
+        </div>
+        {{/each}}
+    </div>
+</script>
+<script id="collection-area" type="text/x-handlebars-template">
+    <span class="lead">Collections&nbsp;</span>
+    <div class="show" id="collection-area-show-hide-control">
+        {{#each this}}
+        <div class="checkbox">
+            <label>
+                <input id="collectionCheckBox-{{this}}" name="collectionCheckBox" type="checkbox" value="{{this}}">
                 {{this}}
             </label>
         </div>

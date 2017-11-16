@@ -28,6 +28,11 @@ var Storage = class Storage {
         return this._proxy(msg,"get_all_tags");
     }
 
+    getAllCollections() {
+        var msg={};
+        return this._proxy(msg,"get_all_collections");
+    }
+
 
     insertOrUpdateEntry(entry) {
         var msg={};

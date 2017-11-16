@@ -2,6 +2,7 @@ var path = require('path');
 var addDays = require('date-fns/add_days');
 var subDays = require('date-fns/sub_days')
 var _ = require('lodash')
+var CSet = require("collections/set");
 const resolve = path.resolve;
 
 const workingDir = process.cwd();
@@ -31,61 +32,21 @@ function csvToArrayString(values) {
     }
     return [];
 }
-function merge(oldRecord, newRecord) {
-    var record = {};
-    var lastVisited = Date.now();
-    if (oldRecord && newRecord) {
-        record = {
-            "_id":oldRecord._id,
-            "userId":newRecord.userId||oldRecord.userId,
-            "href": newRecord.href || oldRecord.href,
-            "hostname": newRecord.hostname || oldRecord.hostname,
-            "pathname": newRecord.pathname || oldRecord.pathname,
-            "lastVisited": lastVisited,
-            "difficulty": newRecord.difficulty || oldRecord.difficulty,
-            "title":newRecord.title || oldRecord.title,
-            "videoTime": newRecord.videoTime || oldRecord.videoTime || [],
-            "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits:1,
-            "tags": newRecord.tags || oldRecord.tags || []
-        };
-        if(newRecord.note===undefined) {
-            record.note = oldRecord.note;
-        } else {
-            record.note = newRecord.note;
-        }
-        if (newRecord.useless!=undefined && newRecord.useless!=null) {
-            record.useless = newRecord.useless;
-        } else if (oldRecord.useless!=undefined && oldRecord.useless!=null) {
-            record.useless = oldRecord.useless;
-        } else {
-            record.useless = false;
-        }
-        return record;
-    } else if (oldRecord) {
-        oldRecord.lastVisited = lastVisited;
-        return oldRecord
-    } else if (newRecord) {
-        record = {
-            "userId":newRecord.userId,
-            "href": newRecord.href,
-            "hostname": newRecord.hostname,
-            "pathname": newRecord.pathname,
-            "lastVisited": lastVisited,
-            "difficulty": newRecord.difficulty,
-            "note": newRecord.note,
-            "visits": 1,
-            "tags": newRecord.tags || [],
-            "videoTime": newRecord.videoTime || [],
-            "useless":newRecord.useless || false
-        };
-        return record
-    } else {
-        return {}
-    }
-}
 
 function isSuperSet(superSet, subSet) {
     return subSet.every(elem => superSet.indexOf(elem) > -1);
+}
+
+function isSetIntersect(first,second) {
+    if(Array.isArray(first) && Array.isArray(second)) {
+        var s1 = new CSet(first)
+        var inters = s1.intersection(second).toArray();
+        if(inters.length>0) {
+            return true;
+        }
+    }
+    return false;
+    
 }
 
 function _singleSort(a,b,s) {
@@ -131,11 +92,11 @@ function createSortFn(sort) {
 module.exports = {
     "convertRelativeToAbsolutePath": convertRelativeToAbsolutePath,
     "workingDir": workingDir,
-    "merge": merge,
     "minsToMilliseconds":minsToMilliseconds,
     "isSuperSet":isSuperSet,
     "subtractDaysFromNow":subtractDaysFromNow,
     "csvToArrayString":csvToArrayString,
     "createSortFn":createSortFn,
+    "isSetIntersect":isSetIntersect,
     "csvToArrayNumber":csvToArrayNumber
 };

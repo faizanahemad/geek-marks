@@ -42,6 +42,7 @@
 .dropdownjs > ul  > li {
   list-style: none;
   padding: 10px 20px;
+  padding-left: 10px;
 }
 .dropdownjs > ul  > li.dropdownjs-add {
   padding: 0;

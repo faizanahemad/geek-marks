@@ -195,3 +195,6 @@ toastr.options = {
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
 }
+
+var defaultCollections = ["Data Structures and Algorithms","Machine Learning & AI",
+"Software Engineering","Personal Development"]

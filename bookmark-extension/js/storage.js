@@ -14,6 +14,7 @@ function merge(oldRecord, newRecord) {
             "difficulty": newRecord.difficulty || oldRecord.difficulty,
             "title":newRecord.title || oldRecord.title,
             "videoTime": newRecord.videoTime || oldRecord.videoTime || [],
+            "collection": newRecord.collection || oldRecord.collection,
             "visits": oldRecord.visits && typeof oldRecord.visits==="number"?oldRecord.visits:1,
             "tags": newRecord.tags || oldRecord.tags || []
         };
@@ -45,6 +46,7 @@ function merge(oldRecord, newRecord) {
             "visits": 1,
             "tags": newRecord.tags || [],
             "videoTime": newRecord.videoTime || [],
+            "collection": newRecord.collection,
             "useless":newRecord.useless || false
         };
         return record
@@ -95,6 +97,21 @@ var Storage = class Storage {
         }, promiseRejectionHandler)
     }
 
+    getAllCollections(userId) {
+        return this.getAll(userId).then((allDocs)=> {
+            var collections = new Set();
+            allDocs.forEach(d=> {
+                if (typeof d.collection!=='undefined' && d.collection!==null) {
+                    collections.add(d.collection)
+                }
+            });
+            // add default collections
+            defaultCollections.forEach(c=>collections.add(c))
+            
+            return Array.from(collections)
+        }, promiseRejectionHandler)
+    }
+
     _isPersistable(newEntry, oldEntry) {
         var hasFields = (entry)=>((entry.tags && entry.tags.length>0) || (entry.videoTime && entry.videoTime.length>0) || (entry.note && entry.note.length>0))?true:false;
         if (newEntry && newEntry.useless) {
@@ -103,6 +120,9 @@ var Storage = class Storage {
             return true
         }
         if(typeof newEntry.userId==='undefined' || newEntry.userId===null) {
+            return false;
+        }
+        if(typeof newEntry.collection==='undefined' || newEntry.collection===null) {
             return false;
         }
         if(!oldEntry) {
@@ -126,20 +146,29 @@ var Storage = class Storage {
 
     _insertOrUpdateEntry(entry) {
         var self = this;
-        return self.db.get(entry._id).then(localDoc=>{
+        var valid = this._isPersistable(entry);
+
+        var promise = Promise.resolve(entry)
+        return promise.then(e=>self.db.get(entry._id))
+        .then(localDoc=>{
             if(!this._isPersistable(entry,localDoc)) {
                 return Promise.reject("Not persistable")
             }
+            return localDoc
+        })
+        .then(localDoc=>{
             entry = merge(localDoc,entry)
             entry._rev = localDoc._rev;
-            // refetching the document after put since put only returns id
-            return self.db.put(entry).then((data)=>{
-                return self.db.get(data.id)
-            });
-        },(err)=>self.db.post(entry).then((data)=>{
-            console.log(data)
-            return self.db.get(data.id)
-        }))
+            return entry;
+        })
+        .then(entry=>self.db.put(entry))
+        .then(data=>self.db.get(data.id))
+        .catch((err)=>{
+            var valid = this._isPersistable(entry);
+            return valid?Promise.resolve(entry):Promise.reject("Not persistable")
+        })
+        .then((entry)=>self.db.post(entry))
+        .then(data=>self.db.get(data.id))
     }
 
     insertOrUpdateEntry(entry, userId) {

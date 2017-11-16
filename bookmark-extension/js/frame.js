@@ -16,6 +16,8 @@ var browseButtonId = "browse-button-id";
 
 var tagId = "tag-id";
 
+var collectionsId = "collection-selector"
+
 function setDisplayStatus(status,data) {
     // show = true
     if (status) {
@@ -190,6 +192,42 @@ function renderTags() {
     }, promiseRejectionHandler);
 }
 
+function renderCollections() {
+    var domCollectionElement = document.getElementById(collectionsId)
+    var currentCollection = displayData.collection;
+    domCollectionElement.onchange = (event)=>{
+        if(typeof domCollectionElement.value!=='undefined' 
+        && domCollectionElement.value!==null
+        && domCollectionElement.value!==displayData.collection) {
+            // persist the collection value
+            displayData.collection = domCollectionElement.value;
+            updateStorage();
+        }
+    }
+    var $select = $("#"+collectionsId)
+    storage.getAllCollections().then(collections=>{
+        collections.forEach(c=>{
+            var $option = $("<option>")
+            $option.attr("value", c)
+            if(c===displayData.collection) {
+                $option.attr("selected", "selected")
+            }
+            $option.text(c);
+            $select.append($option);
+        })
+        return collections
+    }).then((collections)=>{
+        $("#"+collectionsId).dropdown({ "dropdownClass":"dropdown-div"});
+    }).then((collections)=>{
+        if((typeof displayData.collection==='undefined' || displayData.collection===null) 
+        && (typeof displayData.lastVisited!=='undefined' && displayData.lastVisited!==null)) {
+            displayData.collection=domCollectionElement.value || collections[0]
+            
+        }
+        
+    })
+}
+
 function sendIframeAreaChange(style) {
     style = style || {};
     var msg = {from: 'frame', type: 'frame_size_change'};
@@ -299,6 +337,7 @@ function render() {
 
 
     renderTags();
+    renderCollections();
     initialiseDifficultyButton();
 
     document.getElementById(browseButtonId).href = browsePageUrl;

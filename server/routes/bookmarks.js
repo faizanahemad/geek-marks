@@ -11,17 +11,23 @@ module.exports = function(app) {
         var userId = req.session.user_id;
         res.promise(store.getAllTags(userId));
     });
+    app.get('/collections', function(req, res, next) {
+        var userId = req.session.user_id;
+        res.promise(store.getAllCollections(userId));
+    });
     app.get('/search', function(req, res, next) {
         var userId = req.session.user_id;
         var query = req.query;
         var difficulties = utils.csvToArrayNumber(query.difficulty);
         var hostnames = utils.csvToArrayString(query.hostnames);
         var tags = utils.csvToArrayString(query.tags);
+        var collections = utils.csvToArrayString(query.collections);
         var useless = query.useless;
         var visitsGreaterThan = parseInt(query.visits_gte);
         var lastVisitedDaysWithin = parseInt(query.days_within);
         var lastVisitedDaysBeyond = parseInt(query.days_beyond);
         var search = query.search;
+        var tags_or = query.tags_or;
         var sortBy = utils.csvToArrayString(query.sort_by);
         // order_by denotes whether sort order is asc or descending
         var orderBy = utils.csvToArrayNumber(query.order_by);
@@ -36,6 +42,8 @@ module.exports = function(app) {
                                            useless,
                                            hostnames,
                                            tags,
+                                           tags_or,
+                                           collections,
                                            visitsGreaterThan,
                                            lastVisitedDaysWithin,
                                            lastVisitedDaysBeyond,

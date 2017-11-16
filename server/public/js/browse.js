@@ -53,7 +53,7 @@ var TagManager = class TagManager {
 
     render() {
         var self = this;
-        this.tags.then(tags=> {
+        return this.tags.then(tags=> {
             var html = self.template(tags);
             self.elem.innerHTML = html;
             var hiderButton = document.getElementById("tag-area-show-hide");
@@ -73,7 +73,6 @@ var TagManager = class TagManager {
             tagElems.forEach(t=>t.onchange=self.onChangeCallback)
             self.tagElems = Promise.resolve(tagElems);
         });
-        return this;
     }
 
     uncheck(value) {
@@ -95,8 +94,12 @@ var TagManager = class TagManager {
         })
     }
 };
+var tagsOrElem = {checked:false}
 var tm  = new TagManager("tag-selector-area","tag-area","tagCheckBox",tagChange);
-tm.fetchAll().render();
+tm.fetchAll().render().then(()=>{
+    tagsOrElem = document.getElementById('tagCombinerOr');
+    tagsOrElem.onchange = onFilterChange;
+});
 
 
 
@@ -131,6 +134,48 @@ superagent.getAsync("/bookmarks/tags")
 
     },console.error);
 
+
+
+
+var CollectionManager = class CollectionManager {
+    constructor(elemId, templateId, collectionElemsName, onChangeCallback) {
+        this.elem = document.getElementById(elemId);
+        this.collections = Promise.resolve([]);
+        this.source = document.getElementById(templateId).innerHTML;
+        this.template = Handlebars.compile(this.source);
+        this.collectionElemsName = collectionElemsName;
+        this.onChangeCallback = onChangeCallback;
+        this.collectionElems = Promise.resolve([]);
+    }
+
+    fetchAll() {
+        this.collections = superagent.getAsync("/bookmarks/collections")
+            .then(req=>req.body, console.error).then(c=>c.sort());
+        return this;
+    }
+
+    render() {
+        var self = this;
+        this.collections.then(collections=> {
+            var html = self.template(collections);
+            self.elem.innerHTML = html;
+            var ce = Array.from(document.getElementsByName(self.collectionElemsName));
+            ce.forEach(t=>t.onchange=self.onChangeCallback)
+            self.collectionElems = Promise.resolve(ce);
+        });
+        return this;
+    }
+
+    getSelectedCollections() {
+        var self = this;
+        var ce = Array.from(document.getElementsByName(self.collectionElemsName));
+        return ce.filter(c=>c.checked).map(c=>c.value)
+    }
+};
+var cm  = new CollectionManager("collection-selector-area","collection-area","collectionCheckBox",onFilterChange);
+cm.fetchAll().render();
+
+
 var visitedForm=document.getElementById("date-range-selector-area-form");
 var customVisitedSelectorArea = document.getElementById("custom-visited-range-area");
 var visitedWithinElem = document.getElementById("visitedWithinInput");
@@ -138,6 +183,8 @@ var visitedBeforeElem = document.getElementById("visitedBeforeInput");
 var visitsGreaterThanElem = document.getElementById("visitCountInput");
 var searchElem = document.getElementById("searchInput");
 var uselessElem = document.getElementById("useless-select-input");
+
+
 
 var difficultyElemAsc = document.getElementById("difficultyOrderAsc");
 var difficultyElemDesc = document.getElementById("difficultyOrderDesc");
@@ -243,6 +290,7 @@ function getAllFilters() {
     var visitsGreaterThan = parseInt(visitsGreaterThanElem.value);
     var search = searchElem.value;
     var useless = uselessElem.checked;
+    var tagsOr = tagsOrElem.checked;
 
     var sort = {
         difficulty: getSortOrder(difficultyElemAsc,difficultyElemDesc),
@@ -259,6 +307,7 @@ function getAllFilters() {
     var sort_by = Object.entries(sort).map(pair=>pair[0]).join(",");
     var order_by = Object.entries(sort).map(pair=>pair[1]).join(",");
     var tags = taggle.getTagValues().join(",");
+    var collections = cm.getSelectedCollections().join(",")
     var difficulty = difficultiesElem.filter(
         i=>i.checked).map(v=>v.value).join(",");
     var qp = {
@@ -270,7 +319,9 @@ function getAllFilters() {
         days_beyond: visitedBefore,
         visits_gte: visitsGreaterThan,
         sort_by: sort_by,
-        order_by: order_by
+        order_by: order_by,
+        tags_or: tagsOr,
+        collections: collections
     };
     var query = Object.entries(qp).reduce((prev, cur)=> {
         if (cur[1]) {

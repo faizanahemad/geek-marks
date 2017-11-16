@@ -152,6 +152,9 @@ function storageHandler(msg, sender, sendResponse) {
         case "get_all_tags":
             storage.getAllTags(userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
             break;
+        case "get_all_collections":
+            storage.getAllCollections(userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+            break;
         case "insert_or_update":
             storage.insertOrUpdateEntry(msg.entry,userId).then(docs=>{
                 sendResponse(docs);
