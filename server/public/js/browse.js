@@ -16,22 +16,71 @@ var DisplayBookmarks = class DisplayBookmarks {
     render(options) {
         var self = this;
         options = options || {};
-        this.docs.then(docs=>docs.map(d=> {
+        return this.docs.then(docs=>docs.map(d=> {
             d.options = options;
             d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM, hh:mm a");
             return d;
         })).then(docs=> {
             var html = self.template(docs);
             self.elem.innerHTML = html;
+            return docs
         });
-        return this;
     }
 };
 
 var display = new DisplayBookmarks("renderResultArea", "renderTemplate");
 var compact = document.getElementById("compact-select-input");
 compact.onchange = ()=>display.render({compact: !compact.checked});
-display.fetchWithFilters({}).render({compact: !compact.checked});
+display.fetchWithFilters({}).render({compact: !compact.checked}).then((docs)=>{
+    
+    var autocoms = docs.map(d=>{
+        var all = []
+        var autos = generateAutoComplete(d.title +  " "+d.pathname+" "+d.hostname +" "+d.note||"").values();
+        var videoDescriptions = []
+        if(Array.isArray(d.videoTime)) {
+            videoDescriptions = d.videoTime.map(v=>generateAutoComplete(v.description||""))
+            .reduce((acc,cur)=>{
+                return new Set(Array.from(acc.values()).concat(Array.from(cur.values())))
+            },new Set()).values()
+        }
+        
+        return all.concat(Array.from(autos),Array.from(videoDescriptions),[d.title,d.pathname,d.hostname])
+    }).reduce((acc,cur)=>acc.concat(cur),[])
+    .filter(word=>typeof word==="string" && word.length>3)
+    .filter(word=>!endsWithArray(word,domains))
+    .filter(w=>!containsTwice(w,"."))
+    var autocompleteSet = new FuzzySet(autocoms)
+    autocoms = autocompleteSet.values()
+
+    $("#"+"searchInput").autocomplete({
+        source: function(req, responseFn) {
+          var findings = []
+          var term = req.term;
+          if(term.length>3) {
+              var terms = autocompleteSet.get(term,[],0.6)
+              .map(r=>r[1])
+              terms.forEach((m)=>findings.push(m))
+              
+          }
+          if(term.length>=4) {
+              var terms = autocoms.filter(t=>t.includes(term)||t.startsWith(term))
+              terms.forEach((m)=>findings.push(m))
+          }
+          findings = Array.from(new Set(findings))
+          responseFn(findings);
+        },
+        select: function (event, data) {
+            event.preventDefault();
+            //Add the tag if user clicks
+            if (event.which === 1 || event.which === 13) {
+                var term = data.item.value
+                searchElem.value = term;
+                onSearchChange();
+            }
+        }
+    });
+    return docs;
+});
 
 
 var TagManager = class TagManager {
@@ -200,7 +249,7 @@ var difficultiesElem = Array.from(document.getElementsByName("difficultyCheckBox
 visitedWithinElem.onchange = onFilterChange;
 visitedBeforeElem.onchange = onFilterChange;
 visitsGreaterThanElem.onchange = onFilterChange;
-searchElem.onchange = onFilterChange;
+searchElem.onkeypress = onSearchChange;
 uselessElem.onchange = onFilterChange;
 
 difficultyElemAsc.onchange=onFilterChange;
@@ -283,6 +332,12 @@ function getSortOrder(elemAsc,elemDesc) {
     }
 }
 
+function onSearchChange() {
+    var search = searchElem.value;
+    if(search!==null&&search.length>3) {
+        onFilterChange()
+    }
+}
 
 function getAllFilters() {
     var visitedWithin = parseInt(visitedWithinElem.value);

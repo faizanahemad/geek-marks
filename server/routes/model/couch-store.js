@@ -52,6 +52,12 @@ var CouchStore = class CouchStore {
               fields: ['visits']
             }
         })
+
+        this.db.createIndex({
+            index: {
+              fields: ['videoTime.[].description']
+            }
+        })
     }
 
     _find(mango) {
@@ -192,9 +198,10 @@ var CouchStore = class CouchStore {
         if (search && typeof search == "string" && search.length > 0) {
             // var searchRegex = new RegExp(search, "i");
             var searchRegex = "(?mi)"+search
+            var videoTagQuery = {videoTime:{$elemMatch:{description:{$regex:searchRegex}}}}
             var searchQuery = {
                 $or: [{title: {$regex: searchRegex}}, {href: {$regex: searchRegex}},{note: {$regex: searchRegex}},
-                    {pathname: {$regex: searchRegex}}]
+                    {pathname: {$regex: searchRegex}},videoTagQuery]
             };
             query = {$and: [_.cloneDeep(query), searchQuery]}
         }

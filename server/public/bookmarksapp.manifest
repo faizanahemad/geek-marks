@@ -11,6 +11,8 @@ lib/js/taggle.js
 lib/js/superagent.min.js
 lib/js/handlebars.min.js
 lib/js/bluebird.min.js
+lib/js/fuzzyset.js
+lib/js/compromise.min.js
 lib/css/jquery-ui.min.css
 
 /lib/fonts/glyphicons-halflings-regular.eot
@@ -25,6 +27,8 @@ lib/css/jquery-ui.min.css
 /lib/js/superagent.min.js
 /lib/js/handlebars.min.js
 /lib/js/bluebird.min.js
+lib/js/fuzzyset.js
+lib/js/compromise.min.js
 /lib/css/jquery-ui.min.css
 
 NETWORK:

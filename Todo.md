@@ -1,18 +1,19 @@
 ### TODO (Features)
+- Auto complete on search page, General fuzzy search based on text distance [In progress]
+- Improve search init speed
+- search in video tags/timers
+- Video timer in coursera and udemy
 - Tag searches on fuzzy text search (misspellings)
-- General fuzzy search based on text distance
 - Integrate search with google search page and url bar
 - File attachments / images
 - detect content type - audio/video/article etc.
-- Text Area for writing notes to be minimisable.
 - Improve main bookmark widget by making it a round closeable draggable
 - Resize and reposition by drag drop
-- Allow only 10 topics per user, so users know topic is a big thing. 
 - show similar pages to this that you have bookmarked. 
-- Group similar pages together in browse view.
 - Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
 - CSS Fix on Flipkart, prefix css with some custom stuff for content script
 - Support Annotations
+- Text Area for writing notes to be minimisable.
 - dock to bottom like chrome debugger
 - Offline save for reading, show online version if net available
 

@@ -183,7 +183,7 @@ function renderTags() {
                                               select: function (event, data) {
                                                   event.preventDefault();
                                                   //Add the tag if user clicks
-                                                  if (event.which === 1) {
+                                                  if (event.which === 1 || event.which === 13) {
                                                       taggle.add(data.item.value);
                                                   }
                                               }
