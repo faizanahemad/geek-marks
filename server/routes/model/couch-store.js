@@ -144,6 +144,59 @@ var CouchStore = class CouchStore {
         },console.error)
     }
 
+    getAutocompletions(userId) {
+        var query = {}
+        if(userId) {
+            query = {userId: userId,docType:"autocomplete"};
+        } else {
+            console.error("Empty UserId");
+            console.error(id);
+            return Promise.reject("Empty UserId");
+        }
+        return this._find({
+            selector:query
+        }).then(res=>{
+            console.log(res)
+            if(res.length===1) {
+                return res[0]
+            }
+            return null;
+        })
+    }
+
+    storeAutocompletions(body,userId) {
+        var query = {}
+        if(userId) {
+            query = {userId: userId,docType:"autocomplete"};
+        } else {
+            console.error("Empty UserId");
+            console.error(id);
+            return Promise.reject("Empty UserId");
+        }
+
+        return this._find({
+            selector:query
+        }).then(res=>{
+            if(res.length===1) {
+                res = res[0]
+                res.completions = body.completions;
+                res.lastUpdated = body.lastUpdated+1;
+                return res
+            } else {
+                return Promise.reject(null);
+            }
+        }).then(res=>this.db.put(res))
+        .catch(()=>{
+            var res = {
+                completions:body.completions,
+                lastUpdated:body.lastUpdated,
+                "docType":"autocomplete",
+                "userId":userId
+            }
+            return this.db.post(res)
+        })
+    }
+
     getAllByFilters(difficulties,
                     useless,
                     hostnames,

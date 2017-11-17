@@ -28,27 +28,69 @@ var DisplayBookmarks = class DisplayBookmarks {
     }
 };
 
-var display = new DisplayBookmarks("renderResultArea", "renderTemplate");
-var compact = document.getElementById("compact-select-input");
-compact.onchange = ()=>display.render({compact: !compact.checked});
-display.fetchWithFilters({}).render({compact: !compact.checked}).then((docs)=>{
+function generateCompletions(docs) {
     
-    var autocoms = docs.map(d=>{
-        var all = []
-        var autos = generateAutoComplete(d.title +  " "+d.pathname+" "+d.hostname +" "+d.note||"").values();
-        var videoDescriptions = []
+    
+    var concated = docs.map(d=>{
+        var videoDescriptions = ""
         if(Array.isArray(d.videoTime)) {
-            videoDescriptions = d.videoTime.map(v=>generateAutoComplete(v.description||""))
-            .reduce((acc,cur)=>{
-                return new Set(Array.from(acc.values()).concat(Array.from(cur.values())))
-            },new Set()).values()
+            videoDescriptions = d.videoTime.map(v=>v.description).reduce((acc,cur)=>{acc+" | "+cur},"")
         }
+
+        return {
+            autos:d.title +  " "+d.pathname+" "+d.note||"",
+            hosts:d.hostname||"",
+            videoDescriptions:videoDescriptions
+        }
+    }).reduce((acc,cur)=>{
+        acc.autos = acc.autos + " | "+cur.autos
+        acc.hosts = acc.hosts +" | "|cur.hosts
+        acc.videoDescriptions = acc.videoDescriptions + " | "+cur.videoDescriptions
+        return acc
+    },{autos:"",hosts:"",videoDescriptions:""})
+
+    var start = Date.now()
+    var autos = Array.from(generateAutoComplete(concated.autos).values());
+    var hosts = Array.from(generateAutoComplete(concated.hosts).values())
+    .filter(word=>!endsWithArray(word,domains)).filter(w=>w.split(" ").length===1);
+
+    var videoDescriptions = Array.from(generateAutoComplete(concated.videoDescriptions).values());
+    var all = autos.concat(hosts,videoDescriptions)
+    var end = Date.now()
+    var total = end-start
+    console.log("total="+(total/1000))
+
+    var fulltexts = docs.map(d=>[d.title,d.pathname,d.hostname]).reduce((acc,cur)=>acc.concat(cur),[])
+
+    return all.concat(fulltexts).filter(word=>typeof word==="string" && word.length>3)
+    .filter(w=>!containsTwice(w,"."));
+
+    // var autocoms = docs.map(d=>{
+    //     var all = []
+    //     var autos = generateAutoComplete(d.title +  " "+d.pathname+" "+d.note||"").values();
+    //     // take only single word combos from hostname
+    //     var hosts = Array.from(generateAutoComplete(d.hostname||"").values())
+    //     .filter(word=>!endsWithArray(word,domains)).filter(w=>w.split(" ").length===1)
+    //     var videoDescriptions = []
+    //     if(Array.isArray(d.videoTime)) {
+    //         videoDescriptions = d.videoTime.map(v=>generateAutoComplete(v.description||""))
+    //         .reduce((acc,cur)=>{
+    //             return new Set(Array.from(acc.values()).concat(Array.from(cur.values())))
+    //         },new Set()).values()
+    //     }
         
-        return all.concat(Array.from(autos),Array.from(videoDescriptions),[d.title,d.pathname,d.hostname])
-    }).reduce((acc,cur)=>acc.concat(cur),[])
-    .filter(word=>typeof word==="string" && word.length>3)
-    .filter(word=>!endsWithArray(word,domains))
-    .filter(w=>!containsTwice(w,"."))
+    //     return all.concat(Array.from(autos),Array.from(videoDescriptions),hosts,[d.title,d.pathname,d.hostname])
+    // }).reduce((acc,cur)=>acc.concat(cur),[])
+    // .filter(word=>typeof word==="string" && word.length>3)
+    // .filter(w=>!containsTwice(w,"."))
+    // var end = Date.now()
+    // var total = end-start
+    // console.log("total="+(total/1000))
+    // return autocoms
+}
+
+function enableAutocompletions(docs) {
+    var autocoms = generateCompletions(docs)
     var autocompleteSet = new FuzzySet(autocoms)
     autocoms = autocompleteSet.values()
 
@@ -80,7 +122,11 @@ display.fetchWithFilters({}).render({compact: !compact.checked}).then((docs)=>{
         }
     });
     return docs;
-});
+}
+var display = new DisplayBookmarks("renderResultArea", "renderTemplate");
+var compact = document.getElementById("compact-select-input");
+compact.onchange = ()=>display.render({compact: !compact.checked});
+display.fetchWithFilters({}).render({compact: !compact.checked}).then(enableAutocompletions);
 
 
 var TagManager = class TagManager {

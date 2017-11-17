@@ -15,6 +15,15 @@ module.exports = function(app) {
         var userId = req.session.user_id;
         res.promise(store.getAllCollections(userId));
     });
+    app.get('/autocompletions', function(req, res, next) {
+        var userId = req.session.user_id;
+        res.promise(store.getAutocompletions(userId));
+    });
+    app.post('/autocompletions', function(req, res, next) {
+        var userId = req.session.user_id;
+        var body = req.body
+        res.promise(store.storeAutocompletions(body,userId));
+    });
     app.get('/search', function(req, res, next) {
         var userId = req.session.user_id;
         var query = req.query;

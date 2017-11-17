@@ -1046,6 +1046,7 @@ function findInSynonymList(word) {
     return undefined;
 }
 
+// convert plural to singular and replace synonyms
 function singularize(text) {
     var words = text.split(/\W/g);
     words = words.map(w => {
