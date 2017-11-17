@@ -64,63 +64,70 @@ function generateCompletions(docs) {
 
     return all.concat(fulltexts).filter(word=>typeof word==="string" && word.length>3)
     .filter(w=>!containsTwice(w,"."));
-
-    // var autocoms = docs.map(d=>{
-    //     var all = []
-    //     var autos = generateAutoComplete(d.title +  " "+d.pathname+" "+d.note||"").values();
-    //     // take only single word combos from hostname
-    //     var hosts = Array.from(generateAutoComplete(d.hostname||"").values())
-    //     .filter(word=>!endsWithArray(word,domains)).filter(w=>w.split(" ").length===1)
-    //     var videoDescriptions = []
-    //     if(Array.isArray(d.videoTime)) {
-    //         videoDescriptions = d.videoTime.map(v=>generateAutoComplete(v.description||""))
-    //         .reduce((acc,cur)=>{
-    //             return new Set(Array.from(acc.values()).concat(Array.from(cur.values())))
-    //         },new Set()).values()
-    //     }
-        
-    //     return all.concat(Array.from(autos),Array.from(videoDescriptions),hosts,[d.title,d.pathname,d.hostname])
-    // }).reduce((acc,cur)=>acc.concat(cur),[])
-    // .filter(word=>typeof word==="string" && word.length>3)
-    // .filter(w=>!containsTwice(w,"."))
-    // var end = Date.now()
-    // var total = end-start
-    // console.log("total="+(total/1000))
-    // return autocoms
 }
 
 function enableAutocompletions(docs) {
-    var autocoms = generateCompletions(docs)
-    var autocompleteSet = new FuzzySet(autocoms)
-    autocoms = autocompleteSet.values()
+    superagent.get("/bookmarks/autocompletions").endAsync()
+    .then(r=>r.body, console.error).then(body=>{
+        var completions = body.completions
+        var lastUpdated = body.lastUpdated
+        console.log(body)
 
-    $("#"+"searchInput").autocomplete({
-        source: function(req, responseFn) {
-          var findings = []
-          var term = req.term;
-          if(term.length>3) {
-              var terms = autocompleteSet.get(term,[],0.6)
-              .map(r=>r[1])
-              terms.forEach((m)=>findings.push(m))
-              
-          }
-          if(term.length>=4) {
-              var terms = autocoms.filter(t=>t.includes(term)||t.startsWith(term))
-              terms.forEach((m)=>findings.push(m))
-          }
-          findings = Array.from(new Set(findings))
-          responseFn(findings);
-        },
-        select: function (event, data) {
-            event.preventDefault();
-            //Add the tag if user clicks
-            if (event.which === 1 || event.which === 13) {
-                var term = data.item.value
-                searchElem.value = term;
-                onSearchChange();
+        var newDocs = docs.filter(d=>d.lastVisited>=lastUpdated)
+        var latestUpdated = newDocs.reduce((largest,doc)=>doc.lastVisited>=largest?doc.lastVisited:largest,0)
+        var needsUpdates = newDocs.length>0;
+        var autocoms = needsUpdates?generateCompletions(newDocs):[];
+        autocoms = autocoms.concat(completions)
+        .filter(word=>typeof word==="string" && word.length>3)
+        .filter(w=>!containsTwice(w,".")).filter(w=>isNaN(w)).map(w=>w.replace(/[^a-zA-Z0-9_$]+/g, " "))
+        return [autocoms,needsUpdates,latestUpdated]
+    }).then(u=>{
+        var autocoms = u[0]
+        var autocompleteSet = new FuzzySet(autocoms)
+        autocoms = autocompleteSet.values()
+    
+        $("#"+"searchInput").autocomplete({
+            source: function(req, responseFn) {
+              var findings = []
+              var term = req.term;
+              if(term.length>3) {
+                  var terms = autocompleteSet.get(term,[],0.6)
+                  .map(r=>r[1])
+                  terms.forEach((m)=>findings.push(m))
+                  
+              }
+              if(term.length>=4) {
+                  var terms = autocoms.filter(t=>t.includes(term)||t.startsWith(term))
+                  terms.forEach((m)=>findings.push(m))
+              }
+              findings = Array.from(new Set(findings))
+              responseFn(findings);
+            },
+            select: function (event, data) {
+                if (event.which === 1 || event.which === 13) {
+                    event.preventDefault();
+                    var term = data.item.value
+                    searchElem.value = term;
+                    onSearchChange(event);
+                }
             }
+        });
+        return [autocoms,u[1],u[2]];
+    }).then(updates=>{
+        var autocoms = updates[0]
+        var needsUpdates = updates[1]
+        var lastUpdated = updates[2]
+
+        if(needsUpdates) {
+            console.log("Updates added to Autocompletions")
+            console.log(updates)
+            return superagent.post("/bookmarks/autocompletions").send({completions:autocoms,lastUpdated:lastUpdated})
+            .endAsync()
+        } else {
+            Promise.resolve("Updates not needed for Autocompletion index")
         }
-    });
+    }).then(console.log, console.error);;
+    
     return docs;
 }
 var display = new DisplayBookmarks("renderResultArea", "renderTemplate");
@@ -138,11 +145,40 @@ var TagManager = class TagManager {
         this.tagElemsName = tagElemsName;
         this.onChangeCallback = onChangeCallback;
         this.tagElems = Promise.resolve([]);
+        var tagsOrElem = {checked:false}
+        var self = this
+        this.taggle = new Taggle("tagInput", {
+            tags: [],
+            duplicateTagClass: 'bounce',
+            onTagAdd: function (event, tag) {
+                self.check(tag);
+            },
+            onTagRemove: function (event, tag) {
+                self.uncheck(tag);
+                
+            }
+        });
     }
 
-    fetchAll() {
-        this.tags = superagent.getAsync("/bookmarks/tags")
-            .then(req=>req.body, console.error).then(tags=>tags.sort());
+    fetchAll(filters) {
+        var self = this
+        this.tags = superagent.get("/bookmarks/tags").query(filters).endAsync()
+            .then(req => req.body, console.error).then(tags => tags.sort())
+            .then(tags => {
+                $(self.taggle.getInput()).autocomplete({
+                    source: tags, // See jQuery UI documentaton for options
+                    appendTo: self.taggle.getContainer(),
+                    position: { at: "left bottom", of: self.taggle.getContainer() },
+                    select: function (event, data) {
+                        event.preventDefault();
+                        //Add the tag if user clicks
+                        if (event.which === 1) {
+                            self.taggle.add(data.item.value);
+                        }
+                    }
+                });
+                return tags
+            },console.error);;
         return this;
     }
 
@@ -164,8 +200,10 @@ var TagManager = class TagManager {
                     hider.classList.add("hide");
                 }
             }
+            this.tagsOrElem = document.getElementById('tagCombinerOr');
+            this.tagsOrElem.onchange = self.onChangeCallback;
             var tagElems = Array.from(document.getElementsByName(self.tagElemsName));
-            tagElems.forEach(t=>t.onchange=self.onChangeCallback)
+            tagElems.forEach(t=>t.onchange=()=>self.onChangeCallback(t))
             self.tagElems = Promise.resolve(tagElems);
         });
     }
@@ -173,8 +211,9 @@ var TagManager = class TagManager {
     uncheck(value) {
         this.tagElems.then(t=>{
             t.forEach(tm=>{
-                if (tm.value ===value) {
+                if (tm.value===value) {
                     tm.checked = false;
+                    self.onChangeCallback(tm)
                 }
             })
         })
@@ -182,52 +221,35 @@ var TagManager = class TagManager {
     check(value) {
         this.tagElems.then(t=>{
             t.forEach(tm=>{
-                if (tm.value ===value) {
+                if (tm.value===value) {
                     tm.checked = true;
+                    self.onChangeCallback(tm)
                 }
             })
         })
     }
+
+    getTagsOr() {
+        return this.tagsOrElem.checked
+    }
+    getTags() {
+        return this.taggle.getTagValues()
+    }
+    clearAllTags() {
+        this.taggle.removeAll();
+    }
 };
 var tagsOrElem = {checked:false}
 var tm  = new TagManager("tag-selector-area","tag-area","tagCheckBox",tagChange);
-tm.fetchAll().render().then(()=>{
-    tagsOrElem = document.getElementById('tagCombinerOr');
-    tagsOrElem.onchange = onFilterChange;
-});
-
-
-
-var taggle = new Taggle("tagInput", {
-    tags: [],
-    duplicateTagClass: 'bounce',
-    onTagAdd: function (event, tag) {
-        onFilterChange();
-        tm.check(tag);
-    },
-    onTagRemove: function (event, tag) {
-        onFilterChange();
-        tm.uncheck(tag);
+function tagChange(elem) {
+    if (elem && elem.checked) {
+        tm.taggle.add(elem.value);
+    } else {
+        tm.taggle.remove(elem.value, true);
     }
-});
-
-superagent.getAsync("/bookmarks/tags")
-    .then(req=>req.body)
-    .then(tags=> {
-        $(taggle.getInput()).autocomplete({
-                                              source: tags, // See jQuery UI documentaton for options
-                                              appendTo: taggle.getContainer(),
-                                              position: { at: "left bottom", of: taggle.getContainer() },
-                                              select: function(event, data) {
-                                                  event.preventDefault();
-                                                  //Add the tag if user clicks
-                                                  if (event.which === 1) {
-                                                      taggle.add(data.item.value);
-                                                  }
-                                              }
-                                          });
-
-    },console.error);
+    onFilterChange();
+}
+tm.fetchAll().render()
 
 
 
@@ -267,7 +289,14 @@ var CollectionManager = class CollectionManager {
         return ce.filter(c=>c.checked).map(c=>c.value)
     }
 };
-var cm  = new CollectionManager("collection-selector-area","collection-area","collectionCheckBox",onFilterChange);
+
+function onCollectionChange() {
+    var collections = cm.getSelectedCollections().join(",")
+    tm.clearAllTags();
+    tm.fetchAll({collections:collections}).render();
+    onFilterChange();
+}
+var cm  = new CollectionManager("collection-selector-area","collection-area","collectionCheckBox",onCollectionChange);
 cm.fetchAll().render();
 
 
@@ -295,7 +324,16 @@ var difficultiesElem = Array.from(document.getElementsByName("difficultyCheckBox
 visitedWithinElem.onchange = onFilterChange;
 visitedBeforeElem.onchange = onFilterChange;
 visitsGreaterThanElem.onchange = onFilterChange;
-searchElem.onkeypress = onSearchChange;
+(function () {
+    var oldVal;
+    $('#'+"searchInput").on('change textInput input cut propertychange paste', function (e) {
+        var val = this.value;
+        if (val !== oldVal) {
+            oldVal = val;
+            onSearchChange(e);
+        }
+    });
+}());
 uselessElem.onchange = onFilterChange;
 
 difficultyElemAsc.onchange=onFilterChange;
@@ -378,9 +416,10 @@ function getSortOrder(elemAsc,elemDesc) {
     }
 }
 
-function onSearchChange() {
+function onSearchChange(event) {
     var search = searchElem.value;
-    if(search!==null&&search.length>3) {
+    if((search!==null&&search.length>3) 
+    || (event.type==="input" && (event.originalEvent.inputType.includes("delete")))) {
         onFilterChange()
     }
 }
@@ -391,7 +430,7 @@ function getAllFilters() {
     var visitsGreaterThan = parseInt(visitsGreaterThanElem.value);
     var search = searchElem.value;
     var useless = uselessElem.checked;
-    var tagsOr = tagsOrElem.checked;
+    var tagsOr = tm.getTagsOr();
 
     var sort = {
         difficulty: getSortOrder(difficultyElemAsc,difficultyElemDesc),
@@ -407,7 +446,7 @@ function getAllFilters() {
     }
     var sort_by = Object.entries(sort).map(pair=>pair[0]).join(",");
     var order_by = Object.entries(sort).map(pair=>pair[1]).join(",");
-    var tags = taggle.getTagValues().join(",");
+    var tags = tm.getTags().join(",");
     var collections = cm.getSelectedCollections().join(",")
     var difficulty = difficultiesElem.filter(
         i=>i.checked).map(v=>v.value).join(",");
@@ -439,13 +478,4 @@ function getAllFilters() {
 
 function onFilterChange() {
     display.fetchWithFilters(getAllFilters()).render({compact: !compact.checked});
-}
-
-function tagChange() {
-    if (this.checked) {
-        taggle.add(this.value)
-    } else {
-
-        taggle.remove(this.value, true);
-    }
 }

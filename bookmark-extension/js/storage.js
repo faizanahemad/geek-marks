@@ -113,7 +113,10 @@ var Storage = class Storage {
     }
 
     _isPersistable(newEntry, oldEntry) {
-        var hasFields = (entry)=>((entry.tags && entry.tags.length>0) || (entry.videoTime && entry.videoTime.length>0) || (entry.note && entry.note.length>0))?true:false;
+        var hasFields = (entry)=>((entry.tags && entry.tags.length>0) 
+        || (entry.videoTime && entry.videoTime.length>0) 
+        || (entry.note && entry.note.length>0) 
+        || (typeof entry.collection==="string" && entry.collection.length>0))?true:false;
         if (newEntry && newEntry.useless) {
             return true
         } else if (oldEntry && oldEntry.useless){
@@ -146,7 +149,6 @@ var Storage = class Storage {
 
     _insertOrUpdateEntry(entry) {
         var self = this;
-        var valid = this._isPersistable(entry);
 
         var promise = Promise.resolve(entry)
         return promise.then(e=>self.db.get(entry._id))

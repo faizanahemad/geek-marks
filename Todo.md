@@ -1,5 +1,6 @@
 ### TODO (Features)
-- Auto complete on search page, General fuzzy search based on text distance [In progress]
+- Better Error Messages - send fine grained error from background.
+- Fix bug of frame tag input jumping
 - Improve search init speed
 - search in video tags/timers
 - Video timer in coursera and udemy

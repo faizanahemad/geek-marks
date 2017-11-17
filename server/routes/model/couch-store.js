@@ -98,9 +98,15 @@ var CouchStore = class CouchStore {
         });
     }
 
-    getAllTags(userId) {
-        return this.getAll(userId)
-            .then((allDocs)=> {
+    getAllTags(userId,collections) {
+        var allPromise = Promise.resolve([])
+        if(Array.isArray(collections) && collections.length>0) {
+            var query = {userId:userId,collection:{$in:collections}}
+            allPromise = this._find({selector:query})
+        } else {
+            allPromise = this.getAll(userId)
+        }
+        return allPromise.then((allDocs)=> {
                 var tagSet = new CSet();
                 allDocs.forEach(d=> {
                     if (Array.isArray(d.tags)) {
@@ -117,7 +123,7 @@ var CouchStore = class CouchStore {
         return this.getAll(userId).then((allDocs)=> {
             var collections = new Set();
             allDocs.forEach(d=> {
-                if (typeof d.collection!=='undefined' && d.collection!==null) {
+                if (d.collection) {
                     collections.add(d.collection)
                 }
             });

@@ -18,6 +18,7 @@
     "cookies",
     "history",
     "storage",
+    "webNavigation",
     "*://*/*"
   ],
   "web_accessible_resources": [

@@ -160,6 +160,8 @@ function augmentCldWithData(thisLocationData) {
     cld.hostname= cld.hostname||thisLocationData.hostname;
     cld.pathname= cld.pathname||thisLocationData.pathname;
     cld.title=cld.title||getTitle();
+    cld.collection = thisLocationData.collection;
+    cld._id=thisLocationData._id;
     if (cld.useless==undefined) {
         cld.useless=false;
     }

@@ -9,7 +9,8 @@ module.exports = function(app) {
 
     app.get('/tags', function(req, res, next) {
         var userId = req.session.user_id;
-        res.promise(store.getAllTags(userId));
+        var collections = utils.csvToArrayString(req.query.collections);
+        res.promise(store.getAllTags(userId,collections));
     });
     app.get('/collections', function(req, res, next) {
         var userId = req.session.user_id;
