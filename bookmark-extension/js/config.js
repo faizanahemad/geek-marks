@@ -34,8 +34,8 @@ var globalSettings = {
         "color":3,
         "top":21,
         "right":21,
-        "height":580,
-        "width":360
+        "height":620,
+        "width":380
     },
     "settings":{
         "enabled":true
@@ -135,9 +135,9 @@ var defaultSettingsMap = {
     },
     "stackoverflow.com":{
         "style":{
-            "top":21,
+            "top":60,
             "right":21,
-            "height":600,
+            "height":620,
             "width":400
         },
         "settings":{
@@ -196,5 +196,5 @@ toastr.options = {
     "hideMethod": "fadeOut"
 }
 
-var defaultCollections = ["Data Structures and Algorithms","Machine Learning & AI",
+var defaultCollections = ["Misc","Data Structures and Algorithms","Machine Learning & AI",
 "Software Engineering","Personal Development"]

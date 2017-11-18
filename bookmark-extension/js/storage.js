@@ -121,13 +121,13 @@ var Storage = class Storage {
             return true
         } else if (oldEntry && oldEntry.useless){
             return true
+        } else if(typeof newEntry.collection==='undefined' || newEntry.collection===null) {
+            return false;
         }
         if(typeof newEntry.userId==='undefined' || newEntry.userId===null) {
             return false;
         }
-        if(typeof newEntry.collection==='undefined' || newEntry.collection===null) {
-            return false;
-        }
+        
         if(!oldEntry) {
             if(newEntry) {
                 if(newEntry.difficulty) {

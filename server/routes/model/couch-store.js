@@ -118,7 +118,7 @@ var CouchStore = class CouchStore {
     }
 
     getAllCollections(userId) {
-        var defaultCollections = ["Data Structures and Algorithms","Machine Learning & AI",
+        var defaultCollections = ["Misc","Data Structures and Algorithms","Machine Learning & AI",
         "Software Engineering","Personal Development"]
         return this.getAll(userId).then((allDocs)=> {
             var collections = new Set();

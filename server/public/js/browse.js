@@ -18,7 +18,7 @@ var DisplayBookmarks = class DisplayBookmarks {
         options = options || {};
         return this.docs.then(docs=>docs.map(d=> {
             d.options = options;
-            d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM, hh:mm a");
+            d.dateString = dateFns.format(new Date(d.lastVisited),"Do MMM YY, hh:mm a");
             return d;
         })).then(docs=> {
             var html = self.template(docs);

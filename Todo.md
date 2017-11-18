@@ -2,7 +2,6 @@
 - Better Error Messages - send fine grained error from background.
 - Fix bug of frame tag input jumping
 - Improve search init speed
-- search in video tags/timers
 - Video timer in coursera and udemy
 - Tag searches on fuzzy text search (misspellings)
 - Integrate search with google search page and url bar
