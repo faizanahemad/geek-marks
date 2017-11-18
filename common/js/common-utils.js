@@ -1,3 +1,4 @@
+var superagent = Promise.promisifyAll(superagent);
 Element.prototype.remove = function () {
     this.parentElement.removeChild(this);
 }
@@ -33,10 +34,19 @@ function htmlToElements(html) {
     template.innerHTML = html;
     return template.content.childNodes;
 }
+
+
+function appendMany(elem,children) {
+    Array.from(htmlToElements(children)).forEach(child=>elem.appendChild(child))
+}
+function prependMany(elem,children) {
+    Array.from(htmlToElements(children)).forEach(child=>elem.prepend(child))
+}
 function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
-String.prototype.replaceAll = function(search, replacement) {
+
+String.prototype.replaceAll = function (search, replacement) {
     search = escapeRegExp(search);
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
@@ -52,4 +62,9 @@ function getQueryParam(name) {
         parameters[key] = value;
     });
     return parameters[name];
+}
+
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
 }

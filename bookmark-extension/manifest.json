@@ -36,10 +36,8 @@
         "*://*/*"
       ],
       "css": ["lib/css/bootstrap-content-script.css","lib/css/toastr.min.css","css/page.css"],
-      "js": ["lib/js/bluebird.min.js",
-        "lib/js/jquery-3.2.1.min.js",
-        "lib/js/superagent.min.js",
-        "lib/js/toastr.min.js",
+      "js": ["lib/js/generated-lib.js",
+        "js/generated.js",
         "js/config.js",
         "js/common.js",
         "js/chrome_storage.js",
@@ -54,12 +52,8 @@
     }
   ],
   "background": {
-    "scripts": ["lib/js/bluebird.min.js",
-      "lib/js/superagent.min.js",
-      "lib/js/jquery-3.2.1.min.js",
-      "lib/js/toastr.min.js",
-      "lib/js/pouchdb.js",
-      "lib/js/pouchdb.find.js",
+    "scripts": ["lib/js/generated-lib.js",
+      "js/generated.js",
       "js/config.js",
       "js/common.js",
       "js/storage.js",

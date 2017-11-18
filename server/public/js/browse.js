@@ -1,4 +1,3 @@
-var superagent = Promise.promisifyAll(superagent);
 var DisplayBookmarks = class DisplayBookmarks {
     constructor(elemId, templateId) {
         this.elem = document.getElementById(elemId);
