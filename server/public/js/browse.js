@@ -203,27 +203,27 @@ var TagManager = class TagManager {
             this.tagsOrElem = document.getElementById('tagCombinerOr');
             this.tagsOrElem.onchange = self.onChangeCallback;
             var tagElems = Array.from(document.getElementsByName(self.tagElemsName));
-            tagElems.forEach(t=>t.onchange=()=>self.onChangeCallback(t))
+            tagElems.forEach(t=>t.onchange=()=>self.onChangeCallback(self,t))
             self.tagElems = Promise.resolve(tagElems);
         });
     }
 
     uncheck(value) {
-        this.tagElems.then(t=>{
-            t.forEach(tm=>{
-                if (tm.value===value) {
-                    tm.checked = false;
-                    self.onChangeCallback(tm)
+        this.tagElems.then(tagElems=>{
+            tagElems.forEach(t=>{
+                if (t.value===value) {
+                    t.checked = false;
+                    self.onChangeCallback(self,t)
                 }
             })
         })
     }
     check(value) {
-        this.tagElems.then(t=>{
-            t.forEach(tm=>{
-                if (tm.value===value) {
-                    tm.checked = true;
-                    self.onChangeCallback(tm)
+        this.tagElems.then(tagElems=>{
+            tagElems.forEach(t=>{
+                if (t.value===value) {
+                    t.checked = true;
+                    self.onChangeCallback(self,t)
                 }
             })
         })
@@ -241,11 +241,9 @@ var TagManager = class TagManager {
 };
 var tagsOrElem = {checked:false}
 var tm  = new TagManager("tag-selector-area","tag-area","tagCheckBox",tagChange);
-function tagChange(elem) {
-    if (elem && elem.checked) {
-        tm.taggle.add(elem.value);
-    } else {
-        tm.taggle.remove(elem.value, true);
+function tagChange(tagManager,elem) {
+    if(elem) {
+        elem.checked?tagManager.taggle.add(elem.value):tagManager.taggle.remove(elem.value, true)
     }
     onFilterChange();
 }
