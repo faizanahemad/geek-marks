@@ -195,6 +195,3 @@ chrome.runtime.onInstalled.addListener(function(details){
     }
 });
 
-chrome.webNavigation.onBeforeNavigate.addListener(function(object){ 
-    chrome.tabs.get(object.tabId, function(tab){ console.log(tab)});
-});

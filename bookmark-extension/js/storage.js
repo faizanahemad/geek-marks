@@ -98,6 +98,7 @@ var Storage = class Storage {
     }
 
     getAllCollections(userId) {
+        var el=elapser("collections")
         return this.getAll(userId).then((allDocs)=> {
             var collections = new Set();
             allDocs.forEach(d=> {
@@ -107,7 +108,7 @@ var Storage = class Storage {
             });
             // add default collections
             defaultCollections.forEach(c=>collections.add(c))
-            
+            el("collected")
             return Array.from(collections)
         }, promiseRejectionHandler)
     }

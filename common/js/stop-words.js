@@ -1005,25 +1005,27 @@ function removeStopWords(input) {
     input = input.toLowerCase();
     var inpArray = input.replace(/\s\s+/g, ' ').split(/\W/g).map(w => w.trim());
     var inputWords = [];
+    var originalWordIndexes = {}
     for (var i = 0; i < inpArray.length; i++) {
-        if (i < inpArray.length) {
-            if (!stopWordSet.has(inpArray[i]) && inpArray[i].length > 2) {
-                inputWords.push(inpArray[i]);
-            }
+        var curWord = inpArray[i]
+        originalWordIndexes[curWord] = i;
+        if (!stopWordSet.has(curWord) && curWord.length > 3) {
+            inputWords.push(curWord);
         }
     }
     // inputWords = [ ...new Set(inputWords) ];
-    return { inputWords: inputWords, inputArray: inpArray }
+    return { inputWords: inputWords, inputArray: inpArray , originalWordIndexes:originalWordIndexes}
 }
 function generateAutoComplete(input) {
     var input = removeStopWords(input);
     var inputArray = input.inputArray;
     var inputWords = input.inputWords;
     var inputWordsTakenTwo = [];
+    var originalWordIndexes = input.originalWordIndexes
     for (var i = 0; i < inputWords.length - 1; i++) {
         var w1 = inputWords[i];
         var w2 = inputWords[i + 1];
-        var w1Index = inputArray.indexOf(w1);
+        var w1Index = originalWordIndexes[w1];
         if (inputArray[w1Index + 1] === w2)
             inputWordsTakenTwo.push(w1 + " " + w2)
     }
@@ -1033,17 +1035,26 @@ function generateAutoComplete(input) {
 }
 // Use all elements of a tag for word gen: Array.from(document.getElementsByTagName("p")).map(e=>e.innerText).map(generateAutoComplete).filter(arr=>arr.length>0)
 
-var nounExceptionList = [{ word: "modulus", synonyms: ["modulus"] },
-{ word: "list", synonyms: ["lists"] },
-{ word: "numeric", synonyms: ["numerical"] },
-{ word: "stream", synonyms: ["streams", "streaming"] }];
+
+
+function getExceptionMap() {
+    var nounExceptionList = [{ word: "modulus", synonyms: ["modulus"] },
+    { word: "list", synonyms: ["lists"] },
+    { word: "numeric", synonyms: ["numerical"] },
+    { word: "stream", synonyms: ["streams", "streaming"] },
+    { word: "pick", synonyms: ["picks"] },
+    { word: "check", synonyms: ["checks"] },
+    ];
+    var exceptionMap = {};
+    nounExceptionList.map(e => {
+        e.synonyms.forEach(syn => exceptionMap[syn] = e.word)
+    })
+    return exceptionMap;
+}
+var nounExceptionMap = getExceptionMap()
 
 function findInSynonymList(word) {
-    var record = nounExceptionList.find((elem, i, arr) => elem.word === word || elem.synonyms.indexOf(word) > -1)
-    if (record != undefined) {
-        return record.word;
-    }
-    return undefined;
+    return nounExceptionMap[word];
 }
 
 // convert plural to singular and replace synonyms
@@ -1063,21 +1074,21 @@ function singularize(text) {
     return words.join(" ");
 }
 
-var domains = [".com",".ai",".io",".org",".edu",".gov",".in",".net",".co"," com"," ai"," io"," org"," edu"," gov"," in"," net"," co",]
+var domains = [".com", ".ai", ".io", ".org", ".edu", ".gov", ".in", ".net", ".co", " com", " ai", " io", " org", " edu", " gov", " in", " net", " co",]
 
-function endsWithArray(str,arr) {
-    if(Array.isArray(arr) && typeof str==='string') {
-        return arr.map(e=>str.endsWith(e)).reduce((acc,cur)=>acc||cur,false)
+function endsWithArray(str, arr) {
+    if (Array.isArray(arr) && typeof str === 'string') {
+        return arr.map(e => str.endsWith(e)).reduce((acc, cur) => acc || cur, false)
     }
     return false;
 }
 
-function containsTwice(str,char) {
-    if(typeof str==="string" && typeof char==="string") {
-        var i=str.lastIndexOf(char)
-        var j=str.indexOf(char)
+function containsTwice(str, char) {
+    if (typeof str === "string" && typeof char === "string") {
+        var i = str.lastIndexOf(char)
+        var j = str.indexOf(char)
 
-        if(i>-1&&j>-1&&i!==j) {
+        if (i > -1 && j > -1 && i !== j) {
             return true;
         }
     }

@@ -1,3 +1,4 @@
+storage.initCache();
 var displayData = {
     useless:false
 };
@@ -204,6 +205,7 @@ function renderCollections() {
             updateStorage();
         }
     }
+    var el=elapser("collections")
     var $select = $("#"+collectionsId)
     storage.getAllCollections().then(collections=>{
         collections.forEach(c=>{
@@ -218,6 +220,7 @@ function renderCollections() {
         return collections
     }).then((collections)=>{
         $("#"+collectionsId).dropdown({ "dropdownClass":"dropdown-div"});
+        el("rendered")
     }).then((collections)=>{
         if((typeof displayData.collection==='undefined' || displayData.collection===null) 
         && (typeof displayData.lastVisited!=='undefined' && displayData.lastVisited!==null)) {
@@ -298,6 +301,9 @@ function render() {
     var html = template(displayData);
     htmlArea.innerHTML = html;
     chromeStorage.getCombinedSettings().then(data=>$.extend(true,combinedSetting,data)).then(()=>setDisplayStatus(combinedSetting.settings.show_on_load,combinedSetting));
+    renderCollections();
+    renderTags();
+    initialiseDifficultyButton();
     var simplemde = new SimpleMDE({
         element: document.getElementById("editable-note"),
         placeholder:"Enter Note Content...",
@@ -334,12 +340,6 @@ function render() {
         },
     });
     simplemde.value(displayData.note);
-
-
-    renderTags();
-    renderCollections();
-    initialiseDifficultyButton();
-
     document.getElementById(browseButtonId).href = browsePageUrl;
     addDomHandlers(simplemde);
 }
