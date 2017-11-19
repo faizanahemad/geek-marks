@@ -3,9 +3,7 @@ function sendBookmarksRequest() {
     var msg={};
     msg.from = "content_script";
     msg.type = "bookmarks_query";
-    sendMessage(msg,"sendBookmarksRequest").then(doc=>{
-        renderBookmarkLinks(doc.bookmarks)
-    });
+    return sendMessage(msg,"sendBookmarksRequest")
 }
 
 function renderBookmarkLinks(bookmarks) {

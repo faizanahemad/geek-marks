@@ -90,8 +90,10 @@ function prepareData(firstRun) {
         pathMap.clear();
         titleMap.clear();
     }
+    var el = elapser("Render elapser")
     var allPromise = storage.getAll();
     allPromise.then(locationData=>{
+        el("All promise got:")
         locationData.forEach((e)=> {
             hrefMap.set(e["href"], e);
             pathMap.set(e["pathname"],e);

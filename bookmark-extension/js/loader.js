@@ -24,11 +24,11 @@ function popOpen(tabid) {
                 "%loginUrl%", loginUrl));
     }
 }
-function bookmark() {
+function bookmark(settings) {
     sendMessage({from:"content_script",type:"check_login"},"bookmark").then(msg=>{
         var id = msg.id;
         if(msg.login) {
-            init();
+            init(settings);
         } else if(!msg.inProgress) {
             var toastrString = `
                 <div id="toast-container" class="toast-top-right">
@@ -48,12 +48,12 @@ function bookmark() {
     });
     chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         if (msg.from === 'login_extension_page' && msg.type == 'login_info' && msg.login) {
-            init();
+            init(settings);
         }
     });
 }
 chromeStorage.getCombinedSettings().then(data=>{
     if(data.settings.enabled) {
-        bookmark();
+        bookmark(Promise.resolve(data));
     }
 });

@@ -73,7 +73,7 @@ var CacheStorage = class CacheStorage {
             return entry;
         }
 
-        if(this.cache.valid && typeof this.cache[key]!="undefined" && this.cache.time[key] && this.cache.time[key]>Date.now()-5000) {
+        if(this.cache.valid && typeof this.cache[key]!="undefined" && this.cache.time[key] && this.cache.time[key]>Date.now()-10000) {
             entry = this.cache[key];
             return {getOrElse:en};
         }

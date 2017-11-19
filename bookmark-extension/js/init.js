@@ -1,8 +1,13 @@
-function init() {
+function init(settings) {
+    if(typeof settings==="undefined") {
+        settings = chromeStorage.getCombinedSettings()
+    }
     storage.initCache()
     g4gSpecific();
     var resources = addListeners();
-    chromeStorage.getCombinedSettings().then(data=>{
+    var bookmarksReq=sendBookmarksRequest();
+    var preparedData = prepareData(true)
+    settings.then(data=>{
         setStyle(data.style.color);
         if(data.settings.notes) {
             createIframe(data);
@@ -10,11 +15,17 @@ function init() {
         
         if(data.settings.bookmarks)
         {
-            sendBookmarksRequest();
+            bookmarksReq.then(doc=>{
+                renderBookmarkLinks(doc.bookmarks)
+            });
             var initialTimer = false;
             function initialRunner() {
                 if (document.readyState === "complete" || document.readyState==="interactive") {
-                    firstRunDisplay();
+                    // for firstRunDisplay when we are going to use all features, color links and show bookmarks
+                    preparedData.then(()=>{
+                        youtubeTimeCapture();
+                        renderLinks();
+                    });
                     if(initialTimer) {
                         clearInterval(initialTimer)
                     }
@@ -22,8 +33,6 @@ function init() {
             }
             initialRunner()
             initialTimer = setInterval(initialRunner, 50);
-        } else {
-            prepareData(true);
         }
         return resources;
     }).then(resources=>{

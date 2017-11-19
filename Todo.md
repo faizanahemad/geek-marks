@@ -2,18 +2,17 @@
 - Better Error Messages - send fine grained error from background.
 - Fix bug of frame tag input jumping
 - fix autocomplete deletions bug in browse page, deleted entries still show in autocomplete
-- Improve search init speed
 - Video timer in coursera and udemy
+- Google sign in
+- Support Annotations, with offline caching (for speedup? or not)
 - Tag searches on fuzzy text search (misspellings)
 - Integrate search with google search page and url bar
 - File attachments / images
 - detect content type - audio/video/article etc.
 - Improve main bookmark widget by making it a round closeable draggable
 - Resize and reposition by drag drop
-- show similar pages to this that you have bookmarked. 
-- Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
+- show similar pages to this that you have bookmarked.
 - CSS Fix on Flipkart, prefix css with some custom stuff for content script
-- Support Annotations
 - Text Area for writing notes to be minimisable.
 - dock to bottom like chrome debugger
 - Offline save for reading, show online version if net available
@@ -35,6 +34,7 @@
 - Admin Login
 - Secure send password over http by hashing
 - dev mode
+- Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
 - User preference to start the browse page with selected config, allow creation of custom browse pages
 
 ### Login/Sign Up issues
@@ -67,17 +67,8 @@
 - https://pouchdb.com/2015/04/05/filtered-replication.html
 - https://github.com/josdejong/jsoneditor
 - https://selectize.github.io/selectize.js/
-
-### PouchDB Links
-- https://github.com/pouchdb-community/pouchdb-authentication
-- https://github.com/redgeoff/delta-pouch
-- https://github.com/hoodiehq/pouchdb-hoodie-api
-- https://www.npmjs.com/package/@hoodie/store-client
-- https://python-pouchdb.marten-de-vries.nl/plugins.html
-- https://github.com/jo/pouch-resolve-conflicts
-- https://github.com/pouchdb-community/pouchdb-quick-search
-- https://www.npmjs.com/package/superlogin
-- https://github.com/pouchdb/upsert
+- http://h.readthedocs.io/en/latest/api/authorization/
+- https://developers.google.com/identity/sign-in/web/sign-in
 
 ### Iframe chrome extensions
 - http://stackoverflow.com/questions/11325415/access-iframe-content-from-a-chromes-extension-content-script
@@ -90,6 +81,7 @@
 - http://aroc.github.io/side-comments-demo/
 - https://hypothes.is/contribute/
 - http://h.readthedocs.io/en/latest/
+- http://h.readthedocs.io/en/latest/api/authorization/
 - http://docs.annotatorjs.org/en/v1.2.x
 - https://github.com/openannotation/annotator
 - https://github.com/auth0/node-jsonwebtoken

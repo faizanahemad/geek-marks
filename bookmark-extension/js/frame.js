@@ -1,4 +1,7 @@
+var combinedSettings = chromeStorage.getCombinedSettings();
 storage.initCache();
+var collectionsPromise = storage.getAllCollections();
+var tagsPromise = storage.getAllTags();
 var displayData = {
     useless:false
 };
@@ -83,30 +86,30 @@ function deleteFromStorage() {
 function initialiseDifficultyButton() {
     $("#difficulty-input").rating('destroy');
     $("#difficulty-input").rating({
-                                      min: 0,
-                                      max: 5,
-                                      step: 1,
-                                      size: 'xs',
-                                      stars: 5,
-                                      showClear: false,
-                                      showCaption: true,
-                                      hoverEnabled: true,
-                                      clearCaptionClass: "width60 label label-default",
-                                      starCaptionClasses: {
-                                          1: 'width60 label label-ok',
-                                          2: 'width60 label label-warning',
-                                          3: 'width60 label label-info',
-                                          4: 'width60 label label-primary',
-                                          5: 'width60 label label-success'
-                                      },
-                                      starCaptions: {
-                                          1: 'Ok',
-                                          2: 'Good',
-                                          3: 'Very Good',
-                                          4: 'Awesome',
-                                          5: 'Greatest'
-                                      }
-                                  });
+        min: 0,
+        max: 5,
+        step: 1,
+        size: 'xs',
+        stars: 5,
+        showClear: false,
+        showCaption: true,
+        hoverEnabled: true,
+        clearCaptionClass: "width60 label label-default",
+        starCaptionClasses: {
+            1: 'width60 label label-ok',
+            2: 'width60 label label-warning',
+            3: 'width60 label label-info',
+            4: 'width60 label label-primary',
+            5: 'width60 label label-success'
+        },
+        starCaptions: {
+            1: 'Ok',
+            2: 'Good',
+            3: 'Very Good',
+            4: 'Awesome',
+            5: 'Greatest'
+        }
+    });
     $('#difficulty-input').rating('update', displayData.difficulty);
     $('#difficulty-input').on('rating.change', function (event, value, caption) {
         displayData.difficulty = parseInt(value);
@@ -137,7 +140,7 @@ function markAsUseless() {
 
 function renderTags() {
     var tags = displayData.tags || [];
-    var pageTagWords = generateAutoComplete(displayData.title||"");
+    var pageTagWords = generateAutoComplete(displayData.title || "");
     var taggle = new Taggle(tagId, {
         tags: tags,
         duplicateTagClass: 'bounce',
@@ -150,45 +153,45 @@ function renderTags() {
             updateStorage();
         }
     });
-    storage.getAllTags().then(tags=> {
+    tagsPromise.then(tags => {
         var tagSet = pageTagWords;
-        tags.forEach(tw=>{
+        tags.forEach(tw => {
             tw = singularize(tw);
             tagSet.add(tw)
         });
         var tagArray = Array.from(tagSet);
         tagSet = FuzzySet(tagArray);
         $(taggle.getInput()).autocomplete({
-                                              source: function(req, responseFn) {
-                                                var findings = []
-                                                var term = req.term;
-                                                if(term.length>3) {
-                                                    var terms = tagSet.get(term,[],0.6)
-                                                    .map(r=>r[1])
-                                                    terms.forEach((m)=>findings.push(m))
-                                                    
-                                                }
-                                                if(term.length>=4) {
-                                                    var terms = tagArray.filter(t=>t.includes(term)||t.startsWith(term))
-                                                    terms.forEach((m)=>findings.push(m))
-                                                }
-                                                findings = Array.from(new Set(findings))
-                                                responseFn(findings);
-                                                
-                                            },
-                                              appendTo: taggle.getContainer(),
-                                              position: {
-                                                  at: "left bottom",
-                                                  of: taggle.getContainer()
-                                              },
-                                              select: function (event, data) {
-                                                  event.preventDefault();
-                                                  //Add the tag if user clicks
-                                                  if (event.which === 1 || event.which === 13) {
-                                                      taggle.add(data.item.value);
-                                                  }
-                                              }
-                                          });
+            source: function (req, responseFn) {
+                var findings = []
+                var term = req.term;
+                if (term.length > 3) {
+                    var terms = tagSet.get(term, [], 0.6)
+                        .map(r => r[1])
+                    terms.forEach((m) => findings.push(m))
+
+                }
+                if (term.length >= 4) {
+                    var terms = tagArray.filter(t => t.includes(term) || t.startsWith(term))
+                    terms.forEach((m) => findings.push(m))
+                }
+                findings = Array.from(new Set(findings))
+                responseFn(findings);
+
+            },
+            appendTo: taggle.getContainer(),
+            position: {
+                at: "left bottom",
+                of: taggle.getContainer()
+            },
+            select: function (event, data) {
+                event.preventDefault();
+                //Add the tag if user clicks
+                if (event.which === 1 || event.which === 13) {
+                    taggle.add(data.item.value);
+                }
+            }
+        });
 
     }, promiseRejectionHandler);
 }
@@ -207,7 +210,7 @@ function renderCollections() {
     }
     var el=elapser("collections")
     var $select = $("#"+collectionsId)
-    storage.getAllCollections().then(collections=>{
+    collectionsPromise.then(collections=>{
         collections.forEach(c=>{
             var $option = $("<option>")
             $option.attr("value", c)
@@ -300,7 +303,7 @@ function render() {
     var template = Handlebars.compile(templateString);
     var html = template(displayData);
     htmlArea.innerHTML = html;
-    chromeStorage.getCombinedSettings().then(data=>$.extend(true,combinedSetting,data)).then(()=>setDisplayStatus(combinedSetting.settings.show_on_load,combinedSetting));
+    combinedSettings.then(data=>$.extend(true,combinedSetting,data)).then(()=>setDisplayStatus(combinedSetting.settings.show_on_load,combinedSetting));
     renderCollections();
     renderTags();
     initialiseDifficultyButton();
@@ -355,42 +358,44 @@ function getTabId() {
         })
     });
 }
+var tabId = getTabId()
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-        getTabId().then((tab)=>{
-            if(sender.tab && sender.tab.id===tab) {
+        tabId.then((tab) => {
+            if (sender.tab && sender.tab.id === tab) {
                 if (msg.from === 'content_script' && msg.type == 'page_content') {
                     displayData = {};
-                    $.extend(true,displayData,msg);
+                    $.extend(true, displayData, msg);
                     displayData.note = displayData.note || "";
                     displayData.useless = msg.useless;
-                    infoLogger("Iframe Displaydata init with href:"+msg.href,displayData,msg);
-                    $.extend(true,cld,displayData);
+                    infoLogger("Iframe: Displaydata init:" + msg.href, displayData, msg);
+                    $.extend(true, cld, displayData);
 
                 } else if (msg.from === 'content_script' && msg.type == 'page_content_render') {
                     displayData = {};
-                    $.extend(true,displayData,msg);
+                    $.extend(true, displayData, msg);
                     displayData.note = displayData.note || "";
-                    $.extend(true,cld,displayData);
-                    infoLogger("Iframe Displaydata init with Render with href:"+msg.href,displayData,msg);
+                    $.extend(true, cld, displayData);
+                    infoLogger("Iframe: Displaydata init with Render:" + msg.href, displayData, msg);
                     render();
                 }
             }
-        },promiseRejectionHandler);
+        }, promiseRejectionHandler);
     });
 }
 addListeners();
 
 var renderOnload = function renderOnLoad() {
     var renderAttemptCount = 0;
+    tabId.then(tabid=>sendMessageToTab({from:"frame",type:"request_cld"},tabid,"renderOnload"));
     var renderTimer = setInterval(function () {
         renderAttemptCount++;
         if ((document.readyState === "complete"||document.readyState === "interactive") && displayData.note!==undefined) {
             infoLogger("Rendering frame after attempts:"+renderAttemptCount,displayData);
             render();
             clearInterval(renderTimer);
-        } else if (renderAttemptCount>40 && renderAttemptCount < 80) {
-            getTabId().then(tabid=>sendMessageToTab({from:"frame",type:"request_cld"},tabid,"renderOnload"));
+        } else if (renderAttemptCount>10 && renderAttemptCount < 80) {
+            tabId.then(tabid=>sendMessageToTab({from:"frame",type:"request_cld"},tabid,"renderOnload"));
         } else if (renderAttemptCount>120) {
             clearInterval(renderTimer);
         }
