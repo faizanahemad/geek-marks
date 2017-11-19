@@ -49,11 +49,11 @@ function generateCompletions(docs) {
     },{autos:"",hosts:"",videoDescriptions:""})
 
     var start = Date.now()
-    var autos = Array.from(generateAutoComplete(concated.autos).values());
-    var hosts = Array.from(generateAutoComplete(concated.hosts).values())
+    var autos = Array.from(generateAutoComplete(concated.autos));
+    var hosts = Array.from(generateAutoComplete(concated.hosts))
     .filter(word=>!endsWithArray(word,domains)).filter(w=>w.split(" ").length===1);
 
-    var videoDescriptions = Array.from(generateAutoComplete(concated.videoDescriptions).values());
+    var videoDescriptions = Array.from(generateAutoComplete(concated.videoDescriptions));
     var all = autos.concat(hosts,videoDescriptions)
     var end = Date.now()
     var total = end-start
@@ -65,9 +65,10 @@ function generateCompletions(docs) {
     .filter(w=>!containsTwice(w,"."));
 }
 
+var autocompletionsPromise = superagent.get("/bookmarks/autocompletions").endAsync()
+// TODO: fix autocomplete deletions bug in browse page, deleted entries still show in autocomplete
 function enableAutocompletions(docs) {
-    superagent.get("/bookmarks/autocompletions").endAsync()
-    .then(r=>r.body, console.error).then(body=>{
+    autocompletionsPromise.then(r=>r.body, console.error).then(body=>{
         var completions = body.completions
         var lastUpdated = body.lastUpdated
         console.log(body)
@@ -132,7 +133,7 @@ function enableAutocompletions(docs) {
 var display = new DisplayBookmarks("renderResultArea", "renderTemplate");
 var compact = document.getElementById("compact-select-input");
 compact.onchange = ()=>display.render({compact: !compact.checked});
-display.fetchWithFilters({}).render({compact: !compact.checked}).then(enableAutocompletions);
+display.fetchWithFilters({})
 
 
 var TagManager = class TagManager {
@@ -246,7 +247,7 @@ function tagChange(tagManager,elem) {
     }
     onFilterChange();
 }
-tm.fetchAll().render()
+tm.fetchAll()
 
 
 
@@ -294,7 +295,12 @@ function onCollectionChange() {
     onFilterChange();
 }
 var cm  = new CollectionManager("collection-selector-area","collection-area","collectionCheckBox",onCollectionChange);
-cm.fetchAll().render();
+cm.fetchAll()
+
+display.render({compact: !compact.checked}).then(enableAutocompletions);
+tm.render();
+cm.render();
+
 
 
 var visitedForm=document.getElementById("date-range-selector-area-form");

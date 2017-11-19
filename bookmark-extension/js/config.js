@@ -198,3 +198,5 @@ toastr.options = {
 
 var defaultCollections = ["Misc","Data Structures and Algorithms","Machine Learning & AI",
 "Software Engineering","Personal Development"]
+
+var cacheRefreshTime = 3600*1000

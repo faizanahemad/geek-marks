@@ -1,6 +1,7 @@
 ### TODO (Features)
 - Better Error Messages - send fine grained error from background.
 - Fix bug of frame tag input jumping
+- fix autocomplete deletions bug in browse page, deleted entries still show in autocomplete
 - Improve search init speed
 - Video timer in coursera and udemy
 - Tag searches on fuzzy text search (misspellings)

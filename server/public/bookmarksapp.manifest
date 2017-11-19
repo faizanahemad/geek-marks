@@ -6,6 +6,9 @@ lib/fonts/glyphicons-halflings-regular.woff
 lib/fonts/glyphicons-halflings-regular.woff2
 lib/css/generated-lib.css
 lib/js/generated-lib.js
+js/browse.js
+js/generated.js
+css/browse.css
 
 /lib/fonts/glyphicons-halflings-regular.eot
 /lib/fonts/glyphicons-halflings-regular.svg
@@ -14,6 +17,9 @@ lib/js/generated-lib.js
 /lib/fonts/glyphicons-halflings-regular.woff2
 /lib/css/generated-lib.css
 /lib/js/generated-lib.js
+/js/browse.js
+/js/generated.js
+/css/browse.css
 
 NETWORK:
 *

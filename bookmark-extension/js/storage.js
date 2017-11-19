@@ -1,5 +1,3 @@
-var superagent = Promise.promisifyAll(superagent);
-
 function merge(oldRecord, newRecord) {
     var record = {};
     var lastVisited = Date.now();
@@ -56,20 +54,73 @@ function merge(oldRecord, newRecord) {
 }
 var Storage = class Storage {
     constructor(dbName,remoteUrl,userId) {
-        this.db = new PouchDB(dbName, {revs_limit: 10});
+        this.collectionCache = {}
+        this.tagCache = {}
+        this.db = new PouchDB(dbName, {revs_limit: 10, adapter: 'memory'});
+        this.persisted = new PouchDB(dbName, {revs_limit: 20});
         this.remote = new PouchDB(remoteUrl)
         this.userId = userId
-        this.db.sync(this.remote,{
+        this.persisted.sync(this.remote,{
             live: true,
             retry: true,
             filter: 'app/by_user',
             query_params: { "userId": userId }
         })
-        this.db.createIndex({
-                           index: {
-                               fields: ['userId']
-                           }
-                       })
+        this.db.sync(this.persisted,{
+            live: true,
+            retry: true,
+            filter: 'app/by_user',
+            query_params: { "userId": userId }
+        })
+        this.persisted.createIndex({
+            index: {
+                fields: ['userId']
+            }
+        })
+    }
+
+    _updateCache(entry) {
+        var userId = entry.userId
+        var self = this
+        if(this._checkCollectionCacheValidity(userId) && this._checkTagCacheValidity(userId)) {
+            this.collectionCache[userId].collections.add(entry.collection)
+            entry.tags.forEach(t=>self.tagCache[userId].tags.add(t))
+        } else {
+            _initCache(userId) 
+        }
+        return entry
+    }
+
+    _initCache(userId) {
+        this.getAllCollections(userId)
+        this.getAllTags(userId)
+    }
+    _checkCollectionCacheValidity(userId) {
+        if(this.collectionCache[userId] && this.collectionCache[userId].time>Date.now()-cacheRefreshTime) {
+            return true
+        }
+        return false;
+    }
+
+    _checkTagCacheValidity(userId) {
+        if(this.tagCache[userId] && this.tagCache[userId].time>Date.now()-cacheRefreshTime) {
+            return true
+        }
+        return false;
+    }
+
+    _getCollections(allDocs) {
+        var collections = new Set(allDocs.filter(d=>typeof d.collection!=='undefined' && d.collection!==null).map(d=>d.collection))
+        // add default collections
+        defaultCollections.forEach(c=>collections.add(c))
+        return collections;
+    }
+
+    _getTags(allDocs) {
+        // Array concat is used here for flattening
+        var tags = Array.prototype.concat.apply([], allDocs.filter(d=>Array.isArray(d.tags)).map(d=>d.tags)) 
+        var tagSet = new Set(tags);
+        return tagSet;
     }
 
     getAll(userId) {
@@ -86,30 +137,46 @@ var Storage = class Storage {
     }
 
     getAllTags(userId) {
-        return this.getAll(userId).then((allDocs)=> {
-            var tagSet = new Set();
-            allDocs.forEach(d=> {
-                if (Array.isArray(d.tags)) {
-                    d.tags.forEach(tag=>tagSet.add(tag))
+        var self = this;
+        if(this._checkTagCacheValidity(userId)) {
+            return Promise.resolve(Array.from(this.tagCache[userId].tags))
+        } else {
+            return this._getAllTags(userId).then(tags=>{
+                self.tagCache[userId] = {
+                    tags: new Set(tags),
+                    time: Date.now()
                 }
-            });
-            return Array.from(tagSet)
+                return tags;
+            })
+        }
+        
+    }
+
+    _getAllTags(userId) {
+        return this.getAll(userId).then((allDocs)=> {
+            return Array.from(this._getTags(allDocs))
         }, promiseRejectionHandler)
     }
 
     getAllCollections(userId) {
+        var self = this
+        if(this._checkCollectionCacheValidity(userId)) {
+            return Promise.resolve(Array.from(this.collectionCache[userId].collections))
+        } else {
+            return this._getAllCollections(userId).then(cls=>{
+                self.collectionCache[userId] = {}
+                self.collectionCache[userId].collections = new Set(cls)
+                self.collectionCache[userId].time = Date.now()
+                return cls;
+            })
+        }
+    }
+
+    _getAllCollections(userId) {
         var el=elapser("collections")
         return this.getAll(userId).then((allDocs)=> {
-            var collections = new Set();
-            allDocs.forEach(d=> {
-                if (typeof d.collection!=='undefined' && d.collection!==null) {
-                    collections.add(d.collection)
-                }
-            });
-            // add default collections
-            defaultCollections.forEach(c=>collections.add(c))
-            el("collected")
-            return Array.from(collections)
+            el("collected:")
+            return Array.from(this._getCollections(allDocs))
         }, promiseRejectionHandler)
     }
 
@@ -172,6 +239,7 @@ var Storage = class Storage {
         })
         .then((entry)=>self.db.post(entry))
         .then(data=>self.db.get(data.id))
+        .then(entry=>self._updateCache(entry))
     }
 
     insertOrUpdateEntry(entry, userId) {
@@ -191,7 +259,8 @@ var Storage = class Storage {
             this.db.get(entry._id).then(localDoc=>{
                 entry._rev = localDoc._rev;
                 return self.db.put(entry)
-            },(err)=>self.db.post(entry)).catch(console.error)
+            },(err)=>self.db.post(entry))
+            .then(e=>self._updateCache(e)).catch(console.error)
 
         })
     }

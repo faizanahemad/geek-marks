@@ -110,8 +110,7 @@ function prepareData(firstRun) {
                 recordVisit(cld._id)
             }
         }
-    });
-    allPromise.then(undefined,promiseRejectionHandler);
+    }).catch(promiseRejectionHandler);
     return allPromise
 }
 
