@@ -1,4 +1,5 @@
 function init() {
+    storage.initCache()
     g4gSpecific();
     var resources = addListeners();
     chromeStorage.getCombinedSettings().then(data=>{
@@ -10,12 +11,17 @@ function init() {
         if(data.settings.bookmarks)
         {
             sendBookmarksRequest();
-            var initialTimer = setInterval(function () {
+            var initialTimer = false;
+            function initialRunner() {
                 if (document.readyState === "complete" || document.readyState==="interactive") {
                     firstRunDisplay();
-                    clearInterval(initialTimer)
+                    if(initialTimer) {
+                        clearInterval(initialTimer)
+                    }
                 }
-            }, 100);
+            }
+            initialRunner()
+            initialTimer = setInterval(initialRunner, 50);
         } else {
             prepareData(true);
         }

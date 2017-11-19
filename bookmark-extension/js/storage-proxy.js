@@ -61,15 +61,19 @@ var CacheStorage = class CacheStorage {
 
     getFromCache(key){
         var entry = {}
+        var self = this
         function orElse(fn) {
-            return fn();
+            var newVal = fn();
+            self.cache[key] = newVal
+            self.cache.time[key] = Date.now()
+            return newVal;
         }
 
         function en() {
             return entry;
         }
 
-        if(this.cache.valid && typeof this.cache[key]!="undefined") {
+        if(this.cache.valid && typeof this.cache[key]!="undefined" && this.cache.time[key] && this.cache.time[key]>Date.now()-5000) {
             entry = this.cache[key];
             return {getOrElse:en};
         }
@@ -98,22 +102,26 @@ var CacheStorage = class CacheStorage {
         return this.getFromCache("collections").getOrElse(()=>self.storage.getAllCollections());
     }
 
-    initCache() {
+        initCache() {
         this.cache["all"] = this.storage.getAll();
         this.cache["count"] = this.storage.getAllCount();
         this.cache["tags"] = this.storage.getAllTags();
         this.cache["collections"] = this.storage.getAllCollections();
         this.cache.valid = true
+        var now = Date.now()
+        this.cache.time = {}
+        this.cache.time["all"] = now
+        this.cache.time["count"] = now
+        this.cache.time["tags"] = now
+        this.cache.time["collections"] = now
     }
 
 
     insertOrUpdateEntry(entry) {
-        this.cache.valid = false
         return this.storage.insertOrUpdateEntry(entry)
     }
 
     remove(id) {
-        this.cache.valid = false
         return this.storage.remove(id);
     }
 

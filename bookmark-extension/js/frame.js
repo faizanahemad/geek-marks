@@ -389,11 +389,11 @@ var renderOnload = function renderOnLoad() {
             infoLogger("Rendering frame after attempts:"+renderAttemptCount,displayData);
             render();
             clearInterval(renderTimer);
-        } else if (renderAttemptCount>20 && renderAttemptCount < 60) {
+        } else if (renderAttemptCount>40 && renderAttemptCount < 80) {
             getTabId().then(tabid=>sendMessageToTab({from:"frame",type:"request_cld"},tabid,"renderOnload"));
         } else if (renderAttemptCount>120) {
             clearInterval(renderTimer);
         }
-    },50);
+    },20);
 };
 renderOnload();

@@ -24,7 +24,6 @@ function popOpen(tabid) {
                 "%loginUrl%", loginUrl));
     }
 }
-var superagent = Promise.promisifyAll(superagent);
 function bookmark() {
     sendMessage({from:"content_script",type:"check_login"},"bookmark").then(msg=>{
         var id = msg.id;
