@@ -116,13 +116,6 @@ function prepareData(firstRun) {
     return allPromise
 }
 
-function firstRunDisplay() {
-    prepareData(true).then(()=>{
-        youtubeTimeCapture();
-        renderLinks();
-    });
-}
-
 function refreshDisplay() {
     prepareData(false).then(renderLinks)
 }

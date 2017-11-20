@@ -1,4 +1,6 @@
 ### TODO (Features)
+- Navigation with chrome forward and backward broken bug
+- Unify pouchDB access overall
 - Better Error Messages - send fine grained error from background.
 - Fix bug of frame tag input jumping
 - fix autocomplete deletions bug in browse page, deleted entries still show in autocomplete

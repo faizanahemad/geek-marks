@@ -233,12 +233,12 @@ function renderCollections() {
         
     })
 }
-
+var tabId = getTabId()
 function sendIframeAreaChange(style) {
     style = style || {};
     var msg = {from: 'frame', type: 'frame_size_change'};
     $.extend(msg,style);
-    getTabId().then((tabid)=>sendMessageToTab(msg,tabid,"sendIframeAreaChange"));
+    tabId.then((tabid)=>sendMessageToTab(msg,tabid,"sendIframeAreaChange"));
 }
 
 function addDomHandlers(simplemde) {
@@ -358,7 +358,7 @@ function getTabId() {
         })
     });
 }
-var tabId = getTabId()
+
 function addListeners() {
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         tabId.then((tab) => {

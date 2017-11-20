@@ -3,10 +3,10 @@ function init(settings) {
         settings = chromeStorage.getCombinedSettings()
     }
     storage.initCache()
-    g4gSpecific();
     var resources = addListeners();
     var bookmarksReq=sendBookmarksRequest();
     var preparedData = prepareData(true)
+    g4gSpecific();
     settings.then(data=>{
         setStyle(data.style.color);
         if(data.settings.notes) {

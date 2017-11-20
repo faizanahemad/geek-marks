@@ -1,4 +1,4 @@
-var bookmarkIndicatorSpan = `<span class="bookmarks-indicator" style="color: Violet;">&nbsp;[B]</span>`;
+var bookmarkIndicatorSpan = `<span class="bookmarks-indicator gm-badge gm-badge-primary" style="margin: 0.2em;">B</span>`;
 function sendBookmarksRequest() {
     var msg={};
     msg.from = "content_script";
