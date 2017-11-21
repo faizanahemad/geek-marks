@@ -40,8 +40,8 @@ function bookmark(settings) {
                     </div>
                 </div>`
             var toastrHtml = htmlToElement(toastrString);
-            toastrHtml.getElementsByClassName("toast-message")[0].onclick = ()=>popOpen(id)
             document.body.appendChild(toastrHtml);
+            toastrHtml.getElementsByClassName("toast-message")[0].onclick = ()=>popOpen(id)
             setTimeout(()=>toastrHtml.remove(),10000)
 
         }

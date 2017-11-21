@@ -15,12 +15,13 @@ Array.prototype.remove = function (element) {
         this.splice(index, 1);
     }
 }
+var template = document.createElement('template');
 /**
  * @param {String} HTML representing a single element
  * @return {Element}
  */
 function htmlToElement(html) {
-    var template = document.createElement('template');
+    html = html.trim()
     template.innerHTML = html;
     return template.content.firstChild;
 }
@@ -30,7 +31,7 @@ function htmlToElement(html) {
  * @return {NodeList}
  */
 function htmlToElements(html) {
-    var template = document.createElement('template');
+    html = html.trim()
     template.innerHTML = html;
     return template.content.childNodes;
 }
