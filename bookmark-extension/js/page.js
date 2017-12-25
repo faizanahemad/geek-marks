@@ -202,7 +202,7 @@ function addListeners() {
             infoLogger("Storage change msg from background page:",msg);
             refreshDisplayIndicator = true;
         } else if(msg.from==="storage_proxy_failure" && msg.type==="storage_failure") {
-            toastr["error"]("Content not saved, unable to reach servers.", "Save Error")
+            toastr["error"]("Not saved, "+msg.message, "Save Error")
         }
     }
     chrome.runtime.onMessage.addListener(eventListener);

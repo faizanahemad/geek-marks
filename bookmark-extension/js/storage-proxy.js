@@ -11,7 +11,9 @@ var Storage = class Storage {
     }
     _proxyWithFailure(data,type) {
         return this._proxy(data,type)
-            .then(undefined, ()=>sendMessage({from:"storage_proxy_failure",type:"storage_failure"},"_proxyWithFailure"))
+            .then(undefined, (err)=>{
+                sendMessage({from:"storage_proxy_failure",type:"storage_failure",message:err},"_proxyWithFailure")
+            })
     }
 
     getAll() {

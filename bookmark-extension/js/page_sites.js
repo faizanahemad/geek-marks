@@ -87,27 +87,28 @@ function youtubeTimeCapture() {
         cld.videoTime = cld.videoTime || [];
         bootstrapGlyph();
         var videoElem = document.getElementsByTagName("video")[0];
-        var container = document.getElementById("watch7-main-container");
+        var container = document.getElementById("info-skeleton");
+        container.style.display = "flow-root";
         var data = cld.videoTime;
         var template =
-            `<div class="container-fluid" id="youtube-time-cature-area"></div>`;
-        var innerTemplate = `<div class="row"></div>`;
-        var eachTimerTemplate = `<div class="col-md-4 youtube-time-cature-display"><a>%description% <b>@</b> %time%</a></div>`;
+            `<div class="gm-container-fluid" id="youtube-time-cature-area"></div>`;
+        var innerTemplate = `<div class="gm-row"></div>`;
+        var eachTimerTemplate = `<div class="gm-col-md-4 youtube-time-cature-display"><a>%description% <b>@</b> %time%</a></div>`;
         var deleteSpanTemplate = `<span class="glyphicon glyphicon-trash pull-right youtube-timer-delete"></span>`;
-        var addTimerTemplate = `<div class="row">
-    <div class="col-md-5 time-capture-description-area">
-          <div class="form-group">
-            <input type="text" class="form-control time-capture-description-input" id="time-capture-description-input" placeholder="description...">
+        var addTimerTemplate = `<div class="gm-row">
+    <div class="gm-col-md-5 time-capture-description-area">
+          <div class="gm-form-group">
+            <input type="text" class="gm-form-control time-capture-description-input" id="time-capture-description-input" placeholder="description...">
             <span><b>:</b></span>
           </div>
     </div>
-    <div class="col-md-1 time-capture-timer-area">
-          <div class="form-group">
-            <input type="text" class="form-control" id="time-capture-timer-input" value="0:00">
+    <div class="gm-col-md-1 time-capture-timer-area">
+          <div class="gm-form-group">
+            <input type="text" class="gm-form-control" id="time-capture-timer-input" value="0:00">
           </div>
     </div>
-    <div class="col-md-2 time-capture-timer-area">
-        <button class="btn btn-default time-capture-add-button" id="time-capture-add-button"><span class="glyphicon glyphicon-plus"></span></button>
+    <div class="gm-col-md-2 time-capture-timer-area">
+        <button class="gm-btn gm-btn-default time-capture-add-button" id="time-capture-add-button"><span class="glyphicon glyphicon-plus"></span></button>
     </div>
 </div>`;
 

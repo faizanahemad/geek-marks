@@ -177,7 +177,6 @@ var defaultSettingsMap = {
     }
 };
 var apiTimeout = 10000;
-var SEND_RESPONSE_AS_FAILURE = "SEND_RESPONSE_AS_FAILURE";
 toastr.options = {
     "closeButton": true,
     "debug": false,

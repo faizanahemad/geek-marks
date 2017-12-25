@@ -147,28 +147,28 @@ syncCallback();
 function storageHandler(msg, sender, sendResponse) {
     switch (msg.type) {
         case "get_all":
-            storage.getAll(userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+            storage.getAll(userId).then(docs=>sendResponse(docs),(err)=>sendResponse({failure:true,error:err}));
             break;
         case "get_all_tags":
-            storage.getAllTags(userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+            storage.getAllTags(userId).then(docs=>sendResponse(docs),(err)=>sendResponse({failure:true,error:err}));
             break;
         case "get_all_collections":
-            storage.getAllCollections(userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+            storage.getAllCollections(userId).then(docs=>sendResponse(docs),(err)=>sendResponse({failure:true,error:err}));
             break;
         case "insert_or_update":
             storage.insertOrUpdateEntry(msg.entry,userId).then(docs=>{
                 sendResponse(docs);
                 broadcastStoreChange();
-            },()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+            },(err)=>sendResponse({failure:true,error:err}));
             break;
         case "remove":
             storage.remove(msg.id,userId).then(docs=>{
                 sendResponse(docs);
                 broadcastStoreChange();
-            },()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+            },(err)=>sendResponse({failure:true,error:err}));
             break;
         case "visit":
-            storage.logVisit(msg.id,userId).then(docs=>sendResponse(docs),()=>sendResponse(SEND_RESPONSE_AS_FAILURE));
+            storage.logVisit(msg.id,userId).then(docs=>sendResponse(docs),(err)=>sendResponse({failure:true,error:err}));
             break;
     }
 }

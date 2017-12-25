@@ -16,35 +16,44 @@ var doNothingFunc = ()=>{};
 
 function getLogger() {
 
-    var infoLogger = function(arg1, arg2, arg3, arg4) {
-        console.log(arg1);
+    var log = console.log;
+    var logger = function(arg1, arg2, arg3, arg4,error) {
+        log = error?console.error:log;
+        log(arg1);
         if(arg2!=null && arg2!=undefined) {
-            console.log(arg2);
+            log(arg2);
         }
         if(arg3!=null && arg3!=undefined) {
-            console.log(arg3);
+            log(arg3);
         }
         if(arg4!=null && arg4!=undefined) {
-            console.log(arg4);
+            log(arg4);
         }
     }
     if(logEnabled) {
-        return infoLogger;
+        return logger;
     } else {
         return doNothingFunc;
     }
 }
 
 var infoLogger = getLogger();
+function generateStackTrace(message) {
+    var stack = "";
+    if(message!=null && message!=undefined) {
+        stack = message + " \n";
+    }
+    
+    try {
+        throw new Error;
+    } catch(err) {
+        stack = stack+err.stack;
+    }
+    return stack;
+}
 function getStackLogger() {
     var stackLogger = function(arg1, arg2, arg3) {
-        var stack = "";
-        try {
-            throw new Error;
-        } catch(err) {
-            stack = err.stack;
-        }
-        infoLogger(arg1,arg2,arg3,stack);
+        infoLogger(arg1,arg2,arg3,generateStackTrace(),true);
     };
     if(stackTraceLogging) {
         return stackLogger;
@@ -53,28 +62,7 @@ function getStackLogger() {
     }
 }
 var stackLogger = getStackLogger();
-
-function getErrorLogger() {
-
-    var errorLogger = function(arg1, arg2, arg3, arg4) {
-        console.error(arg1);
-        if(arg2!=null && arg2!=undefined) {
-            console.error(arg2);
-        }
-        if(arg3!=null && arg3!=undefined) {
-            console.error(arg3);
-        }
-        if(arg4!=null && arg4!=undefined) {
-            console.error(arg4);
-        }
-    }
-    if(errorLogEnabled) {
-        return errorLogger;
-    } else {
-        return doNothingFunc;
-    }
-}
-var errorLogger = getErrorLogger();
+var errorLogger = getStackLogger();
 var convertSecondsToMinute = function (seconds) {
     var minutes = parseInt(seconds/60);
     seconds = parseInt(seconds - minutes*60);
@@ -105,8 +93,8 @@ function sendMessage(msg,uid) {
     msg.uid = uid;
     return new Promise(function (resolve, reject) {
         chrome.runtime.sendMessage(msg,(reply)=>{
-            if(reply===SEND_RESPONSE_AS_FAILURE) {
-                reject()
+            if(reply && reply.failure) {
+                reject(reply.error)
             } else {
                 resolve(reply);
             }
@@ -121,8 +109,8 @@ function sendMessageToTab(msg, tabId, uid) {
     msg.uid = uid;
     return new Promise(function (resolve, reject) {
         chrome.tabs.sendMessage(tabId,msg,(reply)=>{
-            if(reply===SEND_RESPONSE_AS_FAILURE) {
-                reject()
+            if(reply && reply.failure) {
+                reject(reply.error)
             } else {
                 resolve(reply);
             }

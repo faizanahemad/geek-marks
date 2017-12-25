@@ -186,14 +186,14 @@ var Storage = class Storage {
         || (entry.note && entry.note.length>0) 
         || (typeof entry.collection==="string" && entry.collection.length>0))?true:false;
         if (newEntry && newEntry.useless) {
-            return true
+            return [true,""]
         } else if (oldEntry && oldEntry.useless){
-            return true
+            return [true,""]
         } else if(typeof newEntry.collection==='undefined' || newEntry.collection===null) {
-            return false;
+            return [false,"_isPersistable: No Collection defined"];
         }
         if(typeof newEntry.userId==='undefined' || newEntry.userId===null) {
-            return false;
+            return [false,"_isPersistable: No userId defined"];
         }
         
         if(!oldEntry) {
@@ -212,7 +212,7 @@ var Storage = class Storage {
                 return true;
             }
         }
-        return false;
+        return [false,"_isPersistable: Difficulty or Other Necessart Attributes missing"];;
     }
 
     _insertOrUpdateEntry(entry) {
@@ -221,8 +221,9 @@ var Storage = class Storage {
         var promise = Promise.resolve(entry)
         return promise.then(e=>self.db.get(entry._id))
         .then(localDoc=>{
-            if(!this._isPersistable(entry,localDoc)) {
-                return Promise.reject("Not persistable")
+            var persistable = this._isPersistable(entry,localDoc)
+            if(!persistable[0]) {
+                return Promise.reject(persistable[1])
             }
             return localDoc
         })
@@ -235,7 +236,7 @@ var Storage = class Storage {
         .then(data=>self.db.get(data.id))
         .catch((err)=>{
             var valid = this._isPersistable(entry);
-            return valid?Promise.resolve(entry):Promise.reject("Not persistable")
+            return valid[0]?Promise.resolve(entry):Promise.reject(valid[1])
         })
         .then((entry)=>self.db.post(entry))
         .then(data=>self.db.get(data.id))
