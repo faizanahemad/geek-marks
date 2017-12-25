@@ -48,6 +48,9 @@ module.exports = function(app) {
             sorter[sortBy[i]] = orderBy[i];
             sort.push(sorter)
         }
+        if(sort.length===0){
+            sort.push({"lastVisited":-1})
+        }
         var result = store.getAllByFilters(difficulties,
                                            useless,
                                            hostnames,

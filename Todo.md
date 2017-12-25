@@ -1,6 +1,5 @@
 ### TODO (Features)
 - Navigation with chrome forward and backward broken bug
-- Unify pouchDB access overall
 - Integrate search with already bookmarked chrome store?
 - Better Error Messages - send fine grained error from background.
 - Fix bug of frame tag input jumping
@@ -8,35 +7,39 @@
 - Video timer in coursera and udemy
 - Google sign in
 - Support Annotations, with offline caching (for speedup? or not)
-- Tag searches on fuzzy text search (misspellings)
+- youtube match videos even if they are in playlist by using watch=parameter
+- search with multiple terms. Like search dp in geeksforgeeks
 - Integrate search with google search page and url bar
 - File attachments / images
-- detect content type - audio/video/article etc.
 - Improve main bookmark widget by making it a round closeable draggable
 - Resize and reposition by drag drop
 - show similar pages to this that you have bookmarked.
-- CSS Fix on Flipkart, prefix css with some custom stuff for content script
+- CSS Fix on Flipkart, google maps, prefix css with some custom stuff for content script
 - Text Area for writing notes to be minimisable.
 - dock to bottom like chrome debugger
 - Offline save for reading, show online version if net available
 
 ### Browse Page Improvements
-- Make 3 tabs, browse with filters, search, chrome bookmarks
-- Improve search by having word auto-complete + having auto results after 4 letters
+- Make 2 tabs, browse with filters and search, chrome bookmarks
 - Add a chrome bookmarks browse page with fuzzy search, sortby date and other sortby. Ability to add to Geekmarks.
-- In browse page, have a Tags included and Tags excluded as separate check boxes
 - Show notes as well
 - Improve sidebar by making it closeable with hamburger / Webengage menu.
 - Decide whether to allow edit abilities
 - pagination/Infinite scroll - browse page
-- Provide list and tile view by using iframe? in browse page
+
 
 ### Won't do
 - Add link to previous entry since the topic is same/similar
+- search bug, search matches paragraph when searched for graph, hard to fix cause full word search breaks search in hrefs and paths
+- In browse page, have a Tags included and Tags excluded as separate check boxes
 - Active conditions - match path
 - Admin Login
 - Secure send password over http by hashing
 - dev mode
+- Unify pouchDB access overall. unnecessary and backend has different features from frontend
+- Provide list and tile view by using iframe? in browse page. Perf issue
+- detect content type - audio/video/article etc. Most sites are mixed content.
+- Video timer in coursera and udemy. hard to do and not very beneficial
 - Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
 - User preference to start the browse page with selected config, allow creation of custom browse pages
 
@@ -72,6 +75,9 @@
 - https://selectize.github.io/selectize.js/
 - http://h.readthedocs.io/en/latest/api/authorization/
 - https://developers.google.com/identity/sign-in/web/sign-in
+- https://developer.chrome.com/apps/app_identity
+- https://developers.google.com/identity/sign-in/web/devconsole-project
+- https://stackoverflow.com/questions/44657832/how-to-draw-circle-with-text-in-middle-and-an-image-as-a-background-of-the-circl
 
 ### Iframe chrome extensions
 - http://stackoverflow.com/questions/11325415/access-iframe-content-from-a-chromes-extension-content-script

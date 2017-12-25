@@ -22,7 +22,7 @@ function createIframe(data) {
     if (!location.ancestorOrigins.contains(extensionOrigin)) {
         var iframe = document.createElement('iframe');
         // Must be declared at web_accessible_resources in manifest.json
-        iframe.src = chrome.runtime.getURL('frame.html');
+        iframe.src = chrome.runtime.getURL('frame.html') + '?page_url=' + encodeURIComponent(location.href);
         document.body.appendChild(iframe);
         iframe.id = iframeId;
 

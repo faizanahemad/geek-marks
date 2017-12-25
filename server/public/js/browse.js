@@ -219,6 +219,7 @@ var TagManager = class TagManager {
         })
     }
     check(value) {
+        var self = this;
         this.tagElems.then(tagElems=>{
             tagElems.forEach(t=>{
                 if (t.value===value) {
