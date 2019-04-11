@@ -51,7 +51,7 @@ function renderLinks() {
             linkConfig = hrefMap.get(e.href);
         } else if(pathMap.has(e.pathname) && location.hostname!=="www.youtube.com" && e.hostname!=="www.youtube.com") {
             linkConfig = pathMap.get(e.pathname);
-        } else if (titleMap.has(e.innerText.toLowerCase().trim())) {
+        } else if (e.innerText.length>0 && titleMap.has(e.innerText.toLowerCase().trim())) {
             linkConfig = titleMap.get(e.innerText.toLowerCase().trim())
         }
         var df = linkConfig.difficulty || -1;
@@ -105,6 +105,9 @@ function prepareData(firstRun) {
         hrefMap.delete(null);
         pathMap.delete(null);
         titleMap.delete(null);
+        hrefMap.delete("");
+        pathMap.delete("");
+        titleMap.delete("");
         augmentCLD();
         if (firstRun) {
             sendCLD(1);
@@ -121,7 +124,8 @@ function refreshDisplay() {
 }
 
 function augmentCLD() {
-    var thisLocationData = hrefMap.get(location.href) ||titleMap.get(cld.title) || null;
+    var titleBasedLocationData = cld.title.length>0?titleMap.get(cld.title):null;
+    var thisLocationData = hrefMap.get(location.href) ||titleBasedLocationData || null;
     if (!thisLocationData) {
         if (location.hostname!=="www.youtube.com") {
             thisLocationData = pathMap.get(location.pathname) || {};

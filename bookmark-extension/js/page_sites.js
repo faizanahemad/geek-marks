@@ -10,11 +10,34 @@ function getTitle() {
 
     var s1 = function () {
         var h1s = document.getElementsByTagName("h1");
-        var h1Elem = h1s[0];
-        if (h1Elem) {
-            return h1Elem.textContent.trim().toLowerCase();
-        }
-        return "";
+        var selected = Array.from(h1s).map(h1Elem=>{
+            var title = h1Elem.textContent.trim().toLowerCase();
+            var ts = titleStrength(title);
+            return {title:title,strength:ts};
+        }).reduce((prev,cur)=>{
+            if(cur.strength>prev.strength){
+                return cur;
+            } else {
+                return prev;
+            }
+        },{title:"",strength:0})
+        return selected.title;
+    };
+
+    var h2BasedTitle = function () {
+        var h1s = document.getElementsByTagName("h2");
+        var selected = Array.from(h1s).map(h1Elem=>{
+            var title = h1Elem.textContent.trim().toLowerCase();
+            var ts = titleStrength(title);
+            return {title:title,strength:ts};
+        }).reduce((prev,cur)=>{
+            if(cur.strength>prev.strength){
+                return cur;
+            } else {
+                return prev;
+            }
+        },{title:"",strength:0})
+        return selected.title;
     };
 
     var s2 = function () {
@@ -34,17 +57,28 @@ function getTitle() {
         return "";
     };
 
+    var quoraTitle = function() {
+        var opt1 = Array.from(document.getElementsByClassName("ans_page_question_header"))
+        var opt2 = Array.from(document.getElementsByClassName("question_text_edit"))
+        if(opt1.length===1) {
+            return opt1[0].innerText.trim()
+        } else if(opt2.length===1) {
+            return opt2[0].innerText.trim()
+        }
+        return "";
+    }
+
     var tmap = new Map();
-    var strategyArray = [s0, s1, s2, s3];
+    var strategyArray = [s0, s1, s2, s3,quoraTitle,h2BasedTitle];
     tmap.set("www.geeksforgeeks.org",s3);
     tmap.set("www.quiz.geeksforgeeks.org",s3);
     tmap.set("www.youtube.com",s2);
+    tmap.set("www.quora.com",quoraTitle);
     var curStrategy = tmap.get(location.hostname);
     var title = "";
     if (curStrategy) {
         title = curStrategy();
     }
-    var invalidTitles=["this video is unavailable."];
     if (title.length==0 || invalidTitles.indexOf(title.trim())!==-1) {
         title = "";
         title = strategyArray.reduce((prev,cur)=>{

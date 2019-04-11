@@ -994,10 +994,21 @@ var list = ["4sq",
     "yourselves",
     "you've",
     "z",
-    "zero"];
+    "zero",
+    "o'reilly",
+    "reilly"];
 
 list = list.map(w => w.toLowerCase());
 var stopWordSet = new Set(list);
+
+var invalidTitles=["this video is unavailable.","/watch","your password has been changed","change password"];
+function titleStrength(title) {
+    if (title && typeof title==="string" && (title.length==0 || invalidTitles.indexOf(title.trim())!==-1)) {
+        return 0;
+    }
+    var filteredTitle = removeStopWords(title)["inputWords"];
+    return filteredTitle.length;
+}
 
 
 function removeStopWords(input) {

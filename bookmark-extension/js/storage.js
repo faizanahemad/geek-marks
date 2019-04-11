@@ -86,7 +86,7 @@ var Storage = class Storage {
             this.collectionCache[userId].collections.add(entry.collection)
             entry.tags.forEach(t=>self.tagCache[userId].tags.add(t))
         } else {
-            _initCache(userId) 
+            this._initCache(userId) 
         }
         return entry
     }
@@ -190,7 +190,7 @@ var Storage = class Storage {
         } else if (oldEntry && oldEntry.useless){
             return [true,""]
         } else if(typeof newEntry.collection==='undefined' || newEntry.collection===null) {
-            return [false,"_isPersistable: No Collection defined"];
+            return [false,"_isPersistable: No Collection field defined"];
         }
         if(typeof newEntry.userId==='undefined' || newEntry.userId===null) {
             return [false,"_isPersistable: No userId defined"];
@@ -199,20 +199,20 @@ var Storage = class Storage {
         if(!oldEntry) {
             if(newEntry) {
                 if(newEntry.difficulty) {
-                    return true;
+                    return [true,""];
                 } else if(hasFields(newEntry)) {
                     newEntry.difficulty = newEntry.difficulty || 2;
-                    return true;
+                    return [true,""];
                 }
             }
         } else {
             if(newEntry.difficulty || oldEntry.difficulty) {
-                return true;
+                return [true,""];
             } else if(hasFields(newEntry) || hasFields(oldEntry)) {
-                return true;
+                return [true,""];
             }
         }
-        return [false,"_isPersistable: Difficulty or Other Necessart Attributes missing"];;
+        return [false,"_isPersistable: Difficulty or Other Necessary Attributes missing"];;
     }
 
     _insertOrUpdateEntry(entry) {

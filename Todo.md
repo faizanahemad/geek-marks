@@ -1,30 +1,25 @@
 ### TODO (Features)
+- Default Collection Per Website
+- Improve Title Detection
+    - Title present in top 30% of page
+    - Title detection is a weighted function of font-size, font-weight, greatest enclosing tags upto some x level
+    - Title with more words has more weight
 - Navigation with chrome forward and backward broken bug
-- Integrate search with already bookmarked chrome store?
+- http://interactjs.io/
 - Better Error Messages - send fine grained error from background.
 - Fix bug of frame tag input jumping
 - fix autocomplete deletions bug in browse page, deleted entries still show in autocomplete
-- Video timer in coursera and udemy
 - Google sign in
-- Support Annotations, with offline caching (for speedup? or not)
 - youtube match videos even if they are in playlist by using watch=parameter
 - search with multiple terms. Like search dp in geeksforgeeks
-- Integrate search with google search page and url bar
 - File attachments / images
 - Improve main bookmark widget by making it a round closeable draggable
 - Resize and reposition by drag drop
 - show similar pages to this that you have bookmarked.
-- CSS Fix on Flipkart, google maps, prefix css with some custom stuff for content script
 - Text Area for writing notes to be minimisable.
 - dock to bottom like chrome debugger
-- Offline save for reading, show online version if net available
 
 ### Browse Page Improvements
-- Make 2 tabs, browse with filters and search, chrome bookmarks
-- Add a chrome bookmarks browse page with fuzzy search, sortby date and other sortby. Ability to add to Geekmarks.
-- Show notes as well
-- Improve sidebar by making it closeable with hamburger / Webengage menu.
-- Decide whether to allow edit abilities
 - pagination/Infinite scroll - browse page
 
 
@@ -42,6 +37,17 @@
 - Video timer in coursera and udemy. hard to do and not very beneficial
 - Tag Detection and suggestion, call these implicit tags, as opposed to user specific tags
 - User preference to start the browse page with selected config, allow creation of custom browse pages
+- Offline save for reading, show online version if net available
+- Integrate search with already bookmarked chrome store?
+- Integrate search with google search page and url bar
+- Support Annotations, with offline caching (for speedup? or not)
+- Video timer in coursera and udemy
+- Browse Page Improvements
+    - Make 2 tabs, browse with filters and search, chrome bookmarks
+    - Add a chrome bookmarks browse page with fuzzy search, sortby date and other sortby. Ability to add to Geekmarks.
+    - Show notes as well
+    - Improve sidebar by making it closeable with hamburger / Webengage menu.
+    - Decide whether to allow edit abilities
 
 ### Login/Sign Up issues
 - If check-login is false then try sync and determine actual logout before returning
