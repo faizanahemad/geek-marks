@@ -1,5 +1,8 @@
 ### TODO (Features)
+- CouchDB in same package as node
+- CouchDB backup process
 - Default Collection Per Website
+- Remove Unused or unnecessary features
 - Improve Title Detection
     - Title present in top 30% of page
     - Title detection is a weighted function of font-size, font-weight, greatest enclosing tags upto some x level
